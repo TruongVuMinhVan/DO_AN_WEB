@@ -1,0 +1,11 @@
+.signup-background {
+    background-color: #f0f4f8;
+    background-image: url("https://static.vecteezy.com/system/resources/previews/049/004/338/non_2x/healthy-snacks-with-blank-space-photo.jpg");
+    background-size: cover;
+    background-position: center;
+}
+
+    .signup-background h2,
+    .signup-background p {
+        font-family: 'Inter', sans-serif; 
+    }
