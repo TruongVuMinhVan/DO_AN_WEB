@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Sidebar from './sidebar';
 import { Line } from 'react-chartjs-2';
 import {
@@ -25,6 +25,10 @@ ChartJS.register(
 );
 
 const Dashboard = () => {
+    const [collapsed, setCollapsed] = useState(false); // quản lý trạng thái sidebar
+
+    const handleToggle = () => setCollapsed(!collapsed);
+
     const energyHistoryData = {
         labels: ["8 Apr", "10 Apr", "12 Apr", "14 Apr"],
         datasets: [{
@@ -57,11 +61,10 @@ const Dashboard = () => {
     return (
         <div className="flex">
             {/* Sidebar cố định */}
-            <div className="fixed inset-y-0 left-0 w-64 z-10">
-            </div>
-
             {/* Nội dung dashboard */}
-            <div className="ml-64 flex-1 min-h-screen p-6 overflow-y-auto dashboard-container">
+            <div
+                className={`transition-all duration-300 ${collapsed ? 'ml-20' : 'ml-64'} flex-1 min-h-screen p-6 overflow-y-auto dashboard-container`}
+            >
                 <div className="flex justify-between items-center dashboard-header">
                     <h1>Your Dashboard</h1>
                     <div className="flex items-center">

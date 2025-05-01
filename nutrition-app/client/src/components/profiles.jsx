@@ -84,7 +84,7 @@ const Profile = () => {
     if (error) return <p className="text-center mt-6 text-red-500">{error}</p>;
 
     return (
-        <form onSubmit={handleSubmit} className="p-6 bg-white rounded-lg shadow-md max-w-xl mx-auto mt-10">
+        <form onSubmit={handleSubmit} className="p-6 bg-white rounded-lg shadow-md w-full max-w-2xl mx-auto mt-10">
             <h2 className="text-2xl font-bold text-teal-600 mb-4">Cập nhật hồ sơ</h2>
 
             <input

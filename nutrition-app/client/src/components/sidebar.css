@@ -84,3 +84,14 @@
 .sidebar.collapsed .toggle-btn {
     margin-left: 0;
 }
+
+/* Nội dung chính (dashboard hoặc các trang khác) */
+.main-content {
+    margin-left: 16rem; /* khi sidebar mở */
+    transition: margin-left 0.3s ease;
+}
+
+/* Khi sidebar thu gọn */
+.sidebar.collapsed ~ .main-content {
+    margin-left: 4rem;
+}

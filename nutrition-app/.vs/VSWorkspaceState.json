@@ -3,10 +3,8 @@
     "",
     "\\client",
     "\\client\\src",
-    "\\client\\src\\components",
-    "\\client\\src\\pages",
-    "\\server\\routes"
+    "\\client\\src\\components"
   ],
-  "SelectedNode": "\\client\\src\\pages\\login.jsx",
+  "SelectedNode": "\\client\\src\\components\\dashboard.css",
   "PreviewInSolutionExplorer": false
 }
