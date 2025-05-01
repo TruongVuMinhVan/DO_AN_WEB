@@ -81,6 +81,8 @@ router.put("/profile", verifyToken, (req, res) => {
     const userId = req.user.id;
     const { name, email, age, gender, goal, allergies } = req.body;
 
+    console.log("🔥 Dữ liệu nhận được:", req.body);
+
     const sql = `UPDATE user SET name=?, email=?, age=?, gender=?, goal=?, allergies=? WHERE id=?`;
     db.query(sql, [name, email, age, gender, goal, allergies, userId], (err, result) => {
         if (err) return res.status(500).json({ error: err.message });
