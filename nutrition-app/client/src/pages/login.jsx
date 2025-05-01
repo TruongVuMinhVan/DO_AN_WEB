@@ -84,8 +84,8 @@ const LoginPage = () => {
                 </div>
 
                 <div className="w-1/4 bg-gradient-to-br from-blue-400 to-green-500 text-white p-10 flex flex-col justify-center items-center">
-                    <h2 className="text-2xl font-bold mb-4">Chưa Có Tài Khoản?</h2>
-                    <p className="mb-6 text-center">Đăng ký và khám phá nhiều cơ hội mới!</p>
+                    <h2 className="text-2xl font-bold mb-4">Don't Have An Account?</h2>
+                    <p className="mb-6 text-center">Sign up and find more about us</p>
                     <button
                         onClick={() => navigate('/signUpPage')}
                         className="bg-white text-teal-600 px-6 py-2 rounded-full font-medium"

@@ -29,7 +29,7 @@ const SignUpPage = () => {
                 {/* Left: Sign Up Form */}
                 <div className="w-3/4 p-12 flex flex-col justify-center">
                     <h2 className="text-4xl font-bold text-center text-blue-700 mb-4">Create Account</h2>
-                    <p className="text-center text-gray-500 mb-6">Đăng ký tài khoản để bắt đầu hành trình của bạn.</p>
+                    <p className="text-center text-gray-500 mb-6">Sign up and start your journey.</p>
 
                     {/* Social Buttons */}
                     <div className="flex gap-4 mb-6 justify-center">
@@ -84,8 +84,8 @@ const SignUpPage = () => {
 
                 {/* Right: Already Have Account */}
                 <div className="w-1/4 bg-gradient-to-br from-blue-400 to-green-500 text-white p-10 flex flex-col justify-center items-center">
-                    <h2 className="text-2xl font-bold mb-4">Đã Có Tài Khoản?</h2>
-                    <p className="mb-6 text-center">Đăng nhập để tiếp tục khám phá!</p>
+                    <h2 className="text-2xl font-bold mb-4">Already Have Account?</h2>
+                    <p className="mb-6 text-center">Sign in to discover our website</p>
                     <button
                         onClick={() => navigate('/login')}
                         className="bg-white text-teal-600 px-6 py-2 rounded-full font-medium"

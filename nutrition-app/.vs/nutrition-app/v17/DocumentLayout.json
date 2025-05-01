@@ -3,12 +3,16 @@
   "WorkspaceRootPath": "D:\\STUDY\\DACS\\nutrition-app\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|D:\\STUDY\\DACS\\nutrition-app\\client\\src\\components\\profiles.jsx||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:client\\src\\components\\profiles.jsx||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|D:\\STUDY\\DACS\\nutrition-app\\client\\src\\pages\\login.jsx||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:client\\src\\pages\\login.jsx||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|D:\\STUDY\\DACS\\nutrition-app\\server\\routes\\user.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:server\\routes\\user.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|D:\\STUDY\\DACS\\nutrition-app\\client\\src\\pages\\signUpPage.jsx||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:client\\src\\pages\\signUpPage.jsx||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|D:\\STUDY\\DACS\\nutrition-app\\client\\src\\components\\Dashboard.jsx||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:client\\src\\components\\Dashboard.jsx||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
     }
   ],
   "DocumentGroupContainers": [
@@ -18,7 +22,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 2,
+          "SelectedChildIndex": 1,
           "Children": [
             {
               "$type": "Bookmark",
@@ -26,28 +30,41 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "user.js",
-              "DocumentMoniker": "D:\\STUDY\\DACS\\nutrition-app\\server\\routes\\user.js",
-              "RelativeDocumentMoniker": "server\\routes\\user.js",
-              "ToolTip": "D:\\STUDY\\DACS\\nutrition-app\\server\\routes\\user.js",
-              "RelativeToolTip": "server\\routes\\user.js",
-              "ViewState": "AgIAAD0AAAAAAAAAAAAAAF0AAAAZAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001646|",
-              "WhenOpened": "2025-04-27T04:22:51.365Z",
+              "DocumentIndex": 0,
+              "Title": "login.jsx",
+              "DocumentMoniker": "D:\\STUDY\\DACS\\nutrition-app\\client\\src\\pages\\login.jsx",
+              "RelativeDocumentMoniker": "client\\src\\pages\\login.jsx",
+              "ToolTip": "D:\\STUDY\\DACS\\nutrition-app\\client\\src\\pages\\login.jsx",
+              "RelativeToolTip": "client\\src\\pages\\login.jsx",
+              "ViewState": "AgIAAAkAAAAAAAAAAAAAAFYAAAA8AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003663|",
+              "WhenOpened": "2025-05-01T05:33:48.331Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
-              "Title": "profiles.jsx",
-              "DocumentMoniker": "D:\\STUDY\\DACS\\nutrition-app\\client\\src\\components\\profiles.jsx",
-              "RelativeDocumentMoniker": "client\\src\\components\\profiles.jsx",
-              "ToolTip": "D:\\STUDY\\DACS\\nutrition-app\\client\\src\\components\\profiles.jsx",
-              "RelativeToolTip": "client\\src\\components\\profiles.jsx",
-              "ViewState": "AgIAAHsAAAAAAAAAAADwvyIAAABCAAAAAAAAAA==",
+              "DocumentIndex": 1,
+              "Title": "signUpPage.jsx",
+              "DocumentMoniker": "D:\\STUDY\\DACS\\nutrition-app\\client\\src\\pages\\signUpPage.jsx",
+              "RelativeDocumentMoniker": "client\\src\\pages\\signUpPage.jsx",
+              "ToolTip": "D:\\STUDY\\DACS\\nutrition-app\\client\\src\\pages\\signUpPage.jsx",
+              "RelativeToolTip": "client\\src\\pages\\signUpPage.jsx",
+              "ViewState": "AgIAAEUAAAAAAAAAAAAAAFcAAABTAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003663|",
-              "WhenOpened": "2025-04-27T04:20:31.396Z",
+              "WhenOpened": "2025-05-01T05:32:47.25Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "Dashboard.jsx",
+              "DocumentMoniker": "D:\\STUDY\\DACS\\nutrition-app\\client\\src\\components\\Dashboard.jsx",
+              "RelativeDocumentMoniker": "client\\src\\components\\Dashboard.jsx",
+              "ToolTip": "D:\\STUDY\\DACS\\nutrition-app\\client\\src\\components\\Dashboard.jsx",
+              "RelativeToolTip": "client\\src\\components\\Dashboard.jsx",
+              "ViewState": "AgIAAEsAAAAAAAAAAAAAADwAAAAQAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003663|",
+              "WhenOpened": "2025-05-01T03:34:28.665Z",
               "EditorCaption": ""
             }
           ]

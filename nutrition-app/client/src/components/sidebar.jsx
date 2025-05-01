@@ -1,44 +1,49 @@
-import React from 'react';
-import { Link, useNavigate } from 'react-router-dom'; // ✅ useNavigate để chuyển hướng
+import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import './sidebar.css';
 
 const Sidebar = () => {
+    const [collapsed, setCollapsed] = useState(false);
     const navigate = useNavigate();
 
     const handleLogout = () => {
-        localStorage.removeItem('token'); 
-        navigate('/login'); 
+        localStorage.removeItem('token');
+        navigate('/login');
+    };
+
+    const toggleSidebar = () => {
+        setCollapsed(!collapsed);
     };
 
     return (
-        <div className="w-64 bg-gray-900 text-white h-screen p-5">
-            <h2 className="text-2xl font-bold mb-6">Nutrition App</h2>
-
+        <div className={`sidebar ${collapsed ? 'collapsed' : ''}`}>
+            <div className="sidebar-header">
+                {!collapsed && <span className="title">Nutrition App</span>}
+                <span className="toggle-btn" onClick={toggleSidebar}>☰</span>
+            </div>
             <ul>
-                <li className="mb-4">
+                <li>
                     <Link to="/dashboard" className="flex items-center text-lg hover:text-teal-400">
-                        <i className="fas fa-tachometer-alt mr-3"></i>
-                        Dashboard
+                        <i className="fas fa-tachometer-alt"></i>
+                        <span>Dashboard</span>
                     </Link>
                 </li>
-                <li className="mb-4">
+                <li>
                     <Link to="/profile" className="flex items-center text-lg hover:text-teal-400">
-                        <i className="fas fa-user mr-3"></i>
-                        Profile
+                        <i className="fas fa-user"></i>
+                        <span>Profile</span>
                     </Link>
                 </li>
-                <li className="mb-4">
+                <li>
                     <Link to="/settings" className="flex items-center text-lg hover:text-teal-400">
-                        <i className="fas fa-cogs mr-3"></i>
-                        Settings
+                        <i className="fas fa-cogs"></i>
+                        <span>Settings</span>
                     </Link>
                 </li>
-                <li className="mb-4">
-                    <button
-                        onClick={handleLogout}
-                        className="flex items-center text-lg hover:text-teal-400 focus:outline-none"
-                    >
-                        <i className="fas fa-sign-out-alt mr-3"></i>
-                        Logout
+                <li>
+                    <button onClick={handleLogout} className="flex items-center text-lg hover:text-teal-400">
+                        <i className="fas fa-sign-out-alt"></i>
+                        <span>Logout</span>
                     </button>
                 </li>
             </ul>
