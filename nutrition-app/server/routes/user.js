@@ -91,4 +91,23 @@ router.put("/profile", verifyToken, (req, res) => {
     });
 });
 
+router.delete('/profile', verifyToken, (req, res) => {
+    const userId = req.user.id;
+    console.log("🧠 User nhận được từ token:", req.user);
+    const sql = "DELETE FROM user WHERE id = ?";
+    db.query(sql, [userId], (err, result) => {
+        if (err) {
+            console.error("❌ Xoá thất bại:", err.message);
+            return res.status(500).json({ message: 'Xoá tài khoản thất bại', details: err.message });
+        }
+
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ message: "Không tìm thấy người dùng để xoá" });
+        }
+
+        res.status(200).json({ message: 'Tài khoản đã được xoá' });
+    });
+});
+
+
 module.exports = router; 

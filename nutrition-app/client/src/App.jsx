@@ -10,6 +10,7 @@ import Charts from './components/charts';
 import Profile from './components/profiles';
 import Reports from './components/reports';
 import NotFound from './pages/notFound';
+import FoodSearch from './pages/foodSearch';
 
 // Layout Component chứa Sidebar + Outlet
 const Layout = () => {
@@ -40,6 +41,7 @@ const App = () => {
 
             {/* Protected Routes */}
             <Route path="/" element={<Layout />}>
+                <Route path="/food" element={<FoodSearch />} /> 
                 <Route path="dashboard" element={<Dashboard />} />
                 <Route path="charts" element={<Charts />} />
                 <Route path="profile" element={<Profile />} />

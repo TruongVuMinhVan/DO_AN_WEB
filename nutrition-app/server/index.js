@@ -40,7 +40,7 @@ app.post("/register", (req, res) => {
 });
 
 // ✅ Dùng route login trong routes/user.js
-app.use("/api", userRoutes);
+app.use('/api', userRoutes);
 
 // ✅ Start server
 app.listen(PORT, () => {

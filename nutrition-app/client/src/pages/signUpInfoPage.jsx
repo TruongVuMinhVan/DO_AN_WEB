@@ -18,7 +18,6 @@ const SignUpInfoPage = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        // 👉 Lấy dữ liệu từ localStorage
         const basicInfo = JSON.parse(localStorage.getItem("signup_basic"));
 
         if (!basicInfo) {
@@ -27,21 +26,34 @@ const SignUpInfoPage = () => {
             return;
         }
 
-        const fullUserData = {
-            ...basicInfo,
-            ...info,
-        };
+        const fullUserData = { ...basicInfo, ...info };
 
         try {
+            // Đăng ký
             const res = await fetch("http://localhost:5000/register", {
                 method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
+                headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(fullUserData)
             });
 
             if (!res.ok) throw new Error("Đăng ký thất bại!");
+
+            // ✅ Đăng nhập ngay sau khi đăng ký
+            const loginRes = await fetch("http://localhost:5000/api/login", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    email: basicInfo.email,
+                    password: basicInfo.password,
+                })
+            });
+
+            const loginData = await loginRes.json();
+
+            if (!loginRes.ok) throw new Error(loginData.message || "Đăng nhập thất bại!");
+
+            // ✅ Lưu token
+            localStorage.setItem("token", loginData.token);
 
             alert("🎉 Đăng ký thành công!");
             localStorage.removeItem("signup_basic");

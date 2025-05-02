@@ -3,8 +3,9 @@
     "",
     "\\client",
     "\\client\\src",
-    "\\client\\src\\components"
+    "\\server\\middleware",
+    "\\server\\routes"
   ],
-  "SelectedNode": "\\client\\src\\components\\dashboard.css",
+  "SelectedNode": "\\client\\.gitignore",
   "PreviewInSolutionExplorer": false
 }

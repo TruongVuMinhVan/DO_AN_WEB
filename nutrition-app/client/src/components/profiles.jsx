@@ -144,9 +144,38 @@ const Profile = () => {
                 className="block w-full mb-3 p-2 border rounded"
             />
 
-            <button type="submit" className="px-4 py-2 bg-teal-500 text-white rounded hover:bg-teal-600">
-                💾 Lưu thông tin
-            </button>
+            <div className="flex gap-4 mt-4">
+                <button
+                    type="submit"
+                    className="px-4 py-2 bg-teal-500 text-white rounded hover:bg-teal-600"
+                >
+                    💾 Lưu thông tin
+                </button>
+
+                <button
+                    type="button"
+                    onClick={async () => {
+                        const confirmDelete = window.confirm("⚠️ Bạn có chắc chắn muốn xóa tài khoản không? Hành động này không thể hoàn tác.");
+                        if (confirmDelete) {
+                            try {
+                                const token = localStorage.getItem('token');
+                                await axios.delete('http://localhost:5000/api/profile', {
+                                    headers: { Authorization: `Bearer ${token}` }
+                                });
+                                alert("✅ Tài khoản đã được xóa!");
+                                localStorage.removeItem('token');
+                                navigate('/login');
+                            } catch (error) {
+                                console.error("❌ Xoá thất bại:", error.response?.data || error.message);
+                                alert("Có lỗi xảy ra khi xóa tài khoản: " + (error.response?.data?.message || error.message));
+                            }
+                        }
+                    }}
+                    className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+                >
+                    🗑️ Xóa tài khoản
+                </button>
+            </div>
         </form>
     );
 };
