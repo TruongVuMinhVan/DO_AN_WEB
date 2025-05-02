@@ -3,9 +3,11 @@
     "",
     "\\client",
     "\\client\\src",
+    "\\client\\src\\pages",
+    "\\server",
     "\\server\\middleware",
     "\\server\\routes"
   ],
-  "SelectedNode": "\\client\\.gitignore",
+  "SelectedNode": "\\server\\index.js",
   "PreviewInSolutionExplorer": false
 }

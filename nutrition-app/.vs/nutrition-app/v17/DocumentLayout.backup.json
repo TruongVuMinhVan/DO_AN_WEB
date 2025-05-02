@@ -1,7 +1,16 @@
 {
   "Version": 1,
   "WorkspaceRootPath": "D:\\STUDY\\DACS\\nutrition-app\\",
-  "Documents": [],
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|D:\\STUDY\\DACS\\nutrition-app\\client\\src\\pages\\foodSearch.jsx||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:client\\src\\pages\\foodSearch.jsx||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|D:\\STUDY\\DACS\\nutrition-app\\client\\src\\pages\\login.jsx||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:client\\src\\pages\\login.jsx||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
+    }
+  ],
   "DocumentGroupContainers": [
     {
       "Orientation": 0,
@@ -9,11 +18,37 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": -1,
+          "SelectedChildIndex": 1,
           "Children": [
             {
               "$type": "Bookmark",
               "Name": "ST:0:0:{b1e99781-ab81-11d0-b683-00aa00a3ee26}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "foodSearch.jsx",
+              "DocumentMoniker": "D:\\STUDY\\DACS\\nutrition-app\\client\\src\\pages\\foodSearch.jsx",
+              "RelativeDocumentMoniker": "client\\src\\pages\\foodSearch.jsx",
+              "ToolTip": "D:\\STUDY\\DACS\\nutrition-app\\client\\src\\pages\\foodSearch.jsx",
+              "RelativeToolTip": "client\\src\\pages\\foodSearch.jsx",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABAAAAALAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003663|",
+              "WhenOpened": "2025-05-02T15:35:43.835Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "login.jsx",
+              "DocumentMoniker": "D:\\STUDY\\DACS\\nutrition-app\\client\\src\\pages\\login.jsx",
+              "RelativeDocumentMoniker": "client\\src\\pages\\login.jsx",
+              "ToolTip": "D:\\STUDY\\DACS\\nutrition-app\\client\\src\\pages\\login.jsx",
+              "RelativeToolTip": "client\\src\\pages\\login.jsx",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003663|",
+              "WhenOpened": "2025-05-02T15:35:14.551Z",
+              "EditorCaption": ""
             }
           ]
         }

@@ -1,6 +1,5 @@
-﻿import { Routes, Route, Outlet } from 'react-router-dom';
-import React, { useState } from 'react';
-
+﻿import React, { useState } from 'react';
+import { Routes, Route, Outlet, Navigate } from 'react-router-dom';
 import Login from "./pages/login";
 import Signup from "./pages/signUpPage";
 import SignUpInfoPage from './pages/signUpInfoPage';
@@ -39,8 +38,9 @@ const App = () => {
             <Route path="/signUpPage" element={<Signup />} />
             <Route path="/signup-info" element={<SignUpInfoPage />} />
 
+            <Route index element={<Navigate to="/login" />} /> {/* ✅ dùng index cho "/" */}
             {/* Protected Routes */}
-            <Route path="/" element={<Layout />}>
+            <Route path="/" element={<Layout />}> {/* sau này có trang home thì thay thế */}
                 <Route path="/food" element={<FoodSearch />} /> 
                 <Route path="dashboard" element={<Dashboard />} />
                 <Route path="charts" element={<Charts />} />

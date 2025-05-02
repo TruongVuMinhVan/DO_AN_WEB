@@ -1,7 +1,9 @@
 ﻿const express = require("express");
 const cors = require("cors");
 const db = require("./db");
-const userRoutes = require("./routes/user"); // ✅ Import các route
+// ✅ Import các route
+const userRoutes = require("./routes/user"); 
+const historyRoutes = require('./routes/history');
 
 const app = express();
 const PORT = 5000;
@@ -20,27 +22,11 @@ app.get("/test-db", (req, res) => {
     });
 });
 
-// ✅ Route đăng ký ngay trong index.js (tạm thời nếu muốn)
-app.post("/register", (req, res) => {
-    const { name, email, password, age, weight, height, gender } = req.body;
-
-    const query = `
-        INSERT INTO user (name, email, password, age, weight, height, gender)
-        VALUES (?, ?, ?, ?, ?, ?, ?)
-    `;
-
-    db.query(query, [name, email, password, age, weight, height, gender], (err, result) => {
-        if (err) {
-            console.error("❌ Lỗi khi đăng ký:", err.message);
-            return res.status(500).json({ error: "Đăng ký thất bại!" });
-        }
-
-        res.status(201).json({ message: "Đăng ký thành công!" });
-    });
-});
-
-// ✅ Dùng route login trong routes/user.js
+// ✅ Dùng routes/user.js
 app.use('/api', userRoutes);
+
+// ✅ Dùng server/index.js
+app.use("/api", historyRoutes);
 
 // ✅ Start server
 app.listen(PORT, () => {

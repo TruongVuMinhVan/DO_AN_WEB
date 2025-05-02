@@ -13,7 +13,7 @@
                 'Content-Type': 'application/json',
                 'x-app-id': appId,
                 'x-app-key': apiKey
-            }
+            },
             body: JSON.stringify({ query })
         }
     );
