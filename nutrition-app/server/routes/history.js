@@ -24,4 +24,16 @@ router.get("/history", verifyToken, (req, res) => {
     });
 });
 
+router.delete("/history/:id", verifyToken, (req, res) => {
+    const histId = req.params.id;
+    const sql = "DELETE FROM lich_su_tim_kiem WHERE id = ?";
+    db.query(sql, [histId], (err, result) => {
+        if (err) return res.status(500).json({ error: err.message });
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ message: "Không tìm thấy lịch sử để xóa" });
+        }
+        res.json({ message: "Xóa lịch sử thành công" });
+    });
+});
+
 module.exports = router;

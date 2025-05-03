@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Sidebar from './sidebar';
 import { Line } from 'react-chartjs-2';
 import {
@@ -11,7 +12,6 @@ import {
     Tooltip,
     Legend,
 } from 'chart.js';
-
 import './dashboard.css';
 
 ChartJS.register(
@@ -25,8 +25,17 @@ ChartJS.register(
 );
 
 const Dashboard = () => {
-    const [collapsed, setCollapsed] = useState(false); // quản lý trạng thái sidebar
+    const navigate = useNavigate();
+    const token = localStorage.getItem('token');
 
+    // 🔐 Kiểm tra token ngay khi component mount
+    useEffect(() => {
+        if (!token) {
+            navigate('/login');
+        }
+    }, [navigate, token]);
+
+    const [collapsed, setCollapsed] = useState(false);
     const handleToggle = () => setCollapsed(!collapsed);
 
     const energyHistoryData = {
@@ -60,34 +69,37 @@ const Dashboard = () => {
 
     return (
         <div className="flex">
-            {/* Sidebar cố định */}
+            {/* Sidebar có thể truyền collapsed và toggle */}
+            <Sidebar collapsed={collapsed} toggleSidebar={handleToggle} />
+
             {/* Nội dung dashboard */}
             <div
-                className={`transition-all duration-300 ${collapsed ? 'ml-20' : 'ml-64'} flex-1 min-h-screen p-6 overflow-y-auto dashboard-container`}
+                className={`transition-all duration-300 flex-1 min-h-screen p-6 bg-gray-100 overflow-y-auto ${collapsed ? 'ml-20' : 'ml-64'
+                    }`}
             >
-                <div className="flex justify-between items-center dashboard-header">
-                    <h1>Your Dashboard</h1>
+                <div className="flex justify-between items-center mb-6">
+                    <h1 className="text-2xl font-semibold">Your Dashboard</h1>
                     <div className="flex items-center">
                         <i className="fas fa-bell text-orange-500 mr-4"></i>
                         <a className="text-teal-600" href="#">Account</a>
                     </div>
                 </div>
 
-                <div className="dashboard-content">
-                    <div className="dashboard-card h-64">
-                        <h3>Energy Consumed</h3>
+                <div className="space-y-8">
+                    <div className="bg-white p-4 rounded-xl shadow h-96">
+                        <h3 className="text-lg font-medium mb-2">Energy Consumed</h3>
                         <Line data={energyHistoryData} options={options} />
                     </div>
 
-                    <div className="dashboard-card h-64">
-                        <h3>Weight History</h3>
+                    <div className="bg-white p-4 rounded-xl shadow h-96">
+                        <h3 className="text-lg font-medium mb-2">Weight History</h3>
                         <Line data={weightChangeData} options={options} />
                     </div>
                 </div>
 
-                <div className="dashboard-footer">
+                <footer className="text-center text-gray-500 mt-10">
                     &copy; 2025 Nutrition App
-                </div>
+                </footer>
             </div>
         </div>
     );

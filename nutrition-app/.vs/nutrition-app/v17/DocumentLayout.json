@@ -3,16 +3,12 @@
   "WorkspaceRootPath": "D:\\STUDY\\DACS\\nutrition-app\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|D:\\STUDY\\DACS\\nutrition-app\\server\\routes\\history.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:server\\routes\\history.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|D:\\STUDY\\DACS\\nutrition-app\\server\\index.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:server\\index.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|D:\\STUDY\\DACS\\nutrition-app\\client\\src\\pages\\foodSearch.jsx||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
       "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:client\\src\\pages\\foodSearch.jsx||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|D:\\STUDY\\DACS\\nutrition-app\\server\\routes\\history.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:server\\routes\\history.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
     }
   ],
   "DocumentGroupContainers": [
@@ -25,47 +21,34 @@
           "SelectedChildIndex": 1,
           "Children": [
             {
-              "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "index.js",
-              "DocumentMoniker": "D:\\STUDY\\DACS\\nutrition-app\\server\\index.js",
-              "RelativeDocumentMoniker": "server\\index.js",
-              "ToolTip": "D:\\STUDY\\DACS\\nutrition-app\\server\\index.js",
-              "RelativeToolTip": "server\\index.js",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABsAAAAZAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001646|",
-              "WhenOpened": "2025-05-02T20:12:30.141Z",
-              "EditorCaption": ""
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{b1e99781-ab81-11d0-b683-00aa00a3ee26}"
             },
             {
               "$type": "Document",
               "DocumentIndex": 0,
-              "Title": "history.js",
-              "DocumentMoniker": "D:\\STUDY\\DACS\\nutrition-app\\server\\routes\\history.js",
-              "RelativeDocumentMoniker": "server\\routes\\history.js",
-              "ToolTip": "D:\\STUDY\\DACS\\nutrition-app\\server\\routes\\history.js",
-              "RelativeToolTip": "server\\routes\\history.js",
-              "ViewState": "AgIAAAoAAAAAAAAAAAAIwAwAAAAzAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001646|",
-              "WhenOpened": "2025-05-02T20:03:30.608Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 2,
               "Title": "foodSearch.jsx",
               "DocumentMoniker": "D:\\STUDY\\DACS\\nutrition-app\\client\\src\\pages\\foodSearch.jsx",
               "RelativeDocumentMoniker": "client\\src\\pages\\foodSearch.jsx",
               "ToolTip": "D:\\STUDY\\DACS\\nutrition-app\\client\\src\\pages\\foodSearch.jsx",
               "RelativeToolTip": "client\\src\\pages\\foodSearch.jsx",
-              "ViewState": "AgIAAB4AAAAAAAAAAAAAAIAAAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAJAAAAAAAAAAAAAuwKcAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003663|",
-              "WhenOpened": "2025-05-02T19:46:11.571Z",
+              "WhenOpened": "2025-05-03T05:07:15.302Z",
               "EditorCaption": ""
             },
             {
-              "$type": "Bookmark",
-              "Name": "ST:0:0:{b1e99781-ab81-11d0-b683-00aa00a3ee26}"
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "history.js",
+              "DocumentMoniker": "D:\\STUDY\\DACS\\nutrition-app\\server\\routes\\history.js",
+              "RelativeDocumentMoniker": "server\\routes\\history.js",
+              "ToolTip": "D:\\STUDY\\DACS\\nutrition-app\\server\\routes\\history.js",
+              "RelativeToolTip": "server\\routes\\history.js",
+              "ViewState": "AgIAAAwAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001646|",
+              "WhenOpened": "2025-05-03T12:49:26.122Z",
+              "EditorCaption": ""
             }
           ]
         }

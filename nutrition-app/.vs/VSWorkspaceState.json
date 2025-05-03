@@ -3,9 +3,10 @@
     "",
     "\\client",
     "\\client\\src",
+    "\\client\\src\\api",
+    "\\client\\src\\components",
     "\\client\\src\\pages",
     "\\server",
-    "\\server\\middleware",
     "\\server\\routes"
   ],
   "SelectedNode": "\\server\\index.js",

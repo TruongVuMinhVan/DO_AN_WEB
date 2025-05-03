@@ -23,7 +23,7 @@ const Sidebar = ({ collapsed, toggleSidebar }) => {
             <ul className="space-y-4 mt-6 pl-4">
                 <li>
                     <Link to="/food" className="flex items-center gap-2 hover:text-teal-400">
-                        <i class="fa-solid fa-utensils"></i>
+                        <i className="fa-solid fa-utensils"></i>
                         {!collapsed && <span>Food</span>}
                     </Link>
                 </li>
