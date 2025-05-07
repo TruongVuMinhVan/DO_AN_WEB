@@ -1,12 +1,12 @@
 ﻿const express = require("express");
 const cors = require("cors");
 const db = require("./db");
+const app = express();
+const PORT = 5000;
 // ✅ Import các route
 const userRoutes = require("./routes/user"); 
 const historyRoutes = require('./routes/history');
-
-const app = express();
-const PORT = 5000;
+const mealRoutes = require('./routes/meal');
 
 app.use(cors());
 app.use(express.json());
@@ -25,9 +25,11 @@ app.get("/test-db", (req, res) => {
 // ✅ Dùng routes/user.js
 app.use('/api', userRoutes);
 
-// ✅ Dùng server/index.js
+// ✅ Dùng server/history.js
 app.use("/api", historyRoutes);
 
+// ✅ Dùng server/meal.js
+app.use('/api', mealRoutes);
 // ✅ Start server
 app.listen(PORT, () => {
     console.log(`🚀 Server is running at http://localhost:${PORT}`);

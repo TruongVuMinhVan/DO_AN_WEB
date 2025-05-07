@@ -1,0 +1,70 @@
+﻿body {
+    font-family: Arial, sans-serif;
+    background-color: #f5f5f5;
+    margin: 0;
+    padding: 0;
+}
+
+h1 {
+    color: #333;
+}
+
+.dashboard-container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding: 20px;
+}
+
+.dashboard-header {
+    font-size: 24px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.dashboard-content {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.dashboard-card {
+    background: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    height: 400px;
+    position: relative;
+}
+
+    .dashboard-card h3 {
+        font-size: 18px;
+        color: #444;
+        margin-bottom: 1rem;
+    }
+
+.dashboard-footer {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 14px;
+    color: #888;
+}
+
+/* Đảm bảo biểu đồ chiếm hết chiều cao card */
+.dashboard-card canvas {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100% !important;
+    height: calc(100% - 40px) !important; /* chừa khoảng cho tiêu đề */
+}
+
+.no-result {
+    padding: 8px 12px;
+    color: #777;
+    font-style: italic;
+}

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Máy chủ: 127.0.0.1
--- Thời gian đã tạo: Th4 24, 2025 lúc 01:19 PM
+-- Thời gian đã tạo: Th5 06, 2025 lúc 02:53 PM
 -- Phiên bản máy phục vụ: 10.4.32-MariaDB
 -- Phiên bản PHP: 8.2.12
 
@@ -42,7 +42,9 @@ CREATE TABLE `bua_an` (
 
 CREATE TABLE `goi_y_mon_an` (
   `id` int(11) NOT NULL,
-  `mon_an_de_xuat` text DEFAULT NULL
+  `mon_an_de_xuat` text DEFAULT NULL,
+  `user_id` int(11) DEFAULT NULL,
+  `mon_an_id` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -75,12 +77,59 @@ CREATE TABLE `lich_su_bua_an` (
 -- --------------------------------------------------------
 
 --
+-- Cấu trúc bảng cho bảng `lich_su_tim_kiem`
+--
+
+CREATE TABLE `lich_su_tim_kiem` (
+  `id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `query` text NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Đang đổ dữ liệu cho bảng `lich_su_tim_kiem`
+--
+
+INSERT INTO `lich_su_tim_kiem` (`id`, `user_id`, `query`, `created_at`) VALUES
+(66, 29, '3 apple', '2025-05-06 11:37:39'),
+(67, 29, '3 orange', '2025-05-06 11:40:03'),
+(68, 29, '3 orange', '2025-05-06 11:40:03'),
+(71, 29, '3 orange', '2025-05-06 12:36:20'),
+(72, 29, '3 orange', '2025-05-06 12:36:21'),
+(73, 29, '1 watermelon', '2025-05-06 12:43:11');
+
+-- --------------------------------------------------------
+
+--
 -- Cấu trúc bảng cho bảng `mon_an`
 --
 
 CREATE TABLE `mon_an` (
   `id` int(11) NOT NULL,
   `ten_mon` varchar(255) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Cấu trúc bảng cho bảng `mon_an_bua_an`
+--
+
+CREATE TABLE `mon_an_bua_an` (
+  `bua_an_id` int(11) DEFAULT NULL,
+  `mon_an_id` int(11) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Cấu trúc bảng cho bảng `mon_an_thuc_don`
+--
+
+CREATE TABLE `mon_an_thuc_don` (
+  `thuc_don_id` int(11) DEFAULT NULL,
+  `mon_an_id` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -168,9 +217,7 @@ CREATE TABLE `user` (
 --
 
 INSERT INTO `user` (`id`, `name`, `email`, `password`, `age`, `weight`, `height`, `gender`, `goal`, `allergies`) VALUES
-(1, 'TRUONG VU MINH VAN', 'sieumc1990@gmail.com', '123123456', 16, 55, 170, 'male', NULL, NULL),
-(2, 'VO NGUYEN MINH NHAT', 'minhnhat2611@gmail.com', '123123456', 18, 100, 160, 'male', NULL, NULL),
-(3, 'NGUYEN QUOC TUAN', 'quoctuan1111@gmai.com', '123123456', 19, 88, 188, 'male', NULL, NULL);
+(29, 'TRUONG VU MINH VAN', 'sieumc1990@gmail.com', '$2b$10$RwFUFSy.VyJ/0OBhGP8EN.loHGnBKUWbdLhM9UJFnDVVESWPWAk4y', 13, 13, 13, 'male', NULL, NULL);
 
 --
 -- Chỉ mục cho các bảng đã đổ
@@ -187,7 +234,9 @@ ALTER TABLE `bua_an`
 -- Chỉ mục cho bảng `goi_y_mon_an`
 --
 ALTER TABLE `goi_y_mon_an`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `fk_user` (`user_id`),
+  ADD KEY `fk_mon_an` (`mon_an_id`);
 
 --
 -- Chỉ mục cho bảng `ke_hoach_dinh_duong`
@@ -204,10 +253,31 @@ ALTER TABLE `lich_su_bua_an`
   ADD KEY `user_id` (`user_id`);
 
 --
+-- Chỉ mục cho bảng `lich_su_tim_kiem`
+--
+ALTER TABLE `lich_su_tim_kiem`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `user_id` (`user_id`);
+
+--
 -- Chỉ mục cho bảng `mon_an`
 --
 ALTER TABLE `mon_an`
   ADD PRIMARY KEY (`id`);
+
+--
+-- Chỉ mục cho bảng `mon_an_bua_an`
+--
+ALTER TABLE `mon_an_bua_an`
+  ADD KEY `bua_an_id` (`bua_an_id`),
+  ADD KEY `mon_an_id` (`mon_an_id`);
+
+--
+-- Chỉ mục cho bảng `mon_an_thuc_don`
+--
+ALTER TABLE `mon_an_thuc_don`
+  ADD KEY `thuc_don_id` (`thuc_don_id`),
+  ADD KEY `mon_an_id` (`mon_an_id`);
 
 --
 -- Chỉ mục cho bảng `phan_tich_dinh_duong`
@@ -273,6 +343,12 @@ ALTER TABLE `lich_su_bua_an`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
+-- AUTO_INCREMENT cho bảng `lich_su_tim_kiem`
+--
+ALTER TABLE `lich_su_tim_kiem`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=74;
+
+--
 -- AUTO_INCREMENT cho bảng `mon_an`
 --
 ALTER TABLE `mon_an`
@@ -306,7 +382,7 @@ ALTER TABLE `thuc_don`
 -- AUTO_INCREMENT cho bảng `user`
 --
 ALTER TABLE `user`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=30;
 
 --
 -- Các ràng buộc cho các bảng đã đổ
@@ -319,6 +395,13 @@ ALTER TABLE `bua_an`
   ADD CONSTRAINT `bua_an_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`);
 
 --
+-- Các ràng buộc cho bảng `goi_y_mon_an`
+--
+ALTER TABLE `goi_y_mon_an`
+  ADD CONSTRAINT `fk_mon_an` FOREIGN KEY (`mon_an_id`) REFERENCES `mon_an` (`id`),
+  ADD CONSTRAINT `fk_user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`);
+
+--
 -- Các ràng buộc cho bảng `ke_hoach_dinh_duong`
 --
 ALTER TABLE `ke_hoach_dinh_duong`
@@ -329,6 +412,26 @@ ALTER TABLE `ke_hoach_dinh_duong`
 --
 ALTER TABLE `lich_su_bua_an`
   ADD CONSTRAINT `lich_su_bua_an_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`);
+
+--
+-- Các ràng buộc cho bảng `lich_su_tim_kiem`
+--
+ALTER TABLE `lich_su_tim_kiem`
+  ADD CONSTRAINT `lich_su_tim_kiem_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`);
+
+--
+-- Các ràng buộc cho bảng `mon_an_bua_an`
+--
+ALTER TABLE `mon_an_bua_an`
+  ADD CONSTRAINT `mon_an_bua_an_ibfk_1` FOREIGN KEY (`bua_an_id`) REFERENCES `bua_an` (`id`),
+  ADD CONSTRAINT `mon_an_bua_an_ibfk_2` FOREIGN KEY (`mon_an_id`) REFERENCES `mon_an` (`id`);
+
+--
+-- Các ràng buộc cho bảng `mon_an_thuc_don`
+--
+ALTER TABLE `mon_an_thuc_don`
+  ADD CONSTRAINT `mon_an_thuc_don_ibfk_1` FOREIGN KEY (`thuc_don_id`) REFERENCES `thuc_don` (`id`),
+  ADD CONSTRAINT `mon_an_thuc_don_ibfk_2` FOREIGN KEY (`mon_an_id`) REFERENCES `mon_an` (`id`);
 
 --
 -- Các ràng buộc cho bảng `phan_tich_dinh_duong`

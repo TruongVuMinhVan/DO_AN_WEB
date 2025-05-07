@@ -3,12 +3,11 @@
     "",
     "\\client",
     "\\client\\src",
-    "\\client\\src\\api",
-    "\\client\\src\\components",
     "\\client\\src\\pages",
+    "\\client\\src\\styles",
     "\\server",
     "\\server\\routes"
   ],
-  "SelectedNode": "\\server\\index.js",
+  "SelectedNode": "\\client\\src\\pages\\signUpPage.jsx",
   "PreviewInSolutionExplorer": false
 }

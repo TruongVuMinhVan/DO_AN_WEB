@@ -12,7 +12,7 @@ import {
     Tooltip,
     Legend,
 } from 'chart.js';
-import './dashboard.css';
+import '../styles/dashboard.css';
 
 ChartJS.register(
     CategoryScale,
@@ -70,8 +70,6 @@ const Dashboard = () => {
     return (
         <div className="flex">
             {/* Sidebar có thể truyền collapsed và toggle */}
-            <Sidebar collapsed={collapsed} toggleSidebar={handleToggle} />
-
             {/* Nội dung dashboard */}
             <div
                 className={`transition-all duration-300 flex-1 min-h-screen p-6 bg-gray-100 overflow-y-auto ${collapsed ? 'ml-20' : 'ml-64'

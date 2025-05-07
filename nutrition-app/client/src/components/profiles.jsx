@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faEyeSlash, faEye, faRepeat, faTrashAlt, faSave } from '@fortawesome/free-solid-svg-icons';
+import '../styles/profile.css';
 
 const Profile = () => {
     const [user, setUser] = useState({
@@ -11,172 +14,165 @@ const Profile = () => {
         goal: '',
         allergies: ''
     });
-
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
+    const [showPwdForm, setShowPwdForm] = useState(false);
+    const [pwdData, setPwdData] = useState({ oldPassword: '', newPassword: '' });
+    const [showPwd, setShowPwd] = useState({ old: false, new: false });
+    const [pwdError, setPwdError] = useState('');
     const navigate = useNavigate();
+    const token = localStorage.getItem('token');
 
     useEffect(() => {
-        const fetchUser = async () => {
-            const token = localStorage.getItem('token');
-            if (!token) {
-                navigate('/login');
-                return;
-            }
+        if (!token) return navigate('/login');
 
-            try {
-                const res = await axios.get('http://localhost:5000/api/profile', {
-                    headers: { Authorization: `Bearer ${token}` }
-                });
-
-                // Map gender từ English → Tiếng Việt
-                const genderVi = res.data.gender === 'male' ? 'Nam' :
-                    res.data.gender === 'female' ? 'Nữ' :
-                        res.data.gender === 'other' ? 'Khác' : '';
-
+        axios.get('/api/profile', { headers: { Authorization: `Bearer ${token}` } })
+            .then(res => {
+                const data = res.data;
                 setUser({
-                    name: res.data.name || '',
-                    email: res.data.email || '',
-                    age: res.data.age || '',
-                    gender: genderVi,
-                    goal: res.data.goal || '',
-                    allergies: res.data.allergies || ''
+                    name: data.name ?? '',
+                    email: data.email ?? '',
+                    age: data.age ?? '',
+                    gender: data.gender ?? '',
+                    goal: data.goal ?? '',
+                    allergies: data.allergies ?? ''
                 });
-            } catch (err) {
-                console.error("❌ Không lấy được user:", err);
-                setError('Không thể tải hồ sơ người dùng.');
-            } finally {
-                setLoading(false);
-            }
-        };
+            })
+            .catch(() => setError('Failed to load profile'))
+            .finally(() => setLoading(false));
+    }, [navigate, token]);
 
-        fetchUser();
-    }, [navigate]);
+    const handleChange = e => setUser({ ...user, [e.target.name]: e.target.value });
 
-    const handleChange = (e) => {
-        setUser({ ...user, [e.target.name]: e.target.value });
-    };
-
-    const handleSubmit = async (e) => {
+    const saveProfile = async e => {
         e.preventDefault();
-        const token = localStorage.getItem('token');
-
-        // Map gender từ Tiếng Việt → English
-        let genderMapped = '';
-        if (user.gender === 'Nam') genderMapped = 'male';
-        else if (user.gender === 'Nữ') genderMapped = 'female';
-        else if (user.gender === 'Khác') genderMapped = 'other';
-        else genderMapped = '';
-
         try {
-            await axios.put('http://localhost:5000/api/profile',
-                { ...user, gender: genderMapped },
-                { headers: { Authorization: `Bearer ${token}` } }
-            );
-            alert("🎉 Lưu thành công!");
-        } catch (error) {
-            console.error("❌ Lỗi khi lưu:", error);
-            alert("Lưu thất bại!");
+            await axios.put('/api/profile', user, { headers: { Authorization: `Bearer ${token}` } });
+            alert('✅ Profile saved successfully!');
+        } catch {
+            alert('❌ Failed to save profile!');
         }
     };
 
-    if (loading) return <p className="text-center mt-6">⏳ Đang tải dữ liệu...</p>;
+    const togglePwdForm = () => {
+        setShowPwdForm(x => !x);
+        setPwdError('');
+        setPwdData({ oldPassword: '', newPassword: '' });
+    };
+
+    const handlePwdChange = e => setPwdData({ ...pwdData, [e.target.name]: e.target.value });
+
+    const savePassword = async e => {
+        e.preventDefault();
+        setPwdError('');
+        try {
+            await axios.put('/api/profile/password', pwdData, { headers: { Authorization: `Bearer ${token}` } });
+            alert('✅ Password changed successfully!');
+            togglePwdForm();
+        } catch (err) {
+            setPwdError(err.response?.data?.message || '❌ Password change failed!');
+        }
+    };
+
+    const deleteAccount = async () => {
+        if (!window.confirm('Are you sure you want to delete your account? This action cannot be undone.')) return;
+        try {
+            await axios.delete('/api/profile', { headers: { Authorization: `Bearer ${token}` } });
+            alert('✅ Account deleted!');
+            localStorage.removeItem('token');
+            navigate('/login');
+        } catch {
+            alert('❌ Failed to delete account!');
+        }
+    };
+
+    if (loading) return <p className="text-center mt-6">⏳ Loading...</p>;
     if (error) return <p className="text-center mt-6 text-red-500">{error}</p>;
 
     return (
-        <form onSubmit={handleSubmit} className="p-6 bg-white rounded-lg shadow-md w-full max-w-2xl mx-auto mt-10">
-            <h2 className="text-2xl font-bold text-teal-600 mb-4">Cập nhật hồ sơ</h2>
-
-            <input
-                type="text"
-                name="name"
-                placeholder="Họ tên"
-                value={user.name}
-                onChange={handleChange}
-                className="block w-full mb-3 p-2 border rounded"
-            />
-
-            <input
-                type="email"
-                name="email"
-                placeholder="Email"
-                value={user.email}
-                onChange={handleChange}
-                className="block w-full mb-3 p-2 border rounded"
-            />
-
-            <input
-                type="number"
-                name="age"
-                placeholder="Tuổi"
-                value={user.age}
-                onChange={handleChange}
-                className="block w-full mb-3 p-2 border rounded"
-            />
-
-            <select
-                name="gender"
-                value={user.gender}
-                onChange={handleChange}
-                className="block w-full mb-3 p-2 border rounded"
-            >
-                <option value="">Chọn giới tính</option>
-                <option value="Nam">Nam</option>
-                <option value="Nữ">Nữ</option>
-                <option value="Khác">Khác</option>
-            </select>
-
-            <input
-                type="text"
-                name="goal"
-                placeholder="Mục tiêu sức khoẻ"
-                value={user.goal}
-                onChange={handleChange}
-                className="block w-full mb-3 p-2 border rounded"
-            />
-
-            <input
-                type="text"
-                name="allergies"
-                placeholder="Dị ứng"
-                value={user.allergies}
-                onChange={handleChange}
-                className="block w-full mb-3 p-2 border rounded"
-            />
-
-            <div className="flex gap-4 mt-4">
+        <div className="profile-container">
+            <div className="profile-header">
+                <h2 className="profile-title">Update Profile</h2>
                 <button
-                    type="submit"
-                    className="px-4 py-2 bg-teal-500 text-white rounded hover:bg-teal-600"
+                    onClick={togglePwdForm}
+                    className="repeat-btn"
+                    title={showPwdForm ? 'Cancel password change' : 'Change password'}
                 >
-                    💾 Lưu thông tin
-                </button>
-
-                <button
-                    type="button"
-                    onClick={async () => {
-                        const confirmDelete = window.confirm("⚠️ Bạn có chắc chắn muốn xóa tài khoản không? Hành động này không thể hoàn tác.");
-                        if (confirmDelete) {
-                            try {
-                                const token = localStorage.getItem('token');
-                                await axios.delete('http://localhost:5000/api/profile', {
-                                    headers: { Authorization: `Bearer ${token}` }
-                                });
-                                alert("✅ Tài khoản đã được xóa!");
-                                localStorage.removeItem('token');
-                                navigate('/login');
-                            } catch (error) {
-                                console.error("❌ Xoá thất bại:", error.response?.data || error.message);
-                                alert("Có lỗi xảy ra khi xóa tài khoản: " + (error.response?.data?.message || error.message));
-                            }
-                        }
-                    }}
-                    className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
-                >
-                    🗑️ Xóa tài khoản
+                    <FontAwesomeIcon icon={faRepeat} />
                 </button>
             </div>
-        </form>
+
+            <form onSubmit={saveProfile} className="profile-form">
+                <input name="name" type="text" placeholder="Full Name" value={user.name} onChange={handleChange} className="profile-input" />
+                <input name="email" type="email" placeholder="Email" value={user.email} onChange={handleChange} className="profile-input" />
+                <input name="age" type="number" placeholder="Age" value={user.age} onChange={handleChange} className="profile-input" />
+                <select name="gender" value={user.gender} onChange={handleChange} className="profile-input">
+                    <option value="">Select gender</option>
+                    <option value="male">Male</option>
+                    <option value="female">Female</option>
+                    <option value="other">Other</option>
+                </select>
+                <input name="goal" type="text" placeholder="Health Goal" value={user.goal} onChange={handleChange} className="profile-input" />
+                <input name="allergies" type="text" placeholder="Allergies" value={user.allergies} onChange={handleChange} className="profile-input" />
+                
+            </form>
+
+            {showPwdForm && (
+                <form onSubmit={savePassword} className="profile-form mt-6">
+                    <h3 className="profile-subtitle">Change Password</h3>
+                    <div className="relative">
+                        <input
+                            name="oldPassword"
+                            type={showPwd.old ? 'text' : 'password'}
+                            placeholder="Current Password"
+                            value={pwdData.oldPassword}
+                            onChange={handlePwdChange}
+                            className="profile-input pr-10"
+                            required
+                        />
+                        <button
+                            type="button"
+                            onClick={() => setShowPwd(prev => ({ ...prev, old: !prev.old }))}
+                            className="toggle-pwd-btn"
+                        >
+                            <FontAwesomeIcon icon={showPwd.old ? faEye : faEyeSlash} />
+                        </button>
+                    </div>
+                    <div className="relative">
+                        <input
+                            name="newPassword"
+                            type={showPwd.new ? 'text' : 'password'}
+                            placeholder="New Password"
+                            value={pwdData.newPassword}
+                            onChange={handlePwdChange}
+                            className="profile-input pr-10"
+                            required
+                        />
+                        <button
+                            type="button"
+                            onClick={() => setShowPwd(prev => ({ ...prev, new: !prev.new }))}
+                            className="toggle-pwd-btn"
+                        >
+                            <FontAwesomeIcon icon={showPwd.new ? faEye : faEyeSlash} />
+                        </button>
+                    </div>
+                    {pwdError && <p className="text-red-500">{pwdError}</p>}
+                    <button type="submit" className="profile-btn btn-password">
+                        <FontAwesomeIcon icon={faSave} className="mr-2" />
+                        Save Password
+                    </button>
+                </form>
+            )}
+
+            <button type="button" onClick={saveProfile} className="profile-btn btn-save">
+                <FontAwesomeIcon icon={faSave} className="mr-2" />
+                Save Profile
+            </button>
+
+            <button onClick={deleteAccount} className="profile-btn btn-delete mt-4">
+                <FontAwesomeIcon icon={faTrashAlt} /> Delete Account
+            </button>
+        </div>
     );
 };
 
