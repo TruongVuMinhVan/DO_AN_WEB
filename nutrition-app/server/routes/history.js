@@ -8,10 +8,27 @@ router.post("/history", verifyToken, (req, res) => {
     const userId = req.user.id;
     const { query } = req.body;
 
-    const sql = `INSERT INTO lich_su_tim_kiem (user_id, query) VALUES (?, ?)`;
-    db.query(sql, [userId, query], (err, result) => {
+    // Tìm xem đã có dòng nào cùng query cho user chưa
+    const checkSql = `SELECT id FROM lich_su_tim_kiem WHERE user_id = ? AND query = ? LIMIT 1`;
+
+    db.query(checkSql, [userId, query], (err, rows) => {
         if (err) return res.status(500).json({ error: err.message });
-        res.status(201).json({ message: "Lưu lịch sử thành công" });
+
+        if (rows.length > 0) {
+            // Nếu đã tồn tại: cập nhật lại created_at
+            const updateSql = `UPDATE lich_su_tim_kiem SET created_at = NOW() WHERE id = ?`;
+            db.query(updateSql, [rows[0].id], (err2) => {
+                if (err2) return res.status(500).json({ error: err2.message });
+                return res.status(200).json({ message: "Đã cập nhật thời gian lịch sử" });
+            });
+        } else {
+            // Nếu chưa có: thêm mới
+            const insertSql = `INSERT INTO lich_su_tim_kiem (user_id, query) VALUES (?, ?)`;
+            db.query(insertSql, [userId, query], (err3) => {
+                if (err3) return res.status(500).json({ error: err3.message });
+                return res.status(201).json({ message: "Lưu lịch sử thành công" });
+            });
+        }
     });
 });
 

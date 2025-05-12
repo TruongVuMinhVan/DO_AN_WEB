@@ -3,7 +3,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSearch, faPlus } from '@fortawesome/free-solid-svg-icons';
+import { faSearch, faPlus, faTrash, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { searchFood } from '../api/food';
 import '../styles/foodSearch.css';
 
@@ -64,18 +64,27 @@ const FoodSearch = () => {
             const foods = await searchFood(q);
             setResults(foods);
             await axios.post('/api/history', { query: q }, { headers: { Authorization: `Bearer ${token}` } });
-            setHistory(h => [{ id: Date.now(), query: q }, ...h]);
+            setHistory(h => {
+                const exists = h.find(item => item.query.toLowerCase() === q.toLowerCase());
+                if (exists) {
+                    // Đẩy lên đầu nếu đã có
+                    return [{ ...exists, id: Date.now() }, ...h.filter(item => item.query.toLowerCase() !== q.toLowerCase())];
+                }
+                return [{ id: Date.now(), query: q }, ...h];
+            });
+
         } catch { }
         setDetail(null);
     };
 
     // Thêm hoặc tăng số lượng dựa trên nix_item_id
     const handleAddFood = food => {
+        const id = food.nix_item_id || food.food_name; // Fallback nếu nix_item_id không tồn tại
         setSelectedFoods(prev => {
-            const existing = prev.find(f => f.nix_item_id === food.nix_item_id);
+            const existing = prev.find(f => (f.nix_item_id || f.food_name) === id);
             if (existing) {
                 return prev.map(f =>
-                    f.nix_item_id === food.nix_item_id
+                    (f.nix_item_id || f.food_name) === id
                         ? { ...f, quantity: f.quantity + 1 }
                         : f
                 );
@@ -84,15 +93,17 @@ const FoodSearch = () => {
         });
     };
 
+
     const handleChangeQuantity = (id, delta) => {
         setSelectedFoods(prev =>
             prev.map(f =>
-                f.nix_item_id === id
+                (f.nix_item_id || f.food_name) === id
                     ? { ...f, quantity: Math.max(1, f.quantity + delta) }
                     : f
             )
         );
     };
+
 
     const handleSelectFood = food => {
         setDetail(food);
@@ -180,7 +191,7 @@ const FoodSearch = () => {
                                     }}
                                     title="Xóa khỏi lịch sử"
                                 >
-                                    ❌
+                                    <FontAwesomeIcon icon={faXmark} />
                                 </button>
                             </li>
                         ))}
@@ -194,28 +205,41 @@ const FoodSearch = () => {
                     <ul>
                         {selectedFoods.map(food => (
                             <li
-                                key={food.nix_item_id}
+                                key={food.nix_item_id || food.food_name}
                                 className="selected-item"
                                 onClick={() => handleSelectFood(food)}
                             >
                                 <div className="selected-item-inner">
                                     <span>
-                                        {food.food_name} <strong>× {food.quantity}</strong>
+                                        {food.food_name} <strong> × {food.quantity}</strong>
                                     </span>
                                     <div className="qty-controls">
-                                        <button onClick={e => { e.stopPropagation(); handleChangeQuantity(food.nix_item_id, -1); }}>−</button>
-                                        <button onClick={e => { e.stopPropagation(); handleChangeQuantity(food.nix_item_id, 1); }}>+</button>
-                                        <button className="delete-btn" onClick={e => {
-                                            e.stopPropagation();
-                                            setSelectedFoods(prev => prev.filter(f => f.nix_item_id !== food.nix_item_id));
-                                        }}>
-                                            🗑️
+                                        <button onClick={e => { e.stopPropagation(); handleChangeQuantity(food.nix_item_id || food.food_name, -1); }}>−</button>
+                                        <button onClick={e => { e.stopPropagation(); handleChangeQuantity(food.nix_item_id || food.food_name, 1); }}>+</button>
+                                        <button
+                                            title="Xóa"
+                                            className="delete-btn"
+                                            onClick={e => {
+                                                e.stopPropagation();
+                                                setSelectedFoods(prev => prev.filter(f => (f.nix_item_id || f.food_name) !== (food.nix_item_id || food.food_name)));
+                                            }}
+                                        >
+                                            <FontAwesomeIcon icon={faTrash} />
                                         </button>
+
                                     </div>
                                 </div>
                             </li>
                         ))}
                     </ul>
+                    <button
+                        onClick={handleSaveMeal}
+                        className="btn-save-meal"
+                        style={{ marginTop: '1rem' }}
+                    >
+                        💾 Save Meal
+                    </button>
+
                 </div>
 
                 <div className="totals-panel">
@@ -244,7 +268,7 @@ const FoodSearch = () => {
 
             <div className="search-results">
                 {results.map(food => (
-                    <div key={food.nix_item_id} className="food-card">
+                    <div key={food.nix_item_id || food.food_name} className="food-card">
                         <h2>{food.food_name}</h2>
                         <p>Calo: {food.nf_calories} kcal</p>
                         <p>Protein: {food.nf_protein} g</p>

@@ -180,18 +180,22 @@
 }
 
 .history-delete-btn {
-    background: transparent;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     border: none;
     cursor: pointer;
-    color: #f87171; /* red-400 */
-    margin-left: 0.5rem;
-    font-size: 1rem; /* kích thước tương đương text */
-    line-height: 1;
+    transition: background-color 0.2s ease;
 }
 
     .history-delete-btn:hover {
-        color: #dc2626; /* red-600 */
+        background-color: rgba(255, 255, 255, 0.2); 
     }
+
 
 .history-item {
     display: flex;
@@ -204,3 +208,4 @@
     .history-item:hover {
         background: #f1f5f9;
     }
+
