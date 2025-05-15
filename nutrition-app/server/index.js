@@ -30,6 +30,10 @@ app.use("/api", historyRoutes);
 
 // ✅ Dùng server/meal.js
 app.use('/api', mealRoutes);
+
+// ✅ Dùng server/food.js
+app.use('/api/foods', require('./routes/food'));
+
 // ✅ Start server
 app.listen(PORT, () => {
     console.log(`🚀 Server is running at http://localhost:${PORT}`);

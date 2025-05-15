@@ -61,7 +61,7 @@
 
 .totals-panel {
     grid-column: 5 / span 3;
-    grid-row: 1 / span 4;
+    grid-row: 1 / span 7; 
     padding: 1rem;
     background: #d1fae5;
     border: 1px solid #a7f3d0;
@@ -69,19 +69,43 @@
 }
 
 .selected-list-panel {
+    display: flex; /* thêm */
+    flex-direction: column;
+    position: relative;
     grid-column: 1 / span 4;
     grid-row: 1 / span 7;
     padding: 1rem;
     background: #eff6ff;
     border: 1px solid #bfdbfe;
     border-radius: 0.5rem;
-    overflow-y: auto;
+    overflow: hidden; /* đổi từ overflow-y để nút luôn hiện */
 }
 
     .selected-list-panel ul {
-        list-style: none;
+        display: flex; /* thêm */
+        flex-direction: column; /* thêm */
+        flex: 1 1 auto;
         margin: 0;
         padding: 0;
+        list-style: none;
+        overflow-y: auto;
+    }
+
+.btn-save-meal {
+    margin-top: auto; /* đẩy nút xuống đáy panel */
+    background-color: #0ea5e9;
+    color: white;
+    padding: 0.75rem 1rem;
+    border: none;
+    border-radius: 40px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color .2s;
+    align-self: right; /* căn nút sang trái (tuỳ chỉnh) */
+}
+
+    .btn-save-meal:hover {
+        background-color: #0284c7;
     }
 
 .selected-item {
@@ -131,6 +155,36 @@
     grid-row: 5 / span 3;
     /* reserved */
 }
+
+.selected-list-panel,
+.totals-panel {
+    background: #ffffff;
+    border: 1px solid #cbd5e1;
+    border-radius: 0.5rem;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Card header */
+.panel-title {
+    margin: 0;
+    padding: 0.75rem 1rem;
+    background: #cffafe; /* màu xanh nhạt */
+    color: #025e68; /* xanh đậm hơn */
+    font-size: 1.125rem;
+    font-weight: 650;
+    border-bottom: 0.5px solid #a5f3fc;
+    border-radius: 0.5rem 0.5rem 0.5rem 0.5rem; /* bo chỉ 2 góc trên */
+}
+
+/* Phần nội dung bên dưới header */
+.selected-list-panel > ul,
+.totals-panel > p {
+    padding: 1rem;
+    flex: 1 1 auto;
+    overflow-y: auto;
+}
+
 
 /* SEARCH RESULTS */
 
@@ -209,3 +263,124 @@
         background: #f1f5f9;
     }
 
+
+.chart-panel {
+    grid-column: 8 / span 1; 
+    grid-row: 1 / span 7;
+    padding: 1rem;
+    border-left: 1px solid #cbd5e1;
+    background: #ffffff;
+    border-radius: 0.5rem;
+}
+
+.totals-panel.full-height {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+    /* thêm chút khoảng cách */
+    .totals-panel.full-height > div {
+        margin-top: 1rem;
+    }
+
+/* trong src/styles/foodSearch.css */
+
+.nutrient-line {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.5rem;
+    font-size: 1rem;
+}
+
+    .nutrient-line .dot {
+        width: 0.75rem;
+        height: 0.75rem;
+        border-radius: 50%;
+        display: inline-block;
+        margin-right: 0.5rem;
+    }
+
+.dot-calories {
+    background-color: #10b981; /* màu xanh lá giống pie */
+}
+
+.dot-protein {
+    background-color: #3b82f6; /* màu xanh dương */
+}
+
+.dot-carbs {
+    background-color: #facc15; /* màu vàng */
+}
+
+.dot-fat {
+    background-color: #f97316; /* màu cam */
+}
+
+.nutrient-label {
+    flex: 0 0 auto;
+    margin-right: 0.25rem;
+}
+
+
+.existing-foods-table-container {
+    margin: 1rem 0;
+}
+
+.existing-foods-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+    .existing-foods-table th,
+    .existing-foods-table td {
+        padding: 0.5rem;
+        border: 1px solid #cbd5e1;
+        text-align: left;
+    }
+
+    .existing-foods-table tr:hover {
+        background: #f1f5f9;
+        cursor: pointer;
+    }
+
+/* Card headers */
+.card-header {
+    font-size: 1.25rem;
+    font-weight: 600;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid #cbd5e1;
+    margin-bottom: 0.75rem;
+}
+
+/* Chart wrapper */
+.chart-wrapper {
+    border-left: 1px solid #cbd5e1;
+    padding-left: 1rem;
+    margin-top: 1rem;
+}
+
+/* Dot màu tương ứng */
+.dot-calories {
+    background: #F87171;
+}
+
+.dot-protein {
+    background: #34D399;
+}
+
+.dot-carbs {
+    background: #60A5FA;
+}
+
+.dot-fat {
+    background: #FBBF24;
+}
+
+.dot {
+    display: inline-block;
+    width: 0.75rem;
+    height: 0.75rem;
+    border-radius: 50%;
+    margin-right: 0.5rem;
+}

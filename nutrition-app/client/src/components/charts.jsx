@@ -51,7 +51,7 @@ const Charts = () => {
 
     const options = {
         responsive: true,
-        maintainAspectRatio: false, // 👈 Giúp chiều cao chính xác hơn
+        maintainAspectRatio: false, 
         plugins: {
             legend: { position: "top" },
             title: { display: false }
