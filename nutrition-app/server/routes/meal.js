@@ -53,13 +53,18 @@ router.get('/meals/report', verifyToken, async (req, res) => {
 // Lưu lịch sử bữa ăn vào lich_su_bua_an (dùng cho dashboard/report)
 router.post('/meals', verifyToken, async (req, res) => {
     const userId = req.user.id;
+<<<<<<< HEAD
     const { items } = req.body;
 
+=======
+    const { items } = req.body;  // items = [{ food_name, quantity }, ...]
+>>>>>>> f217226a2968b9de084227ab6b12b5c643e17947
     if (!Array.isArray(items) || !items.length) {
         return res.status(400).json({ message: 'Chưa có món ăn nào để lưu.' });
     }
 
     try {
+<<<<<<< HEAD
         await db.promise().query('START TRANSACTION');
 
         // 1. Tạo record bữa ăn
@@ -94,10 +99,32 @@ router.post('/meals', verifyToken, async (req, res) => {
             );
 
             // 2.3 Lấy hoặc gọi API để lấy dinh dưỡng
+=======
+        // Thêm thông tin dinh dưỡng vào từng item
+        for (let item of items) {
+            // Tìm hoặc tạo mon_an
+            const [rows] = await db.promise().query(
+                'SELECT id FROM mon_an WHERE ten_mon = ? LIMIT 1',
+                [item.food_name]
+            );
+            let monAnId;
+            if (rows.length) {
+                monAnId = rows[0].id;
+            } else {
+                const [ins] = await db.promise().query(
+                    'INSERT INTO mon_an (ten_mon) VALUES (?)',
+                    [item.food_name]
+                );
+                monAnId = ins.insertId;
+            }
+
+            // Lấy hoặc tạo thông tin dinh dưỡng
+>>>>>>> f217226a2968b9de084227ab6b12b5c643e17947
             let [nutriRows] = await db.promise().query(
                 'SELECT calo, protein, carb, fat FROM thong_tin_dinh_duong WHERE mon_an_id = ? LIMIT 1',
                 [monAnId]
             );
+<<<<<<< HEAD
 
             let nutri;
             if (!nutriRows.length) {
@@ -111,6 +138,26 @@ router.post('/meals', verifyToken, async (req, res) => {
                         nf_total_carbohydrate: 0,
                         nf_total_fat: 0
                     };
+=======
+            let nutri;
+            if (!nutriRows.length) {
+                try {
+                    nutri = await fetchNutritionix(item.food_name);
+                    await db.promise().query(
+                        `INSERT INTO thong_tin_dinh_duong (mon_an_id, calo, protein, carb, fat)
+                         VALUES (?, ?, ?, ?, ?)`,
+                        [
+                            monAnId,
+                            nutri.nf_calories,
+                            nutri.nf_protein,
+                            nutri.nf_total_carbohydrate,
+                            nutri.nf_total_fat
+                        ]
+                    );
+                } catch (err) {
+                    console.warn(`⚠️ Không thể lấy dinh dưỡng cho ${item.food_name}:`, err.message);
+                    nutri = { nf_calories: 0, nf_protein: 0, nf_total_carbohydrate: 0, nf_total_fat: 0 };
+>>>>>>> f217226a2968b9de084227ab6b12b5c643e17947
                 }
             } else {
                 nutri = {
@@ -121,6 +168,7 @@ router.post('/meals', verifyToken, async (req, res) => {
                 };
             }
 
+<<<<<<< HEAD
             // 2.4 Upsert thông tin dinh dưỡng
             await db.promise().query(
                 `INSERT INTO thong_tin_dinh_duong (mon_an_id, calo, protein, carb, fat)
@@ -147,11 +195,22 @@ router.post('/meals', verifyToken, async (req, res) => {
         }
 
         // 3. Lưu bản ghi lich_su_bua_an (để truy xuất lịch sử nhanh)
+=======
+            // Gán dinh dưỡng vào item
+            item.calo = nutri.nf_calories;
+            item.protein = nutri.nf_protein;
+            item.carb = nutri.nf_total_carbohydrate;
+            item.fat = nutri.nf_total_fat;
+        }
+
+        // Lưu vào lich_su_bua_an (lúc này items đã có đủ dinh dưỡng)
+>>>>>>> f217226a2968b9de084227ab6b12b5c643e17947
         await db.promise().query(
             'INSERT INTO lich_su_bua_an (user_id, danh_sach_bua_an, thoi_gian) VALUES (?, ?, NOW())',
             [userId, JSON.stringify(items)]
         );
 
+<<<<<<< HEAD
         await db.promise().query('COMMIT');
         res.status(201).json({ message: 'Lưu bữa ăn thành công', mealId });
     } catch (err) {
@@ -161,6 +220,14 @@ router.post('/meals', verifyToken, async (req, res) => {
     }
 });
 
+=======
+        res.status(201).json({ message: 'Saved meal successfully' });
+    } catch (err) {
+        console.error('❌ Lỗi lưu bữa ăn:', err);
+        res.status(500).json({ message: 'Server error', error: err.message });
+    }
+});
+>>>>>>> f217226a2968b9de084227ab6b12b5c643e17947
 router.get('/meals/energy-history', verifyToken, async (req, res) => {
     const userId = req.user.id;
     try {
@@ -204,4 +271,8 @@ router.get('/user/profile', verifyToken, async (req, res) => {
     }
 });
 
+<<<<<<< HEAD
 module.exports = router;
+=======
+module.exports = router;
+>>>>>>> f217226a2968b9de084227ab6b12b5c643e17947

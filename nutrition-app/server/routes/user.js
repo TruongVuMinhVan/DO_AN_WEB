@@ -5,9 +5,12 @@ const verifyToken = require('../middleware/auth');
 const bcrypt = require('bcrypt');
 const jwt = require("jsonwebtoken");
 const SECRET_KEY = process.env.SECRET_KEY || "your_secret_key";
+<<<<<<< HEAD
 const multer = require('multer');
 const path = require('path');
 
+=======
+>>>>>>> f217226a2968b9de084227ab6b12b5c643e17947
 
 // 🧑 Lấy danh sách người dùng
 router.get("/user", (req, res) => {
@@ -21,11 +24,16 @@ router.get("/user", (req, res) => {
 });
 
 // 📝 Đăng ký người dùng
+<<<<<<< HEAD
+=======
+// POST /api/register
+>>>>>>> f217226a2968b9de084227ab6b12b5c643e17947
 router.post("/register", async (req, res) => {
     const { name, email, password, age, weight, height, gender } = req.body;
     if (!name || !email || !password || !age || !weight || !height || !gender) {
         return res.status(400).json({ error: "Vui lòng nhập đầy đủ tất cả thông tin." });
     }
+<<<<<<< HEAD
 
     try {
         // Hash mật khẩu
@@ -54,6 +62,19 @@ router.post("/register", async (req, res) => {
                 });
             }
         );
+=======
+    try {
+        const hash = await bcrypt.hash(password, 10);
+        const sql = `INSERT INTO user (name, email, password, age, weight, height, gender)
+                     VALUES (?, ?, ?, ?, ?, ?, ?)`;
+        db.query(sql, [name, email, hash, age, weight, height, gender], (err, result) => {
+            if (err) {
+                console.error("❌ Lỗi khi thêm người dùng:", err.message);
+                return res.status(500).json({ error: "Đăng ký thất bại.", details: err.message });
+            }
+            res.status(201).json({ message: "Đăng ký thành công!", userId: result.insertId });
+        });
+>>>>>>> f217226a2968b9de084227ab6b12b5c643e17947
     } catch (e) {
         console.error("❌ Hash error:", e.message);
         res.status(500).json({ error: "Lỗi khi mã hóa mật khẩu" });
@@ -76,11 +97,16 @@ router.post("/login", (req, res) => {
 
 router.get("/profile", verifyToken, (req, res) => {
     const userId = req.user.id;
+<<<<<<< HEAD
     const sql = `
     SELECT id, name, email, age, weight, height, gender, goal, allergies, avatarUrl
     FROM user
     WHERE id = ?
   `;
+=======
+    const sql = `SELECT id, name, email, age, gender, goal, allergies 
+               FROM user WHERE id = ?`;
+>>>>>>> f217226a2968b9de084227ab6b12b5c643e17947
     db.query(sql, [userId], (err, results) => {
         if (err) return res.status(500).json({ error: err.message });
         if (!results.length) return res.status(404).json({ message: "User not found" });
@@ -92,11 +118,17 @@ router.get("/profile", verifyToken, (req, res) => {
 router.put("/profile", verifyToken, (req, res) => {
     const userId = req.user.id;
     const { name, email, age, gender, goal, allergies } = req.body;
+<<<<<<< HEAD
     const sql = `
     SELECT id, name, email, age, weight, height, gender, goal, allergies, avatarUrl
     FROM user
     WHERE id = ?
   `;
+=======
+    const sql = `UPDATE user 
+               SET name=?, email=?, age=?, gender=?, goal=?, allergies=? 
+               WHERE id=?`;
+>>>>>>> f217226a2968b9de084227ab6b12b5c643e17947
     db.query(sql, [name, email, age, gender, goal, allergies, userId], (err) => {
         if (err) return res.status(500).json({ error: err.message });
         res.json({ message: "Profile updated" });
@@ -167,6 +199,7 @@ router.delete('/profile', verifyToken, (req, res) => {
     });
 });
 
+<<<<<<< HEAD
 const storage = multer.diskStorage({
     destination: (req, file, cb) => cb(null, path.join(__dirname, '../public/avatars')),
     filename: (req, file, cb) => {
@@ -189,5 +222,7 @@ router.post('/profile/avatar', verifyToken, upload.single('avatar'), (req, res) 
     res.json({ avatarUrl });
   });
 });
+=======
+>>>>>>> f217226a2968b9de084227ab6b12b5c643e17947
 
 module.exports = router; 

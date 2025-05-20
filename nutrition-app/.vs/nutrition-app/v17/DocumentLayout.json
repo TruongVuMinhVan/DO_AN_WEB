@@ -3,6 +3,7 @@
   "WorkspaceRootPath": "D:\\STUDY\\DACS\\nutrition-app\\",
   "Documents": [
     {
+<<<<<<< HEAD
       "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|D:\\STUDY\\DACS\\nutrition-app\\client\\src\\styles\\Header.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}",
       "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:client\\src\\styles\\Header.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}"
     },
@@ -21,6 +22,18 @@
     {
       "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|D:\\STUDY\\DACS\\nutrition-app\\client\\src\\App.jsx||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
       "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:client\\src\\App.jsx||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
+=======
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|D:\\STUDY\\DACS\\nutrition-app\\client\\src\\pages\\foodSearch.jsx||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:client\\src\\pages\\foodSearch.jsx||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|D:\\STUDY\\DACS\\nutrition-app\\server\\routes\\meal.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:server\\routes\\meal.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|D:\\STUDY\\DACS\\nutrition-app\\server\\routes\\food.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:server\\routes\\food.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
+>>>>>>> f217226a2968b9de084227ab6b12b5c643e17947
     }
   ],
   "DocumentGroupContainers": [
@@ -45,6 +58,7 @@
               "Name": "ST:0:0:{3ae79031-e1bc-11d0-8f78-00a0c9110057}"
             },
             {
+<<<<<<< HEAD
               "$type": "Bookmark",
               "Name": "ST:0:0:{aa2115a1-9712-457b-9047-dbb71ca2cdd2}"
             },
@@ -97,11 +111,24 @@
               "ViewState": "AgIAAAYAAAAAAAAAAAAAADYAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003663|",
               "WhenOpened": "2025-05-19T14:23:47.907Z",
+=======
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "food.js",
+              "DocumentMoniker": "D:\\STUDY\\DACS\\nutrition-app\\server\\routes\\food.js",
+              "RelativeDocumentMoniker": "server\\routes\\food.js",
+              "ToolTip": "D:\\STUDY\\DACS\\nutrition-app\\server\\routes\\food.js",
+              "RelativeToolTip": "server\\routes\\food.js",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAkAAAAXAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001646|",
+              "WhenOpened": "2025-05-14T14:54:46.66Z",
+>>>>>>> f217226a2968b9de084227ab6b12b5c643e17947
               "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 1,
+<<<<<<< HEAD
               "Title": "user.js",
               "DocumentMoniker": "D:\\STUDY\\DACS\\nutrition-app\\server\\routes\\user.js",
               "RelativeDocumentMoniker": "server\\routes\\user.js",
@@ -110,6 +137,29 @@
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAQAAAAhAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001646|",
               "WhenOpened": "2025-05-19T14:35:47.339Z",
+=======
+              "Title": "meal.js",
+              "DocumentMoniker": "D:\\STUDY\\DACS\\nutrition-app\\server\\routes\\meal.js",
+              "RelativeDocumentMoniker": "server\\routes\\meal.js",
+              "ToolTip": "D:\\STUDY\\DACS\\nutrition-app\\server\\routes\\meal.js",
+              "RelativeToolTip": "server\\routes\\meal.js",
+              "ViewState": "AgIAADEAAAAAAAAAAAAuwEEAAAAOAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001646|",
+              "WhenOpened": "2025-05-14T14:24:45.081Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "foodSearch.jsx",
+              "DocumentMoniker": "D:\\STUDY\\DACS\\nutrition-app\\client\\src\\pages\\foodSearch.jsx",
+              "RelativeDocumentMoniker": "client\\src\\pages\\foodSearch.jsx",
+              "ToolTip": "D:\\STUDY\\DACS\\nutrition-app\\client\\src\\pages\\foodSearch.jsx",
+              "RelativeToolTip": "client\\src\\pages\\foodSearch.jsx",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAwAAAAvAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003663|",
+              "WhenOpened": "2025-05-11T06:34:42.066Z",
+>>>>>>> f217226a2968b9de084227ab6b12b5c643e17947
               "EditorCaption": ""
             }
           ]
