@@ -2,6 +2,7 @@
   "ExpandedNodes": [
     "",
     "\\client",
+    "\\client\\src",
     "\\server",
     "\\server\\routes"
   ],
