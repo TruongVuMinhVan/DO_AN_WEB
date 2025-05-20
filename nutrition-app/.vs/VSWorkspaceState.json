@@ -3,8 +3,7 @@
     "",
     "\\client",
     "\\client\\src",
-    "\\server",
-    "\\server\\routes"
+    "\\server"
   ],
   "PreviewInSolutionExplorer": false
 }
