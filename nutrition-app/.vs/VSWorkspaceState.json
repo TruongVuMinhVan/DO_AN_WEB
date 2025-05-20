@@ -3,7 +3,9 @@
     "",
     "\\client",
     "\\client\\src",
-    "\\server"
+    "\\server",
+    "\\server\\public"
   ],
+  "SelectedNode": "\\server\\public\\avatars",
   "PreviewInSolutionExplorer": false
 }

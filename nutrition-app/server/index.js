@@ -2,15 +2,22 @@
 const express = require("express");
 const cors = require("cors");
 const db = require("./db");
+const path = require('path');
 const app = express();
 const PORT = 5000;
 // ✅ Import các route
-const userRoutes = require("./routes/user"); 
+const userRoutes = require("./routes/user");
 const historyRoutes = require('./routes/history');
 const mealRoutes = require('./routes/meal');
 
 app.use(cors());
 app.use(express.json());
+
+// Serve thư mục avatars tĩnh để client có thể lấy ảnh qua URL /avatars/…
+app.use(
+    '/avatars',
+    express.static(path.join(__dirname, 'public/avatars'))
+);
 
 // ✅ Route test DB
 app.get("/test-db", (req, res) => {

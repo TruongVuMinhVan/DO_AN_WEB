@@ -10,6 +10,7 @@ import Profile from './components/profiles';
 import Reports from './components/reports';
 import NotFound from './pages/notFound';
 import FoodSearch from './pages/foodSearch';
+import Header from './components/Header';
 
 // Layout Component chứa Sidebar + Outlet
 const Layout = () => {
@@ -21,13 +22,19 @@ const Layout = () => {
         <div className="flex min-h-screen">
             <Sidebar collapsed={collapsed} toggleSidebar={toggleSidebar} />
             <div
-                className={`transition-all duration-300 flex-1 p-6 bg-gray-100 ${collapsed ? 'ml-20' : 'ml-64'
+                className={`transition-all duration-300 flex-1 bg-gray-100 ${collapsed ? 'ml-20' : 'ml-64'
                     }`}
             >
-                <Outlet />
+                {/* ← Thêm Header ở đây */}
+                <Header />
+                {/* Phần chứa nội dung trang con */}
+                <div className="p-6">
+                    <Outlet />
+                </div>
             </div>
         </div>
     );
+
 };
 
 const App = () => {
