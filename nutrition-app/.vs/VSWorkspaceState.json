@@ -2,10 +2,8 @@
   "ExpandedNodes": [
     "",
     "\\client",
-    "\\client\\src",
     "\\server",
     "\\server\\routes"
   ],
-  "SelectedNode": "\\server\\routes\\food.js",
   "PreviewInSolutionExplorer": false
 }

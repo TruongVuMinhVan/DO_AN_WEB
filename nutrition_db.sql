@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Máy chủ: 127.0.0.1
--- Thời gian đã tạo: Th5 06, 2025 lúc 02:53 PM
+-- Thời gian đã tạo: Th5 16, 2025 lúc 08:09 AM
 -- Phiên bản máy phục vụ: 10.4.32-MariaDB
 -- Phiên bản PHP: 8.2.12
 
@@ -31,8 +31,16 @@ CREATE TABLE `bua_an` (
   `id` int(11) NOT NULL,
   `user_id` int(11) DEFAULT NULL,
   `date` datetime DEFAULT NULL,
-  `food_list` text DEFAULT NULL
+  `food_list` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(`food_list`))
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Đang đổ dữ liệu cho bảng `bua_an`
+--
+
+INSERT INTO `bua_an` (`id`, `user_id`, `date`, `food_list`) VALUES
+(17, 29, '2025-05-16 12:38:38', '[{\"food_name\":\"chicken breast raw\",\"quantity\":1}]'),
+(18, 29, '2025-05-16 13:03:54', '[{\"food_name\":\"egg\",\"quantity\":1}]');
 
 -- --------------------------------------------------------
 
@@ -87,18 +95,6 @@ CREATE TABLE `lich_su_tim_kiem` (
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Đang đổ dữ liệu cho bảng `lich_su_tim_kiem`
---
-
-INSERT INTO `lich_su_tim_kiem` (`id`, `user_id`, `query`, `created_at`) VALUES
-(66, 29, '3 apple', '2025-05-06 11:37:39'),
-(67, 29, '3 orange', '2025-05-06 11:40:03'),
-(68, 29, '3 orange', '2025-05-06 11:40:03'),
-(71, 29, '3 orange', '2025-05-06 12:36:20'),
-(72, 29, '3 orange', '2025-05-06 12:36:21'),
-(73, 29, '1 watermelon', '2025-05-06 12:43:11');
-
 -- --------------------------------------------------------
 
 --
@@ -110,6 +106,18 @@ CREATE TABLE `mon_an` (
   `ten_mon` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Đang đổ dữ liệu cho bảng `mon_an`
+--
+
+INSERT INTO `mon_an` (`id`, `ten_mon`) VALUES
+(4, 'Orange, Raw'),
+(5, 'Rice, White, Cooked'),
+(6, 'Chicken Breast, Raw'),
+(7, 'Egg, Whole, Raw'),
+(10, 'chicken breast raw'),
+(11, 'egg');
+
 -- --------------------------------------------------------
 
 --
@@ -117,9 +125,18 @@ CREATE TABLE `mon_an` (
 --
 
 CREATE TABLE `mon_an_bua_an` (
-  `bua_an_id` int(11) DEFAULT NULL,
-  `mon_an_id` int(11) DEFAULT NULL
+  `id` int(11) NOT NULL,
+  `bua_an_id` int(11) NOT NULL,
+  `mon_an_id` int(11) NOT NULL,
+  `quantity` int(11) NOT NULL DEFAULT 1
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Đang đổ dữ liệu cho bảng `mon_an_bua_an`
+--
+
+INSERT INTO `mon_an_bua_an` (`id`, `bua_an_id`, `mon_an_id`, `quantity`) VALUES
+(17, 18, 11, 1);
 
 -- --------------------------------------------------------
 
@@ -171,11 +188,10 @@ CREATE TABLE `thong_ke_dinh_duong` (
 CREATE TABLE `thong_tin_dinh_duong` (
   `id` int(11) NOT NULL,
   `mon_an_id` int(11) DEFAULT NULL,
-  `calo` int(11) DEFAULT NULL,
+  `calo` float DEFAULT NULL,
   `protein` float DEFAULT NULL,
   `carb` float DEFAULT NULL,
-  `fat` float DEFAULT NULL,
-  `vitamin` text DEFAULT NULL
+  `fat` float DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -269,6 +285,7 @@ ALTER TABLE `mon_an`
 -- Chỉ mục cho bảng `mon_an_bua_an`
 --
 ALTER TABLE `mon_an_bua_an`
+  ADD PRIMARY KEY (`id`),
   ADD KEY `bua_an_id` (`bua_an_id`),
   ADD KEY `mon_an_id` (`mon_an_id`);
 
@@ -298,7 +315,7 @@ ALTER TABLE `thong_ke_dinh_duong`
 --
 ALTER TABLE `thong_tin_dinh_duong`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `mon_an_id` (`mon_an_id`);
+  ADD UNIQUE KEY `uniq_mon_an` (`mon_an_id`);
 
 --
 -- Chỉ mục cho bảng `thuc_don`
@@ -322,7 +339,7 @@ ALTER TABLE `user`
 -- AUTO_INCREMENT cho bảng `bua_an`
 --
 ALTER TABLE `bua_an`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
 
 --
 -- AUTO_INCREMENT cho bảng `goi_y_mon_an`
@@ -346,13 +363,19 @@ ALTER TABLE `lich_su_bua_an`
 -- AUTO_INCREMENT cho bảng `lich_su_tim_kiem`
 --
 ALTER TABLE `lich_su_tim_kiem`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=74;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=108;
 
 --
 -- AUTO_INCREMENT cho bảng `mon_an`
 --
 ALTER TABLE `mon_an`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+
+--
+-- AUTO_INCREMENT cho bảng `mon_an_bua_an`
+--
+ALTER TABLE `mon_an_bua_an`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
 
 --
 -- AUTO_INCREMENT cho bảng `phan_tich_dinh_duong`
@@ -423,8 +446,8 @@ ALTER TABLE `lich_su_tim_kiem`
 -- Các ràng buộc cho bảng `mon_an_bua_an`
 --
 ALTER TABLE `mon_an_bua_an`
-  ADD CONSTRAINT `mon_an_bua_an_ibfk_1` FOREIGN KEY (`bua_an_id`) REFERENCES `bua_an` (`id`),
-  ADD CONSTRAINT `mon_an_bua_an_ibfk_2` FOREIGN KEY (`mon_an_id`) REFERENCES `mon_an` (`id`);
+  ADD CONSTRAINT `mon_an_bua_an_ibfk_1` FOREIGN KEY (`bua_an_id`) REFERENCES `bua_an` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `mon_an_bua_an_ibfk_2` FOREIGN KEY (`mon_an_id`) REFERENCES `mon_an` (`id`) ON DELETE CASCADE;
 
 --
 -- Các ràng buộc cho bảng `mon_an_thuc_don`

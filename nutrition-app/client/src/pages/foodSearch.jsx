@@ -14,11 +14,14 @@ const FoodSearch = () => {
     const [history, setHistory] = useState([]);
     const [selectedFoods, setSelectedFoods] = useState([]);
     const [existingFoods, setExistingFoods] = useState([]);
+    const [selectedDescription, setSelectedDescription] = useState(null);
+    const [selectedExistingId, setSelectedExistingId] = useState(null);
     const [totals, setTotals] = useState({ calories: 0, protein: 0, carbs: 0, fat: 0 });
     const [showDropdown, setShowDropdown] = useState(false);
     const wrapperRef = useRef(null);
     const navigate = useNavigate();
     const token = localStorage.getItem('token');
+    const [detail, setDetail] = useState(null);
 
     // 1) Redirect nếu không có token
     useEffect(() => {
@@ -72,20 +75,20 @@ const FoodSearch = () => {
         if (!q.trim()) return;
         setShowDropdown(false);
         try {
-        const foods = await searchFood(q);
-        setResults(foods);
-        // Cập nhật lịch sử, loại trùng
-        await axios.post('/api/history', { query: q }, { headers: { Authorization: `Bearer ${token}` } });
-        setHistory(h => {
-            const exists = h.find(item => item.query.toLowerCase() === q.toLowerCase());
-            if (exists) {
-                return [
-                    { ...exists, id: Date.now() },
-                    ...h.filter(i => i.query.toLowerCase() !== q.toLowerCase())
-                ];
-            }
-            return [{ id: Date.now(), query: q }, ...h];
-        });
+            const foods = await searchFood(q);
+            setResults(foods);
+            // Cập nhật lịch sử, loại trùng
+            await axios.post('/api/history', { query: q }, { headers: { Authorization: `Bearer ${token}` } });
+            setHistory(h => {
+                const exists = h.find(item => item.query.toLowerCase() === q.toLowerCase());
+                if (exists) {
+                    return [
+                        { ...exists, id: Date.now() },
+                        ...h.filter(i => i.query.toLowerCase() !== q.toLowerCase())
+                    ];
+                }
+                return [{ id: Date.now(), query: q }, ...h];
+            });
 
         } catch { }
         setDetail(null);
@@ -140,19 +143,25 @@ const FoodSearch = () => {
         }
         await axios.post(
             '/api/meals',
-            { items: selectedFoods.map(f => ({ food_name: f.food_name, quantity: f.quantity })) },
+            { items: selectedFoods.map(f => ({ food_name: f.food_name, quantity: f.quantity })) },  //selectedFoods
             { headers: { Authorization: `Bearer ${token}` } }
         );
+
         alert('✅ Đã lưu bữa ăn!');
         setSelectedFoods([]);
     };
 
     // 12) Chọn món có sẵn
-    const handleSelectExisting = async name => {
+    const handleSelectExisting = async (name) => {
+        setSelectedDescription(name);
         setQ(name);
         setShowDropdown(false);
-        const foods = await searchFood(name);
-        setResults(foods);
+        try {
+            const foods = await searchFood(name);
+            setResults(foods);
+        } catch (err) {
+            console.error('Lỗi Nutritionix:', err);
+        }
     };
 
     const filteredHistory = q.trim()
@@ -271,21 +280,26 @@ const FoodSearch = () => {
             <div className="existing-foods-table-container">
                 <h3 className="panel-header">Món có sẵn</h3>
                 <table className="existing-foods-table">
-                    <thead><tr><th>Description</th><th>Source</th></tr></thead>
+                    <thead>
+                        <tr><th>Description</th><th>Source</th></tr>
+                    </thead>
                     <tbody>
                         {existingFoods.map(item => (
+                            // Ví dụ trong FoodSearch.jsx
                             <tr
                                 key={item.id}
-                                className="existing-food-row"
+                                className={`existing-food-row${selectedDescription === item.ten_mon ? ' selected' : ''}`}
                                 onClick={() => handleSelectExisting(item.ten_mon)}
                             >
                                 <td>{item.ten_mon}</td>
                                 <td>NCDB</td>
                             </tr>
+
                         ))}
                     </tbody>
                 </table>
             </div>
+
         </div>
     );
 };

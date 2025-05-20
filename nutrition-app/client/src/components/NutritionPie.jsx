@@ -37,7 +37,7 @@ const NutritionPie = ({ data }) => {
                         '#facc15', // yellow
                         '#f97316'  // orange
                     ],
-                    hoverOffset: 4
+                    hoverOffset: 1
                 }
             ]
         };

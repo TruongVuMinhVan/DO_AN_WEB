@@ -165,7 +165,6 @@
     flex-direction: column;
 }
 
-/* Card header */
 .panel-title {
     margin: 0;
     padding: 0.75rem 1rem;
@@ -177,7 +176,6 @@
     border-radius: 0.5rem 0.5rem 0.5rem 0.5rem; /* bo chỉ 2 góc trên */
 }
 
-/* Phần nội dung bên dưới header */
 .selected-list-panel > ul,
 .totals-panel > p {
     padding: 1rem;
@@ -329,13 +327,16 @@
 
 .existing-foods-table {
     width: 100%;
-    border-collapse: collapse;
+    /* bật border-spacing */
+    border-collapse: separate;
+    border-spacing: 0 3px;
 }
 
     .existing-foods-table th,
     .existing-foods-table td {
         padding: 0.5rem;
         border: 1px solid #cbd5e1;
+        background: #fff;
         text-align: left;
     }
 
@@ -343,6 +344,29 @@
         background: #f1f5f9;
         cursor: pointer;
     }
+
+.existing-food-row {
+    cursor: pointer;
+    transition: background-color 0.2s, box-shadow 0.2s, border-color 0.2s;
+    border: 2px solid transparent; /* giữ layout */
+    background: #fff; /* đảm bảo nền */
+}
+
+    .existing-food-row:hover {
+        background-color: #e0f2fe;
+    }
+
+    .existing-food-row.selected {
+        position: relative; /* để z-index hoạt động */
+        z-index: 1; /* nổi lên trên hàng khác */
+        background-color: #bae6fd;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        border-color: #38bdf8;
+    }
+
+        .existing-food-row.selected td {
+            border-color: #38bdf8;
+        }
 
 /* Card headers */
 .card-header {
@@ -360,7 +384,7 @@
     margin-top: 1rem;
 }
 
-/* Dot màu tương ứng */
+
 .dot-calories {
     background: #F87171;
 }
@@ -384,3 +408,5 @@
     border-radius: 50%;
     margin-right: 0.5rem;
 }
+
+
