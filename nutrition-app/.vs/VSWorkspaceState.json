@@ -3,9 +3,8 @@
     "",
     "\\client",
     "\\client\\src",
-    "\\server",
-    "\\server\\public"
+    "\\client\\src\\styles"
   ],
-  "SelectedNode": "\\server\\public\\avatars",
+  "SelectedNode": "\\client\\src\\styles\\signUpInfoPage.css",
   "PreviewInSolutionExplorer": false
 }

@@ -1,6 +1,6 @@
-﻿// src/pages/SignUpInfoPage.jsx
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import "../styles/signUpInfoPage.css";
 
 const SignUpInfoPage = () => {
     const [info, setInfo] = useState({
@@ -14,7 +14,7 @@ const SignUpInfoPage = () => {
     useEffect(() => {
         const basic = localStorage.getItem("signup_basic");
         if (!basic) {
-            alert("Missing basic info, please register again.");
+            alert("Thiếu thông tin cơ bản, vui lòng đăng ký lại.");
             navigate("/signUpPage");
         }
     }, [navigate]);
@@ -27,14 +27,14 @@ const SignUpInfoPage = () => {
         e.preventDefault();
         const basic = JSON.parse(localStorage.getItem("signup_basic") || "{}");
         if (!basic.email || !basic.password) {
-            alert("Missing basic info, please register again.");
+            alert("Thiếu thông tin cơ bản, vui lòng đăng ký lại.");
             return navigate("/signUpPage");
         }
 
         const payload = { ...basic, ...info };
 
         try {
-            // 1️⃣ Register
+            // Đăng ký
             let res = await fetch("/api/register", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -42,10 +42,10 @@ const SignUpInfoPage = () => {
             });
             if (!res.ok) {
                 const { error } = await res.json();
-                throw new Error(error || "Register failed");
+                throw new Error(error || "Đăng ký thất bại.");
             }
 
-            // 2️⃣ Login immediately
+            // Tự động đăng nhập
             res = await fetch("/api/login", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -55,12 +55,12 @@ const SignUpInfoPage = () => {
                 })
             });
             const loginData = await res.json();
-            if (!res.ok) throw new Error(loginData.message || "Login failed");
+            if (!res.ok) throw new Error(loginData.message || "Đăng nhập thất bại.");
 
-            // 3️⃣ Save token & redirect
+            // Lưu token & chuyển hướng
             localStorage.setItem("token", loginData.token);
             localStorage.removeItem("signup_basic");
-            alert("🎉 Registered and logged in!");
+            alert("🎉 Đăng ký và đăng nhập thành công!");
             navigate("/login");
         } catch (err) {
             alert("❌ " + err.message);
@@ -68,56 +68,54 @@ const SignUpInfoPage = () => {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-blue-50">
-            <div className="bg-white p-10 rounded-2xl shadow-md w-full max-w-lg">
-                <h2 className="text-3xl font-bold mb-6 text-center text-blue-700">
-                    Personal Info
-                </h2>
+        <div className="info-nensignup">
+            <div className="info-form-khung">
+                <h2 className="info-tieude">Thông Tin Cá Nhân</h2>
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <input
                         type="number"
                         name="age"
                         value={info.age}
                         onChange={handleChange}
-                        placeholder="Age"
+                        placeholder="Tuổi"
                         required
-                        className="w-full px-4 py-2 rounded bg-gray-100"
+                        className="info-input"
                     />
                     <input
                         type="number"
                         name="weight"
                         value={info.weight}
                         onChange={handleChange}
-                        placeholder="Weight (kg)"
+                        placeholder="Cân nặng (kg)"
                         required
-                        className="w-full px-4 py-2 rounded bg-gray-100"
+                        className="info-input"
                     />
                     <input
                         type="number"
                         name="height"
                         value={info.height}
                         onChange={handleChange}
-                        placeholder="Height (cm)"
+                        placeholder="Chiều cao (cm)"
                         required
-                        className="w-full px-4 py-2 rounded bg-gray-100"
+                        className="info-input"
                     />
                     <select
                         name="gender"
                         value={info.gender}
                         onChange={handleChange}
                         required
-                        className="w-full px-4 py-2 rounded bg-gray-100"
+                        className="info-select"
                     >
-                        <option value="">Select gender</option>
-                        <option value="male">Male</option>
-                        <option value="female">Female</option>
-                        <option value="other">Other</option>
+                        <option value="">Chọn giới tính</option>
+                        <option value="male">Nam</option>
+                        <option value="female">Nữ</option>
+                        <option value="other">Khác</option>
                     </select>
                     <button
                         type="submit"
-                        className="w-full bg-blue-600 text-white py-2 rounded-full hover:bg-blue-700"
+                        className="info-submit-btn"
                     >
-                        Continue
+                        Tiếp tục
                     </button>
                 </form>
             </div>

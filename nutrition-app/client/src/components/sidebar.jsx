@@ -11,57 +11,48 @@ const Sidebar = ({ collapsed, toggleSidebar }) => {
     };
 
     return (
-        <div
-            className={`fixed top-0 left-0 h-full bg-gray-900 text-white z-50 transition-all duration-300 ${collapsed ? 'w-20' : 'w-64'
-                }`}
-        >
-            <div className="flex items-center justify-between p-4">
-                {!collapsed && <span className="text-xl font-bold">Nutrition App</span>}
-                <button onClick={toggleSidebar} className="text-white text-xl">☰</button>
+        <div className={`sidebar ${collapsed ? 'collapsed' : ''}`}>
+            <div className="sidebar-header">
+                <span className="title">Nutrition App</span>
+                <button onClick={toggleSidebar} className="toggle-btn">☰</button>
             </div>
 
-            <ul className="space-y-4 mt-6 pl-4">
+            <ul className="menu-list">
                 <li>
-                    <Link to="/food" className="flex items-center gap-2 hover:text-teal-400">
-                        <i className="fa-solid fa-utensils"></i>
-                        {!collapsed && <span>Food</span>}
+                    <Link to="/food">
+                        <i className="fa-solid fa-utensils" />
+                        <span>Food</span>
                     </Link>
                 </li>
                 <li>
-                    <Link to="/dashboard" className="flex items-center gap-2 hover:text-teal-400">
-                        <i className="fas fa-tachometer-alt"></i>
-                        {!collapsed && <span>Dashboard</span>}
+                    <Link to="/dashboard">
+                        <i className="fas fa-tachometer-alt" />
+                        <span>Dashboard</span>
                     </Link>
                 </li>
                 <li>
-                    <Link to="/profile" className="flex items-center gap-2 hover:text-teal-400">
-                        <i className="fas fa-user"></i>
-                        {!collapsed && <span>Profile</span>}
+                    <Link to="/profile">
+                        <i className="fas fa-user" />
+                        <span>Profile</span>
                     </Link>
                 </li>
                 <li>
-                    <Link to="/settings" className="flex items-center gap-2 hover:text-teal-400">
-                        <i className="fas fa-cogs"></i>
-                        {!collapsed && <span>Settings</span>}
-                    </Link>
-                </li>
-               <li>
-                    <Link to="/report" className="flex items-center gap-2 hover:text-teal-400">
-                        <i className="fas fa-chart-line"></i>
-                        {!collapsed && <span>report</span>}
+                    <Link to="/settings">
+                        <i className="fas fa-cogs" />
+                        <span>Settings</span>
                     </Link>
                 </li>
                 <li>
-                    
-                  
-                    
+                    <Link to="/report">
+                        <i className="fas fa-chart-line" />
+                        <span>Reports</span>
+                    </Link>
+                </li>
                 <li>
-                    <button onClick={handleLogout} className="flex items-center gap-2 hover:text-teal-400">
-                        <i className="fas fa-sign-out-alt"></i>
-                        {!collapsed && <span>Logout</span>}
+                    <button onClick={handleLogout} className="logout-btn">
+                        <i className="fas fa-sign-out-alt" />
+                        <span>Logout</span>
                     </button>
-                </li>
-                
                 </li>
             </ul>
         </div>
