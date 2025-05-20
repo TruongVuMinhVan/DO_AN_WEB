@@ -4,8 +4,11 @@
     "\\client",
     "\\client\\src",
     "\\client\\src\\components",
-    "\\client\\src\\styles"
+    "\\client\\src\\styles",
+    "\\server",
+    "\\server\\public\\avatars",
+    "\\server\\routes"
   ],
-  "SelectedNode": "\\client\\src\\App.jsx",
+  "SelectedNode": "\\client\\src",
   "PreviewInSolutionExplorer": false
 }

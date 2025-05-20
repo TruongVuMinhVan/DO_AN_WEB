@@ -14,9 +14,12 @@ app.use(cors());
 app.use(express.json());
 
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 app.get("/", (req, res) => {
   res.send("Backend is running");
 =======
+=======
+>>>>>>> Stashed changes
 // Serve thư mục avatars tĩnh để client có thể lấy ảnh qua URL /avatars/…
 const path = require('path');
 app.use(
