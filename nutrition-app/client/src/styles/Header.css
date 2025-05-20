@@ -1,0 +1,56 @@
+﻿/* src/styles/Header.css */
+.notif-container {
+    position: fixed;
+    top: 20px;
+    right: 24px;
+    z-index: 50;
+}
+
+.notif-btn {
+    width: 3rem; /* chiều rộng cố định */
+    height: 3rem; /* chiều cao cố định = chiều rộng */
+    display: flex; /* để icon canh giữa */
+    align-items: center;
+    justify-content: center;
+    background: #fff;
+    border: none;
+    font-size: 1.25rem;
+    cursor: pointer;
+    border-radius: 50%; 
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    padding: 0; 
+}
+
+.notif-panel {
+    position: absolute;
+    top: 48px;
+    right: 0;
+    width: 260px;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+    overflow: hidden;
+}
+
+.panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #f3f4f6;
+    padding: 0.5rem 1rem;
+    font-weight: 600;
+}
+
+.close-btn {
+    background: transparent;
+    border: none;
+    font-size: 1rem;
+    cursor: pointer;
+}
+
+.notif-content {
+    padding: 1rem;
+    font-size: 0.875rem;
+    color: #555;
+}
