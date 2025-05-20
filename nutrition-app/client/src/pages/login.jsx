@@ -28,7 +28,7 @@ const LoginPage = () => {
             const data = await res.json();
             if (res.ok) {
                 localStorage.setItem("token", data.token); 
-                //alert("Đăng nhập thành công!");
+               
                 navigate("/home");
             } else {
                 setError(data.message || 'Đăng nhập thất bại');

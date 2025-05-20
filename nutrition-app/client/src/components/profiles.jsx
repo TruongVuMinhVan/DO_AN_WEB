@@ -164,12 +164,12 @@ const Profile = () => {
                 </form>
             )}
 
-            <button type="button" onClick={saveProfile} className="profile-btn btn-save">
+            <button type="button" onClick={saveProfile} className="profile-btn btn-save width 20px">
                 <FontAwesomeIcon icon={faSave} className="mr-2" />
                 Save Profile
             </button>
 
-            <button onClick={deleteAccount} className="profile-btn btn-delete mt-4">
+            <button onClick={deleteAccount} className="profile-btn btn-delete width 20px mt-2">
                 <FontAwesomeIcon icon={faTrashAlt} /> Delete Account
             </button>
         </div>

@@ -7,11 +7,10 @@ import Sidebar from './components/sidebar';
 import Dashboard from './components/Dashboard';
 import Charts from './components/charts';
 import Profile from './components/profiles';
-import Reports from './components/reports';
 import NotFound from './pages/notFound';
 import FoodSearch from './pages/foodSearch';
-
-// Layout Component chứa Sidebar + Outlet
+import Home from './pages/Home';
+import Report from './pages/Report';
 const Layout = () => {
     const [collapsed, setCollapsed] = useState(false);
 
@@ -40,12 +39,15 @@ const App = () => {
 
             <Route index element={<Navigate to="/login" />} /> {/* ✅ dùng index cho "/" */}
             {/* Protected Routes */}
-            <Route path="/" element={<Layout />}> {/* sau này có trang home thì thay thế */}
+            <Route path="/" element={<Layout />}>
+             {/* sau này có trang home thì thay thế */}
+                <Route index element={<Home />} />
+                <Route path="/home" element={<Home />} />
                 <Route path="/food" element={<FoodSearch />} /> 
                 <Route path="dashboard" element={<Dashboard />} />
                 <Route path="charts" element={<Charts />} />
                 <Route path="profile" element={<Profile />} />
-                <Route path="reports" element={<Reports />} />
+                <Route path="report" element={<Report />} />
                 <Route path="*" element={<NotFound />} />
             </Route>
         </Routes>

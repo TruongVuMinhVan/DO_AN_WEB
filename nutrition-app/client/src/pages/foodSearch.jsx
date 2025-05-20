@@ -19,7 +19,7 @@ const FoodSearch = () => {
     const wrapperRef = useRef(null);
     const navigate = useNavigate();
     const token = localStorage.getItem('token');
-
+    const [detail, setDetail] = useState(null);
     // 1) Redirect nếu không có token
     useEffect(() => {
         if (!token) navigate('/login');

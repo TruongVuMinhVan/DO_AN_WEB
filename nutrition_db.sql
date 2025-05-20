@@ -1,31 +1,21 @@
--- phpMyAdmin SQL Dump
--- version 5.2.1
--- https://www.phpmyadmin.net/
---
--- Máy chủ: 127.0.0.1
--- Thời gian đã tạo: Th5 06, 2025 lúc 02:53 PM
--- Phiên bản máy phục vụ: 10.4.32-MariaDB
--- Phiên bản PHP: 8.2.12
-
+CREATE DATABASE IF NOT EXISTS nutrition_db;
+USE nutrition_db;
+DROP TABLE IF EXISTS mon_an_thuc_don;
+DROP TABLE IF EXISTS mon_an_bua_an;
+DROP TABLE IF EXISTS thong_tin_dinh_duong;
+DROP TABLE IF EXISTS phan_tich_dinh_duong;
+DROP TABLE IF EXISTS thong_ke_dinh_duong;
+DROP TABLE IF EXISTS lich_su_tim_kiem;
+DROP TABLE IF EXISTS lich_su_bua_an;
+DROP TABLE IF EXISTS ke_hoach_dinh_duong;
+DROP TABLE IF EXISTS goi_y_mon_an;
+DROP TABLE IF EXISTS bua_an;
+DROP TABLE IF EXISTS thuc_don;
+DROP TABLE IF EXISTS mon_an;
+DROP TABLE IF EXISTS user;
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
 SET time_zone = "+00:00";
-
-
-/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
-/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
-/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
-/*!40101 SET NAMES utf8mb4 */;
-
---
--- Cơ sở dữ liệu: `nutrition_db`
---
-
--- --------------------------------------------------------
-
---
--- Cấu trúc bảng cho bảng `bua_an`
---
 
 CREATE TABLE `bua_an` (
   `id` int(11) NOT NULL,
@@ -33,13 +23,6 @@ CREATE TABLE `bua_an` (
   `date` datetime DEFAULT NULL,
   `food_list` text DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
--- --------------------------------------------------------
-
---
--- Cấu trúc bảng cho bảng `goi_y_mon_an`
---
-
 CREATE TABLE `goi_y_mon_an` (
   `id` int(11) NOT NULL,
   `mon_an_de_xuat` text DEFAULT NULL,
@@ -47,11 +30,6 @@ CREATE TABLE `goi_y_mon_an` (
   `mon_an_id` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- --------------------------------------------------------
-
---
--- Cấu trúc bảng cho bảng `ke_hoach_dinh_duong`
---
 
 CREATE TABLE `ke_hoach_dinh_duong` (
   `id` int(11) NOT NULL,
@@ -61,12 +39,6 @@ CREATE TABLE `ke_hoach_dinh_duong` (
   `ti_le_dinh_duong` text DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- --------------------------------------------------------
-
---
--- Cấu trúc bảng cho bảng `lich_su_bua_an`
---
-
 CREATE TABLE `lich_su_bua_an` (
   `id` int(11) NOT NULL,
   `user_id` int(11) DEFAULT NULL,
@@ -74,11 +46,7 @@ CREATE TABLE `lich_su_bua_an` (
   `thoi_gian` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- --------------------------------------------------------
 
---
--- Cấu trúc bảng cho bảng `lich_su_tim_kiem`
---
 
 CREATE TABLE `lich_su_tim_kiem` (
   `id` int(11) NOT NULL,
@@ -87,9 +55,6 @@ CREATE TABLE `lich_su_tim_kiem` (
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Đang đổ dữ liệu cho bảng `lich_su_tim_kiem`
---
 
 INSERT INTO `lich_su_tim_kiem` (`id`, `user_id`, `query`, `created_at`) VALUES
 (66, 29, '3 apple', '2025-05-06 11:37:39'),
@@ -99,22 +64,14 @@ INSERT INTO `lich_su_tim_kiem` (`id`, `user_id`, `query`, `created_at`) VALUES
 (72, 29, '3 orange', '2025-05-06 12:36:21'),
 (73, 29, '1 watermelon', '2025-05-06 12:43:11');
 
--- --------------------------------------------------------
 
---
--- Cấu trúc bảng cho bảng `mon_an`
---
 
 CREATE TABLE `mon_an` (
   `id` int(11) NOT NULL,
   `ten_mon` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- --------------------------------------------------------
 
---
--- Cấu trúc bảng cho bảng `mon_an_bua_an`
---
 
 CREATE TABLE `mon_an_bua_an` (
   `bua_an_id` int(11) DEFAULT NULL,
@@ -458,6 +415,3 @@ ALTER TABLE `thuc_don`
   ADD CONSTRAINT `thuc_don_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`);
 COMMIT;
 
-/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
-/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
-/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
