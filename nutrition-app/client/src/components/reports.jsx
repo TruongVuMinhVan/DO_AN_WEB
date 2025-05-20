@@ -1,79 +1,29 @@
-import React, { useEffect, useState } from "react";
-import { Line } from "react-chartjs-2";
-import axios from "axios";
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend,
-} from "chart.js";
+// Hàm kiểm tra chế độ ăn và cảnh báo nếu không cân đối
+function checkDietBalance({ carbs, protein, fat }) {
+    // Tỷ lệ khuyến nghị: Carb 50-60%, Protein 10-20%, Fat 20-30%
+    const total = carbs + protein + fat;
+    if (total === 0) return "Chưa nhập dữ liệu dinh dưỡng.";
 
-ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
+    const carbPercent = (carbs / total) * 100;
+    const proteinPercent = (protein / total) * 100;
+    const fatPercent = (fat / total) * 100;
 
-const Reports = () => {
-  const [reportData, setReportData] = useState([]);
-  const [dateRange, setDateRange] = useState("7"); // default: 7 ngày
-  const [loading, setLoading] = useState(false); // trạng thái loading
-  const [error, setError] = useState(""); // trạng thái lỗi
+    let warnings = [];
 
-  useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true); // Đánh dấu là đang tải
-      setError(""); // Reset lỗi trước khi fetch lại
-      try {
-        const res = await axios.get(`http://localhost:5000/api/reports?days=${dateRange}`);
-        setReportData(res.data);
-      } catch (err) {
-        setError("Lỗi khi tải dữ liệu báo cáo. Vui lòng thử lại.");
-        console.error(err);
-      } finally {
-        setLoading(false); // Kết thúc quá trình tải
-      }
-    };
-    fetchData();
-  }, [dateRange]);
+    if (carbPercent < 50 || carbPercent > 60) {
+        warnings.push("Tỷ lệ tinh bột (carb) không cân đối (khuyến nghị 50-60%).");
+    }
+    if (proteinPercent < 10 || proteinPercent > 20) {
+        warnings.push("Tỷ lệ đạm (protein) không cân đối (khuyến nghị 10-20%).");
+    }
+    if (fatPercent < 20 || fatPercent > 30) {
+        warnings.push("Tỷ lệ chất béo (fat) không cân đối (khuyến nghị 20-30%).");
+    }
 
-  const data = {
-    labels: reportData.map(item => item.date),
-    datasets: [
-      {
-        label: "Calories Consumed",
-        data: reportData.map(item => item.calories),
-        fill: false,
-        borderColor: "rgb(75, 192, 192)",
-        tension: 0.1,
-      },
-    ],
-  };
+    if (warnings.length === 0) {
+        return "Chế độ ăn cân đối.";
+    }
+    return warnings.join(" ");
+}
 
-  return (
-    <div className="p-6 bg-white rounded shadow-md w-full">
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="text-2xl font-bold text-gray-800">Báo cáo tiêu thụ calo</h2>
-        <select
-          value={dateRange}
-          onChange={(e) => setDateRange(e.target.value)}
-          className="border border-gray-300 rounded px-2 py-1"
-        >
-          <option value="7">7 ngày gần nhất</option>
-          <option value="14">14 ngày gần nhất</option>
-          <option value="30">30 ngày gần nhất</option>
-        </select>
-      </div>
-
-      {loading ? (
-        <div className="text-center">Đang tải dữ liệu...</div> // Hiển thị khi đang tải
-      ) : error ? (
-        <div className="text-center text-red-500">{error}</div> // Hiển thị khi có lỗi
-      ) : (
-        <Line data={data} options={{ responsive: true, plugins: { legend: { position: "top" } } }} />
-      )}
-    </div>
-  );
-};
-
-export default Reports;
+module.exports = checkDietBalance;

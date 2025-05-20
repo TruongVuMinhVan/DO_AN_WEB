@@ -9,7 +9,6 @@ const PORT = 5000;
 const userRoutes = require("./routes/user");
 const historyRoutes = require('./routes/history');
 const mealRoutes = require('./routes/meal');
-
 app.use(cors());
 app.use(express.json());
 
@@ -29,7 +28,6 @@ app.get("/test-db", (req, res) => {
         res.json({ status: "success", result: result[0].result });
     });
 });
-
 // ✅ Dùng routes/user.js
 app.use('/api', userRoutes);
 
