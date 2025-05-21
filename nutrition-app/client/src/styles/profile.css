@@ -181,6 +181,26 @@
     cursor: pointer;
 }
 
+.input-with-unit {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 30%;
+}
+
+.input-with-unit input {
+  padding-right: 40px; /* tạo khoảng trống cho đơn vị */
+  width: 100%;
+}
+
+.unit-label {
+  position: absolute;
+  right: 10px;
+  color: #555;
+  font-size: 0.9em;
+  pointer-events: none;
+}
+
 @media (max-width: 768px) {
     .profile-container {
         flex-direction: column;

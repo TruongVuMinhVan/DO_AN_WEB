@@ -91,15 +91,20 @@ router.get("/profile", verifyToken, (req, res) => {
 // Cập nhật profile (không password)
 router.put("/profile", verifyToken, (req, res) => {
     const userId = req.user.id;
-    const { name, email, age, gender, goal, allergies } = req.body;
+    const { name, email, age, gender, goal, allergies, weight, height } = req.body;
+
     const sql = `
-    SELECT id, name, email, age, weight, height, gender, goal, allergies, avatarUrl
-    FROM user
-    WHERE id = ?
-  `;
-    db.query(sql, [name, email, age, gender, goal, allergies, userId], (err) => {
-        if (err) return res.status(500).json({ error: err.message });
-        res.json({ message: "Profile updated" });
+        UPDATE user
+        SET name = ?, email = ?, age = ?, gender = ?, goal = ?, allergies = ?, weight = ?, height = ?
+        WHERE id = ?
+    `;
+
+    db.query(sql, [name, email, age, gender, goal, allergies, weight, height, userId], (err, result) => {
+        if (err) {
+            console.error("❌ Lỗi khi cập nhật profile:", err.message);
+            return res.status(500).json({ error: err.message });
+        }
+        res.json({ message: "Profile updated successfully" });
     });
 });
 

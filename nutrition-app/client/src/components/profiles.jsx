@@ -136,18 +136,45 @@ const Profile = () => {
 
                 <form onSubmit={saveProfile} className="profile-form">
                     <input name="name" type="text" placeholder="Họ và tên" value={user.name} onChange={handleChange} className="profile-input" />
+
                     <input name="email" type="email" placeholder="Email" value={user.email} onChange={handleChange} className="profile-input" />
+
                     <input name="age" type="number" placeholder="Tuổi" value={user.age} onChange={handleChange} className="profile-input" />
+
                     <select name="gender" value={user.gender} onChange={handleChange} className="profile-input">
                         <option value="">Chọn giới tính</option>
                         <option value="male">Nam</option>
                         <option value="female">Nữ</option>
                         <option value="other">Khác</option>
                     </select>
+
                     <input name="goal" type="text" placeholder="Mục tiêu sức khoẻ" value={user.goal} onChange={handleChange} className="profile-input" />
+
                     <input name="allergies" type="text" placeholder="Dị ứng (nếu có)" value={user.allergies} onChange={handleChange} className="profile-input" />
-                    <input name="weight" type="number" placeholder="Cân nặng (kg)" value={user.weight} onChange={handleChange} className="profile-input" />
-                    <input name="height" type="number" placeholder="Chiều cao (cm)" value={user.height} onChange={handleChange} className="profile-input" />
+
+                    <div className="input-with-unit">
+                        <input
+                            name="weight"
+                            type="number"
+                            placeholder="Cân nặng"
+                            value={user.weight}
+                            onChange={handleChange}
+                            className="profile-input"
+                        />
+                        <span className="unit-label">kg</span>
+                    </div>
+
+                    <div className="input-with-unit">
+                        <input
+                            name="height"
+                            type="number"
+                            placeholder="Chiều cao"
+                            value={user.height}
+                            onChange={handleChange}
+                            className="profile-input"
+                        />
+                        <span className="unit-label">cm</span>
+                    </div>
 
                     {showPwdForm && (
                         <>

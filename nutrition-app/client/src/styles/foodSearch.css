@@ -69,7 +69,7 @@
 }
 
 .selected-list-panel {
-    display: flex; /* thêm */
+    display: flex;
     flex-direction: column;
     position: relative;
     grid-column: 1 / span 4;
@@ -78,18 +78,29 @@
     background: #eff6ff;
     border: 1px solid #bfdbfe;
     border-radius: 0.5rem;
-    overflow: hidden; /* đổi từ overflow-y để nút luôn hiện */
+    overflow: hidden;
+    max-height: 100%; /* Đảm bảo không vượt khỏi grid row */
 }
 
     .selected-list-panel ul {
-        display: flex; /* thêm */
-        flex-direction: column; /* thêm */
+        display: flex;
+        flex-direction: column;
         flex: 1 1 auto;
         margin: 0;
         padding: 0;
         list-style: none;
         overflow-y: auto;
+        max-height: 300px; /* Chỉ cuộn khi dài quá */
     }
+
+        .selected-list-panel ul::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .selected-list-panel ul::-webkit-scrollbar-thumb {
+            background-color: rgba(0, 0, 0, 0.2);
+            border-radius: 4px;
+        }
 
 .btn-save-meal {
     margin-top: auto; /* đẩy nút xuống đáy panel */
@@ -168,12 +179,12 @@
 .panel-title {
     margin: 0;
     padding: 0.75rem 1rem;
-    background: #cffafe; /* màu xanh nhạt */
-    color: #025e68; /* xanh đậm hơn */
+    background: #cffafe; 
+    color: #025e68; 
     font-size: 1.125rem;
     font-weight: 650;
     border-bottom: 0.5px solid #a5f3fc;
-    border-radius: 0.5rem 0.5rem 0.5rem 0.5rem; /* bo chỉ 2 góc trên */
+    border-radius: 0.5rem 0.5rem 0.5rem 0.5rem; 
 }
 
 .selected-list-panel > ul,

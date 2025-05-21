@@ -11,11 +11,11 @@ import Reports from './components/reports';
 import NotFound from './pages/notFound';
 import FoodSearch from './pages/foodSearch';
 import Header from './components/Header';
-
+import Report from './pages/Report';
+import Home from './pages/Home';
 // Layout Component chứa Sidebar + Outlet
 const Layout = () => {
     const [collapsed, setCollapsed] = useState(false);
-
     const toggleSidebar = () => setCollapsed(!collapsed);
 
     return (
@@ -52,7 +52,7 @@ const App = () => {
                 <Route path="dashboard" element={<Dashboard />} />
                 <Route path="charts" element={<Charts />} />
                 <Route path="profile" element={<Profile />} />
-                <Route path="reports" element={<Reports />} />
+                <Route path="report" element={<Report />} />
                 <Route path="*" element={<NotFound />} />
             </Route>
         </Routes>
