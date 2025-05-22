@@ -1,4 +1,6 @@
-﻿.food-search-container {
+﻿/* LAYOUT */
+
+.food-search-container {
     padding: 1rem;
 }
 
@@ -77,7 +79,7 @@
     padding: 1rem;
     background: #eff6ff;
     border: 1px solid #bfdbfe;
-    border-radius: 0.5rem;
+    border-radius: 1rem;
     overflow: hidden;
     max-height: 100%;
 }
@@ -170,6 +172,21 @@
     flex-direction: column;
 }
 
+    .selected-list-panel > ul,
+    .totals-panel > p {
+        padding: 1rem;
+        flex: 1 1 auto;
+        overflow-y: auto;
+    }
+
+.selected-panel-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+
 .panel-title {
     margin: 0;
     padding: 0.75rem 1rem;
@@ -181,18 +198,19 @@
     border-radius: 0.5rem 0.5rem 0.5rem 0.5rem; 
 }
 
-.selected-list-panel > ul,
-.totals-panel > p {
-    padding: 1rem;
-    flex: 1 1 auto;
-    overflow-y: auto;
+.panel-header {
+    margin: 0; /* loại bỏ margin mặc định */
+    padding: 0.75rem 1rem; /* giống với .panel-title cũ */
+    font-size: 1.125rem;
+    font-weight: 650;
+    background: #cffafe;
+    color: #025e68;
+    border-bottom: 0.5px solid #a5f3fc;
+    border-radius: 0.5rem 0.5rem 0 0; /* bo góc trên */
 }
 
-.selected-panel-top {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 0.5rem;
+.totals-panel .panel-header {
+    border-radius: 0.5rem 0.5rem 0 0; /* bo 2 góc trên */
 }
 
 .food-summary-box {
@@ -265,6 +283,17 @@
         background-color: #e2e8f0;
     }
 
+.totals-panel.full-height {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+    /* thêm chút khoảng cách */
+    .totals-panel.full-height > div {
+        margin-top: 2rem;
+    }
+
 /* SEARCH RESULTS */
 
 .search-results {
@@ -329,7 +358,6 @@
         background-color: rgba(255, 255, 255, 0.2); 
     }
 
-
 .history-item {
     display: flex;
     justify-content: space-between; /* đảm bảo span và button về 2 bên */
@@ -342,7 +370,6 @@
         background: #f1f5f9;
     }
 
-
 .chart-panel {
     grid-column: 8 / span 1; 
     grid-row: 1 / span 7;
@@ -351,17 +378,6 @@
     background: #ffffff;
     border-radius: 0.5rem;
 }
-
-.totals-panel.full-height {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-}
-
-    /* thêm chút khoảng cách */
-    .totals-panel.full-height > div {
-        margin-top: 1rem;
-    }
 
 /* trong src/styles/foodSearch.css */
 
@@ -400,7 +416,6 @@
     flex: 0 0 auto;
     margin-right: 0.25rem;
 }
-
 
 .existing-foods-table-container {
     margin: 1rem 0;

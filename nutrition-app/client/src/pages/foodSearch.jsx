@@ -3,7 +3,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSearch, faPlus, faTrash, faXmark, faCalendarAlt, faChevronLeft, faChevronRight } from '@fortawesome/free-solid-svg-icons';
+import { faSearch, faPlus, faTrash, faXmark, faChevronLeft, faChevronRight } from '@fortawesome/free-solid-svg-icons';
 import { searchFood } from '../api/food';
 import NutritionPie from '../components/NutritionPie';
 import '../styles/foodSearch.css';
@@ -72,7 +72,26 @@ const FoodSearch = () => {
         setTotals(sums);
     }, [selectedFoods]);
 
-    // 6) Xử lý search form
+    // 6) Thêm effect để tải các món ăn theo ngày đã chọn
+    useEffect(() => {
+        if (!token || !selectedDate) return;
+        const fetchMealByDate = async () => {
+            const dateStr = selectedDate.toISOString().slice(0, 10);
+            try {
+                const res = await axios.get('/api/meals', {
+                    headers: { Authorization: `Bearer ${token}` },
+                    params: { date: dateStr }
+                });
+                setSelectedFoods(res.data.items || []);
+            } catch (err) {
+                console.error('Lỗi khi tải meal theo ngày:', err);
+                setSelectedFoods([]);
+            }
+        };
+        fetchMealByDate();
+    }, [selectedDate, token]);
+
+    // 7) Xử lý search form
     const handleSearch = async e => {
         e.preventDefault();
         if (!q.trim()) return;
@@ -97,7 +116,7 @@ const FoodSearch = () => {
         setDetail(null);
     };
 
-    // 7) Thêm món vào selectedFoods (tăng quantity nếu đã có)
+    // 8) Thêm món vào selectedFoods (tăng quantity nếu đã có)
     const handleAddFood = food => {
         const key = food.nix_item_id || food.food_name;
         setSelectedFoods(prev => {
@@ -113,7 +132,7 @@ const FoodSearch = () => {
         });
     };
 
-    // 8) Tăng/giảm số lượng đã chọn
+    // 9) Tăng/giảm số lượng đã chọn
     const handleChangeQuantity = (key, delta) => {
         setSelectedFoods(prev =>
             prev.map(f =>
@@ -124,7 +143,7 @@ const FoodSearch = () => {
         );
     };
 
-    // 9) Chọn lại từ lịch sử
+    // 10) Chọn lại từ lịch sử
     const handleSelectHistory = item => {
         setQ(item.query);
         setShowDropdown(false);
@@ -133,28 +152,43 @@ const FoodSearch = () => {
         }, 0);
     };
 
-    // 10) Xóa khỏi lịch sử
+    // 11) Xóa khỏi lịch sử
     const handleDeleteHistory = async id => {
         await axios.delete(`/api/history/${id}`, { headers: { Authorization: `Bearer ${token}` } });
         setHistory(h => h.filter(i => i.id !== id));
     };
 
-    // 11) Lưu bữa ăn
+    // 12) Lưu bữa ăn
     const handleSaveMeal = async () => {
         if (!selectedFoods.length) {
             return alert('Chưa có món nào để lưu!');
         }
-        await axios.post(
-            '/api/meals',
-            { items: selectedFoods.map(f => ({ food_name: f.food_name, quantity: f.quantity })) },  //selectedFoods
-            { headers: { Authorization: `Bearer ${token}` } }
-        );
+        const dateStr = selectedDate.toISOString().slice(0, 10);
+        const payload = {
+            date: dateStr,
+            items: selectedFoods.map(f => ({
+                food_name: f.food_name,
+                quantity: f.quantity,
+                nf_calories: f.nf_calories,
+                nf_protein: f.nf_protein,
+                nf_total_carbohydrate: f.nf_total_carbohydrate,
+                nf_total_fat: f.nf_total_fat
+            }))
+        };
 
-        alert('✅ Đã lưu bữa ăn!');
-        setSelectedFoods([]);
+        try {
+            // Gọi PUT để upsert
+            const res = await axios.put('/api/meals', payload, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            alert(res.data.message);
+        } catch (err) {
+            console.error(err);
+            alert('❌ Không thể lưu bữa ăn. Vui lòng thử lại!');
+        }
     };
 
-    // 12) Chọn món có sẵn
+    // 13) Chọn món có sẵn
     const handleSelectExisting = async (name) => {
         setSelectedDescription(name);
         setQ(name);
@@ -171,19 +205,20 @@ const FoodSearch = () => {
         ? history.filter(h => h.query.toLowerCase().includes(q.toLowerCase()))
         : [];
 
-    // 13) Chọn ngày hôm trước
+    // 14) Chọn ngày hôm trước
     const handlePrevDay = () => {
         const prevDate = new Date(selectedDate);
         prevDate.setDate(prevDate.getDate() - 1);
         setSelectedDate(prevDate);
     };
 
-    // 14) Chọn ngày hôm sau
+    // 15) Chọn ngày hôm sau
     const handleNextDay = () => {
         const nextDate = new Date(selectedDate);
         nextDate.setDate(nextDate.getDate() + 1);
         setSelectedDate(nextDate);
     };
+
 
     return (
         <div className="food-search-container">
