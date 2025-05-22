@@ -3,25 +3,28 @@ import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSearch, faPlus, faTrash, faXmark } from '@fortawesome/free-solid-svg-icons';
+import { faSearch, faPlus, faTrash, faXmark, faCalendarAlt, faChevronLeft, faChevronRight } from '@fortawesome/free-solid-svg-icons';
 import { searchFood } from '../api/food';
 import NutritionPie from '../components/NutritionPie';
 import '../styles/foodSearch.css';
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 const FoodSearch = () => {
     const [q, setQ] = useState('');
     const [results, setResults] = useState([]);
     const [history, setHistory] = useState([]);
+    const [detail, setDetail] = useState(null);
     const [selectedFoods, setSelectedFoods] = useState([]);
     const [existingFoods, setExistingFoods] = useState([]);
     const [selectedDescription, setSelectedDescription] = useState(null);
     const [selectedExistingId, setSelectedExistingId] = useState(null);
     const [totals, setTotals] = useState({ calories: 0, protein: 0, carbs: 0, fat: 0 });
     const [showDropdown, setShowDropdown] = useState(false);
+    const [selectedDate, setSelectedDate] = useState(new Date());
     const wrapperRef = useRef(null);
     const navigate = useNavigate();
     const token = localStorage.getItem('token');
-    const [detail, setDetail] = useState(null);
 
     // 1) Redirect nếu không có token
     useEffect(() => {
@@ -168,6 +171,20 @@ const FoodSearch = () => {
         ? history.filter(h => h.query.toLowerCase().includes(q.toLowerCase()))
         : [];
 
+    // 13) Chọn ngày hôm trước
+    const handlePrevDay = () => {
+        const prevDate = new Date(selectedDate);
+        prevDate.setDate(prevDate.getDate() - 1);
+        setSelectedDate(prevDate);
+    };
+
+    // 14) Chọn ngày hôm sau
+    const handleNextDay = () => {
+        const nextDate = new Date(selectedDate);
+        nextDate.setDate(nextDate.getDate() + 1);
+        setSelectedDate(nextDate);
+    };
+
     return (
         <div className="food-search-container">
             <h1 className="food-search-title">Tìm Kiếm Thức Ăn</h1>
@@ -212,35 +229,58 @@ const FoodSearch = () => {
             <div className="grid-container">
                 {/* Selected Foods Panel */}
                 <div className="selected-list-panel">
-                    <h3 className="panel-header">Thức ăn đã chọn</h3>
-                    <ul>
-                        {selectedFoods.map(f => {
-                            const key = f.nix_item_id || f.food_name;
-                            return (
-                                <li key={key} className="selected-item">
-                                    <div className="selected-item-inner">
-                                        <span>{f.food_name} <strong>× {f.quantity}</strong></span>
-                                        <div className="qty-controls">
-                                            <button onClick={e => { e.stopPropagation(); handleChangeQuantity(key, -1); }}>−</button>
-                                            <button onClick={e => { e.stopPropagation(); handleChangeQuantity(key, 1); }}>+</button>
-                                            <button
-                                                className="delete-btn"
-                                                title="Xóa"
-                                                onClick={e => {
-                                                    e.stopPropagation();
-                                                    setSelectedFoods(prev => prev.filter(x => (x.nix_item_id || x.food_name) !== key));
-                                                }}
-                                            >
-                                                <FontAwesomeIcon icon={faTrash} />
-                                            </button>
+                    <div className="selected-panel-top">
+                        <h3 className="panel-header">Thức ăn đã chọn</h3>
+                        <div className="meal-date-picker-fixed">
+                            <button onClick={handlePrevDay} className="date-nav-btn">
+                                <FontAwesomeIcon icon={faChevronLeft} />
+                            </button>
+
+                            <DatePicker
+                                selected={selectedDate}
+                                onChange={date => setSelectedDate(date)}
+                                dateFormat="dd/MM/yyyy"
+                                className="date-input"
+                            />
+
+                            <button onClick={handleNextDay} className="date-nav-btn">
+                                <FontAwesomeIcon icon={faChevronRight} />
+                            </button>
+                        </div>
+                    </div>
+
+                    <div style={{ display: 'flex', gap: '1rem' }}>
+                        <ul style={{ flex: 1 }}>
+                            {selectedFoods.map(f => {
+                                const key = f.nix_item_id || f.food_name;
+                                return (
+                                    <li key={key} className="selected-item">
+                                        <div className="selected-item-inner">
+                                            <span>{f.food_name} <strong>× {f.quantity}</strong></span>
+                                            <div className="qty-controls">
+                                                <button onClick={e => { e.stopPropagation(); handleChangeQuantity(key, -1); }}>−</button>
+                                                <button onClick={e => { e.stopPropagation(); handleChangeQuantity(key, 1); }}>+</button>
+                                                <button
+                                                    className="delete-btn"
+                                                    title="Xóa"
+                                                    onClick={e => {
+                                                        e.stopPropagation();
+                                                        setSelectedFoods(prev => prev.filter(x => (x.nix_item_id || x.food_name) !== key));
+                                                    }}
+                                                >
+                                                    <FontAwesomeIcon icon={faTrash} />
+                                                </button>
+                                            </div>
                                         </div>
-                                    </div>
-                                </li>
-                            );
-                        })}
-                    </ul>
-                    <button className="btn-save-meal" onClick={handleSaveMeal}>💾 Lưu Bữa Ăn</button>
+                                    </li>
+                                );
+                            })}
+                        </ul>
+                    </div>
+
+                    <button className="btn-save-meal" onClick={handleSaveMeal}>Lưu Bữa Ăn</button>
                 </div>
+
 
                 {/* Totals + Pie Chart */}
                 <div className="totals-panel">

@@ -79,7 +79,7 @@
     border: 1px solid #bfdbfe;
     border-radius: 0.5rem;
     overflow: hidden;
-    max-height: 100%; /* Đảm bảo không vượt khỏi grid row */
+    max-height: 100%;
 }
 
     .selected-list-panel ul {
@@ -161,12 +161,6 @@
             background-color: #ffcccc;
         }
 
-.reserved-panel {
-    grid-column: 5 / span 3;
-    grid-row: 5 / span 3;
-    /* reserved */
-}
-
 .selected-list-panel,
 .totals-panel {
     background: #ffffff;
@@ -194,6 +188,82 @@
     overflow-y: auto;
 }
 
+.selected-panel-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.food-summary-box {
+    flex: 1;
+    font-weight: 500;
+    color: #0f172a;
+}
+
+.calendar-button {
+    background: #f1f5f9;
+    border: 1px solid #cbd5e1;
+    border-radius: 0.375rem;
+    padding: 0.5rem 0.75rem;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+    .calendar-button:hover {
+        background: #e2e8f0;
+    }
+
+.reserved-panel {
+    grid-column: 5 / span 3;
+    grid-row: 5 / span 3;
+    /* reserved */
+}
+
+.meal-date-box {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.meal-date-label {
+    font-weight: 600;
+    font-size: 1rem;
+}
+
+.meal-date-picker-fixed {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: #eff6ff;
+    padding: 0.5rem;
+    border-radius: 8px;
+    z-index: 1;
+    position: relative;
+}
+
+.date-input {
+    padding: 6px 10px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 1rem;
+    min-width: 130px;
+}
+
+.date-nav-btn {
+    background: #f3f4f6;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    padding: 6px 10px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+    .date-nav-btn:hover {
+        background-color: #e2e8f0;
+    }
 
 /* SEARCH RESULTS */
 

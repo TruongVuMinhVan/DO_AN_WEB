@@ -3,8 +3,9 @@
     "",
     "\\client",
     "\\client\\src",
-    "\\client\\src\\styles"
+    "\\server",
+    "\\server\\routes"
   ],
-  "SelectedNode": "\\client\\src\\styles\\foodSearch.css",
+  "SelectedNode": "\\server\\routes\\meal.js",
   "PreviewInSolutionExplorer": false
 }

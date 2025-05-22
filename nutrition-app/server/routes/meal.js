@@ -124,12 +124,12 @@ router.post('/meals', verifyToken, async (req, res) => {
             // 2.4 Upsert thông tin dinh dưỡng
             await db.promise().query(
                 `INSERT INTO thong_tin_dinh_duong (mon_an_id, calo, protein, carb, fat)
-         VALUES (?, ?, ?, ?, ?)
-         ON DUPLICATE KEY UPDATE
-           calo = VALUES(calo),
-           protein = VALUES(protein),
-           carb = VALUES(carb),
-           fat = VALUES(fat)`,
+                VALUES (?, ?, ?, ?, ?)
+                ON DUPLICATE KEY UPDATE
+                calo = VALUES(calo),
+                protein = VALUES(protein),
+                carb = VALUES(carb),
+                fat = VALUES(fat)`,
                 [
                     monAnId,
                     nutri.nf_calories * quantity,
@@ -159,6 +159,24 @@ router.post('/meals', verifyToken, async (req, res) => {
         console.error('❌ Lỗi lưu bữa ăn:', err);
         res.status(500).json({ message: 'Server error', error: err.message });
     }
+});
+
+router.get('/meals', verifyToken, async (req, res) => {
+    const userId = req.user.id;
+    const { date } = req.query; // ?date=YYYY-MM-DD
+
+    const sql = `SELECT id, food_list
+               FROM bua_an
+               WHERE user_id = ? AND DATE(date) = ?`;
+    const [rows] = await db.promise().query(sql, [userId, date]);
+
+    // Trả về mảng món
+    if (rows.length) {
+        // chỉ lấy bản ghi đầu (nếu bạn chỉ cho 1 bữa/ngày) hoặc gộp nhiều bữa
+        const items = JSON.parse(rows[0].food_list);
+        return res.json(items);
+    }
+    res.json([]); // chưa có bữa nào
 });
 
 router.get('/meals/energy-history', verifyToken, async (req, res) => {

@@ -10,6 +10,7 @@
     "npm-run-all": "^4.1.5"
   },
   "dependencies": {
-    "express": "^5.1.0"
+    "express": "^5.1.0",
+    "react-datepicker": "^8.3.0"
   }
 }
