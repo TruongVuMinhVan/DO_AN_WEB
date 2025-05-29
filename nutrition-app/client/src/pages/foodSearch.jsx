@@ -7,8 +7,12 @@ import { faSearch, faPlus, faTrash, faXmark, faChevronLeft, faChevronRight } fro
 import { searchFood } from '../api/food';
 import NutritionPie from '../components/NutritionPie';
 import '../styles/foodSearch.css';
+//Import lịch ngày/tháng/năm
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+//Import cảnh báo popup
+import Popup from '../components/Popup';
+
 
 const FoodSearch = () => {
     const [q, setQ] = useState('');
@@ -18,8 +22,8 @@ const FoodSearch = () => {
     const [selectedFoods, setSelectedFoods] = useState([]);
     const [existingFoods, setExistingFoods] = useState([]);
     const [selectedDescription, setSelectedDescription] = useState(null);
-    const [selectedExistingId, setSelectedExistingId] = useState(null);
     const [totals, setTotals] = useState({ calories: 0, protein: 0, carbs: 0, fat: 0 });
+    const [popup, setPopup] = useState({ open: false, message: '', success: true });
     const [showDropdown, setShowDropdown] = useState(false);
     const [selectedDate, setSelectedDate] = useState(new Date());
     const wrapperRef = useRef(null);
@@ -63,13 +67,31 @@ const FoodSearch = () => {
 
     // 5) Recompute totals khi selectedFoods thay đổi
     useEffect(() => {
-        const sums = selectedFoods.reduce((acc, f) => ({
-            calories: acc.calories + (f.nf_calories || 0) * f.quantity,
-            protein: acc.protein + (f.nf_protein || 0) * f.quantity,
-            carbs: acc.carbs + (f.nf_total_carbohydrate || 0) * f.quantity,
-            fat: acc.fat + (f.nf_total_fat || 0) * f.quantity,
-        }), { calories: 0, protein: 0, carbs: 0, fat: 0 });
-        setTotals(sums);
+        const sums = selectedFoods.reduce((acc, f) => {
+            const baseGram = f.serving_weight_grams ?? 100;
+            const usedGram = f.custom_weight ?? baseGram;
+            const ratio = usedGram / baseGram;
+
+            const caloPerCustom = (f.nf_calories || 0) * ratio;
+            const proteinPerCustom = (f.nf_protein || 0) * ratio;
+            const carbsPerCustom = (f.nf_total_carbohydrate || 0) * ratio;
+            const fatPerCustom = (f.nf_total_fat || 0) * ratio;
+
+            const count = f.quantity ?? 1;
+            return {
+                calories: acc.calories + caloPerCustom * count,
+                protein: acc.protein + proteinPerCustom * count,
+                carbs: acc.carbs + carbsPerCustom * count,
+                fat: acc.fat + fatPerCustom * count,
+            };
+        }, { calories: 0, protein: 0, carbs: 0, fat: 0 });
+
+        setTotals({
+            calories: Math.round(sums.calories * 100) / 100,
+            protein: Math.round(sums.protein * 100) / 100,
+            carbs: Math.round(sums.carbs * 100) / 100,
+            fat: Math.round(sums.fat * 100) / 100,
+        });
     }, [selectedFoods]);
 
     // 6) Thêm effect để tải các món ăn theo ngày đã chọn
@@ -82,11 +104,14 @@ const FoodSearch = () => {
                     headers: { Authorization: `Bearer ${token}` },
                     params: { date: dateStr }
                 });
-                setSelectedFoods(res.data.items || []);
-            } catch (err) {
-                console.error('Lỗi khi tải meal theo ngày:', err);
+                setSelectedFoods((res.data.items || []).map(f => ({
+                    ...f,
+                    quantity: f.quantity ?? 1
+                })));
+            } catch {
                 setSelectedFoods([]);
             }
+            setResults([]);
         };
         fetchMealByDate();
     }, [selectedDate, token]);
@@ -160,31 +185,35 @@ const FoodSearch = () => {
 
     // 12) Lưu bữa ăn
     const handleSaveMeal = async () => {
-        if (!selectedFoods.length) {
-            return alert('Chưa có món nào để lưu!');
-        }
+        if (!selectedFoods.length) return setPopup({ open: true, message: 'Chưa có món nào để lưu!', success: false });
+
         const dateStr = selectedDate.toISOString().slice(0, 10);
+        const { data } = await axios.get('/api/meals', {
+            headers: { Authorization: `Bearer ${token}` },
+            params: { date: dateStr }
+        });
+
+        const method = data.items.length ? 'put' : 'post';
+        const url = '/api/meals';
         const payload = {
             date: dateStr,
             items: selectedFoods.map(f => ({
                 food_name: f.food_name,
-                quantity: f.quantity,
+                quantity: f.quantity ?? 1,
+                custom_weight: f.custom_weight,
+                nix_item_id: f.nix_item_id,
                 nf_calories: f.nf_calories,
                 nf_protein: f.nf_protein,
                 nf_total_carbohydrate: f.nf_total_carbohydrate,
-                nf_total_fat: f.nf_total_fat
+                nf_total_fat: f.nf_total_fat,
             }))
         };
 
         try {
-            // Gọi PUT để upsert
-            const res = await axios.put('/api/meals', payload, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
-            alert(res.data.message);
-        } catch (err) {
-            console.error(err);
-            alert('❌ Không thể lưu bữa ăn. Vui lòng thử lại!');
+            const res = await axios[method](url, payload, { headers: { Authorization: `Bearer ${token}` } });
+            setPopup({ open: true, message: res.data.message, success: true });
+        } catch {
+            setPopup({ open: true, message: '❌ Không thể lưu! Vui lòng thử lại.', success: false });
         }
     };
 
@@ -219,6 +248,31 @@ const FoodSearch = () => {
         setSelectedDate(nextDate);
     };
 
+    // 16) Lọc món trùng tên
+    const uniqueFoods = existingFoods
+        .filter(i => i.ten_mon)               
+        .reduce((acc, item) => {
+            const key = item.ten_mon.trim().toLowerCase();
+            if (!acc.map.has(key)) {
+                acc.map.set(key, true);
+                acc.list.push(item);
+            }
+            return acc;
+        }, { map: new Map(), list: [] }).list;
+
+    // 17) Tính theo gam món
+    const handleChangeWeight = (key, newWeightStr) => {
+        const newWeight = Math.max(1, parseFloat(newWeightStr) || 0); // Ensure minimum weight is 1g
+        setSelectedFoods(prev =>
+            prev.map(f => {
+                const fKey = f.nix_item_id || f.food_name;
+                if (fKey === key) {
+                    return { ...f, custom_weight: newWeight };
+                }
+                return f;
+            })
+        );
+    };
 
     return (
         <div className="food-search-container">
@@ -262,6 +316,7 @@ const FoodSearch = () => {
 
             {/* Grid layout */}
             <div className="grid-container">
+
                 {/* Selected Foods Panel */}
                 <div className="selected-list-panel">
                     <div className="selected-panel-top">
@@ -286,15 +341,42 @@ const FoodSearch = () => {
 
                     <div style={{ display: 'flex', gap: '1rem' }}>
                         <ul style={{ flex: 1 }}>
-                            {selectedFoods.map(f => {
+                            {selectedFoods.map((f, i) => {
                                 const key = f.nix_item_id || f.food_name;
                                 return (
-                                    <li key={key} className="selected-item">
+                                    <li
+                                        key={`${key}-${i}`}
+                                        className="selected-item"
+                                        onClick={() => {
+                                            setResults(prev => {
+                                                const exists = prev.some(item => (item.nix_item_id || item.food_name) === key);
+                                                return exists ? prev : [...prev, f];
+                                            });
+                                        }}
+                                    >
                                         <div className="selected-item-inner">
-                                            <span>{f.food_name} <strong>× {f.quantity}</strong></span>
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                                <span>
+                                                    {f.food_name} <strong>× {f.quantity}</strong>
+                                                </span>
+                                            </div>
+
                                             <div className="qty-controls">
                                                 <button onClick={e => { e.stopPropagation(); handleChangeQuantity(key, -1); }}>−</button>
                                                 <button onClick={e => { e.stopPropagation(); handleChangeQuantity(key, 1); }}>+</button>
+
+                                                <input
+                                                    type="number"
+                                                    min="1"
+                                                    placeholder={f.serving_weight_grams ? `${f.serving_weight_grams}g` : 'Khối lượng'}
+                                                    value={f.custom_weight ?? ''}
+                                                    onClick={e => e.stopPropagation()}
+                                                    onChange={e => handleChangeWeight(key, e.target.value)}
+                                                    style={{ width: '70px', padding: '2px 6px', marginLeft: '0.5rem' }}
+                                                />
+
+                                                <span style={{ marginLeft: '0.25rem' }}>(g)</span>
+
                                                 <button
                                                     className="delete-btn"
                                                     title="Xóa"
@@ -314,6 +396,15 @@ const FoodSearch = () => {
                     </div>
 
                     <button className="btn-save-meal" onClick={handleSaveMeal}>Lưu Bữa Ăn</button>
+
+                    {/* Popup hiển thị ở cuối cùng */}
+                    {popup.open && (
+                        <Popup
+                            message={popup.message}
+                            success={popup.success}
+                            onClose={() => setPopup({ ...popup, open: false })}
+                        />
+                    )}
                 </div>
 
 
@@ -337,8 +428,8 @@ const FoodSearch = () => {
 
             {/* Search Results */}
             <div className="search-results">
-                {results.map(food => (
-                    <div key={food.nix_item_id || food.food_name} className="food-card">
+                {results.map((food, i) => (
+                    <div key={`${food.nix_item_id || food.food_name}-${i}`} className="food-card">
                         <h2>{food.food_name}</h2>
                         <p>Calo: {food.nf_calories} kcal</p>
                         <p>Protein: {food.nf_protein} g</p>
@@ -351,6 +442,7 @@ const FoodSearch = () => {
                 ))}
             </div>
 
+
             {/* Existing Foods Table */}
             <div className="existing-foods-table-container">
                 <h3 className="panel-header">Món có sẵn</h3>
@@ -359,8 +451,7 @@ const FoodSearch = () => {
                         <tr><th>Description</th><th>Source</th></tr>
                     </thead>
                     <tbody>
-                        {existingFoods.map(item => (
-                            // Ví dụ trong FoodSearch.jsx
+                        {uniqueFoods.map(item => (
                             <tr
                                 key={item.id}
                                 className={`existing-food-row${selectedDescription === item.ten_mon ? ' selected' : ''}`}
@@ -369,12 +460,10 @@ const FoodSearch = () => {
                                 <td>{item.ten_mon}</td>
                                 <td>NCDB</td>
                             </tr>
-
                         ))}
                     </tbody>
                 </table>
             </div>
-
         </div>
     );
 };

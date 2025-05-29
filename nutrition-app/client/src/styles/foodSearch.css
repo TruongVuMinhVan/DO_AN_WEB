@@ -309,6 +309,21 @@
     background: #ffffff;
     border-radius: 0.5rem;
     box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    opacity: 0;
+    transform: translateY(-10px);
+    animation: fadeSlideIn 0.3s ease forwards;
+    transition: box-shadow 0.2s ease;
+}
+
+@keyframes fadeSlideIn {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.food-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .add-food-btn {
@@ -325,7 +340,12 @@
     align-items: center;
     justify-content: center;
     cursor: pointer;
+    transition: background-color 0.2s ease;
 }
+
+    .add-food-btn:hover {
+        background-color: #0e9b6d;
+    }
 
 .history-dropdown {
     position: absolute;
@@ -355,12 +375,12 @@
 }
 
     .history-delete-btn:hover {
-        background-color: rgba(255, 255, 255, 0.2); 
+        background-color: rgba(255, 255, 255, 0.2);
     }
 
 .history-item {
     display: flex;
-    justify-content: space-between; /* đảm bảo span và button về 2 bên */
+    justify-content: space-between;
     align-items: center;
     padding: 0.5rem;
     cursor: pointer;
@@ -371,13 +391,14 @@
     }
 
 .chart-panel {
-    grid-column: 8 / span 1; 
+    grid-column: 8 / span 1;
     grid-row: 1 / span 7;
     padding: 1rem;
     border-left: 1px solid #cbd5e1;
     background: #ffffff;
     border-radius: 0.5rem;
 }
+
 
 /* trong src/styles/foodSearch.css */
 

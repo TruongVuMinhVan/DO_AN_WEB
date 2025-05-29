@@ -1,0 +1,71 @@
+/* Popup.css */
+
+.popup-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    animation: fadeIn 0.3s ease;
+}
+
+.popup-box {
+    background: white;
+    padding: 2rem;
+    border-radius: 10px;
+    min-width: 300px;
+    text-align: center;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+    transform: scale(0.7);
+    animation: popupZoom 0.3s ease forwards;
+    opacity: 0;
+}
+
+    .popup-box.success {
+        border: 2px solid green;
+    }
+
+    .popup-box.error {
+        border: 2px solid red;
+    }
+
+    .popup-box button {
+        margin-top: 1rem;
+        padding: 0.5rem 1rem;
+        background: #007bff;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+        .popup-box button:hover {
+            background: #0056b3;
+        }
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes popupZoom {
+    0% {
+        transform: scale(0.7);
+        opacity: 0;
+    }
+
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
