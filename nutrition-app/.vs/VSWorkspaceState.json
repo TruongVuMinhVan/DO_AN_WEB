@@ -2,8 +2,10 @@
   "ExpandedNodes": [
     "",
     "\\client",
-    "\\client\\src"
+    "\\client\\src",
+    "\\client\\src\\styles",
+    "\\server\\routes"
   ],
-  "SelectedNode": "\\server",
+  "SelectedNode": "\\client\\src\\styles\\foodSearch.css",
   "PreviewInSolutionExplorer": false
 }

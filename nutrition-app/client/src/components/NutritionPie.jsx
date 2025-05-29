@@ -32,10 +32,10 @@ const NutritionPie = ({ data }) => {
                 {
                     data: [calories, protein, carbs, fat],
                     backgroundColor: [
+                        '#f97316', // orange
                         '#10b981', // green
                         '#3b82f6', // blue
-                        '#facc15', // yellow
-                        '#f97316'  // orange
+                        '#facc15'  // yellow
                     ],
                     hoverOffset: 1
                 }

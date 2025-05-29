@@ -28,6 +28,7 @@ app.get("/test-db", (req, res) => {
         res.json({ status: "success", result: result[0].result });
     });
 });
+
 // ✅ Dùng routes/user.js
 app.use('/api', userRoutes);
 

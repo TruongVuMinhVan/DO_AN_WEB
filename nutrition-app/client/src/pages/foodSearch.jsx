@@ -3,7 +3,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSearch, faPlus, faTrash, faXmark, faChevronLeft, faChevronRight } from '@fortawesome/free-solid-svg-icons';
+import { faSearch, faPlus, faMinus, faTrash, faXmark, faChevronLeft, faChevronRight } from '@fortawesome/free-solid-svg-icons';
 import { searchFood } from '../api/food';
 import NutritionPie from '../components/NutritionPie';
 import '../styles/foodSearch.css';
@@ -13,7 +13,37 @@ import "react-datepicker/dist/react-datepicker.css";
 //Import cảnh báo popup
 import Popup from '../components/Popup';
 
+function scaleNutrition(food) {
+    const weight = Number(food.custom_weight);
+    const baseWeight = food.serving_weight_grams || 100;
 
+    if (!weight || weight <= 0 || !baseWeight) return food;
+
+    const ratio = weight / baseWeight;
+
+    return {
+        ...food,
+        nf_calories: Number((food.nf_calories * ratio).toFixed(2)),
+        nf_protein: Number((food.nf_protein * ratio).toFixed(2)),
+        nf_total_carbohydrate: Number((food.nf_total_carbohydrate * ratio).toFixed(2)),
+        nf_total_fat: Number((food.nf_total_fat * ratio).toFixed(2)),
+    };
+}
+
+function normalizeTo100g(food) {
+    const gram = food.serving_weight_grams || 100;
+
+    const ratio = 100 / gram;
+
+    return {
+        ...food,
+        nf_calories: Number((food.nf_calories * ratio).toFixed(2)),
+        nf_protein: Number((food.nf_protein * ratio).toFixed(2)),
+        nf_total_carbohydrate: Number((food.nf_total_carbohydrate * ratio).toFixed(2)),
+        nf_total_fat: Number((food.nf_total_fat * ratio).toFixed(2)),
+        serving_weight_grams: 100 // chuẩn hóa luôn về 100g
+    };
+}
 const FoodSearch = () => {
     const [q, setQ] = useState('');
     const [results, setResults] = useState([]);
@@ -30,6 +60,9 @@ const FoodSearch = () => {
     const navigate = useNavigate();
     const token = localStorage.getItem('token');
 
+    const handleShowDetail = (food) => {
+        setDetail(food);
+    };
     // 1) Redirect nếu không có token
     useEffect(() => {
         if (!token) navigate('/login');
@@ -68,21 +101,24 @@ const FoodSearch = () => {
     // 5) Recompute totals khi selectedFoods thay đổi
     useEffect(() => {
         const sums = selectedFoods.reduce((acc, f) => {
-            const baseGram = f.serving_weight_grams ?? 100;
-            const usedGram = f.custom_weight ?? baseGram;
-            const ratio = usedGram / baseGram;
+            const usedGram = f.custom_weight ?? 100;
+            const quantity = f.quantity ?? 1;
 
-            const caloPerCustom = (f.nf_calories || 0) * ratio;
-            const proteinPerCustom = (f.nf_protein || 0) * ratio;
-            const carbsPerCustom = (f.nf_total_carbohydrate || 0) * ratio;
-            const fatPerCustom = (f.nf_total_fat || 0) * ratio;
+            // Đưa về dữ liệu gốc 100g (nếu dữ liệu từ API là theo 189g chẳng hạn)
+            const gramPerServing = f.serving_weight_grams || 100;
 
-            const count = f.quantity ?? 1;
+            const caloPer100g = (f.nf_calories || 0) / gramPerServing * 100;
+            const proteinPer100g = (f.nf_protein || 0) / gramPerServing * 100;
+            const carbPer100g = (f.nf_total_carbohydrate || 0) / gramPerServing * 100;
+            const fatPer100g = (f.nf_total_fat || 0) / gramPerServing * 100;
+
+            const factor = usedGram * quantity / 100;
+
             return {
-                calories: acc.calories + caloPerCustom * count,
-                protein: acc.protein + proteinPerCustom * count,
-                carbs: acc.carbs + carbsPerCustom * count,
-                fat: acc.fat + fatPerCustom * count,
+                calories: acc.calories + caloPer100g * factor,
+                protein: acc.protein + proteinPer100g * factor,
+                carbs: acc.carbs + carbPer100g * factor,
+                fat: acc.fat + fatPer100g * factor,
             };
         }, { calories: 0, protein: 0, carbs: 0, fat: 0 });
 
@@ -100,14 +136,36 @@ const FoodSearch = () => {
         const fetchMealByDate = async () => {
             const dateStr = selectedDate.toISOString().slice(0, 10);
             try {
-                const res = await axios.get('/api/meals', {
+                // 1) Lấy danh sách món từ lịch sử
+                const { data } = await axios.get('/api/meals', {
                     headers: { Authorization: `Bearer ${token}` },
                     params: { date: dateStr }
                 });
-                setSelectedFoods((res.data.items || []).map(f => ({
-                    ...f,
-                    quantity: f.quantity ?? 1
-                })));
+                // data.items = [ { food_name, quantity, custom_weight } ]
+
+                // 2) Fetch dinh dưỡng cho từng món
+                const enriched = await Promise.all(
+                    data.items.map(async item => {
+                        // Gọi endpoint /api/foods/fetch để lấy dinh dưỡng chuẩn 100g
+                        const res = await axios.post('/api/foods/fetch',
+                            { food_name: item.food_name, weight: 100 },
+                            { headers: { Authorization: `Bearer ${token}` } }
+                        );
+                        return {
+                            ...item,
+                            quantity: item.quantity ?? 1,
+                            custom_weight: item.custom_weight ?? 100,
+                            // trường nutrition từ backend
+                            nf_calories: res.data.nf_calories,
+                            nf_protein: res.data.nf_protein,
+                            nf_total_carbohydrate: res.data.nf_total_carbohydrate,
+                            nf_total_fat: res.data.nf_total_fat,
+                            serving_weight_grams: res.data.serving_weight_grams
+                        };
+                    })
+                );
+
+                setSelectedFoods(enriched);
             } catch {
                 setSelectedFoods([]);
             }
@@ -123,7 +181,7 @@ const FoodSearch = () => {
         setShowDropdown(false);
         try {
             const foods = await searchFood(q);
-            setResults(foods);
+            setResults(foods.map(normalizeTo100g));
             // Cập nhật lịch sử, loại trùng
             await axios.post('/api/history', { query: q }, { headers: { Authorization: `Bearer ${token}` } });
             setHistory(h => {
@@ -185,32 +243,42 @@ const FoodSearch = () => {
 
     // 12) Lưu bữa ăn
     const handleSaveMeal = async () => {
-        if (!selectedFoods.length) return setPopup({ open: true, message: 'Chưa có món nào để lưu!', success: false });
+        if (!selectedFoods.length) {
+            return setPopup({ open: true, message: 'Chưa có món nào để lưu!', success: false });
+        }
 
         const dateStr = selectedDate.toISOString().slice(0, 10);
-        const { data } = await axios.get('/api/meals', {
-            headers: { Authorization: `Bearer ${token}` },
-            params: { date: dateStr }
-        });
-
-        const method = data.items.length ? 'put' : 'post';
-        const url = '/api/meals';
-        const payload = {
-            date: dateStr,
-            items: selectedFoods.map(f => ({
-                food_name: f.food_name,
-                quantity: f.quantity ?? 1,
-                custom_weight: f.custom_weight,
-                nix_item_id: f.nix_item_id,
-                nf_calories: f.nf_calories,
-                nf_protein: f.nf_protein,
-                nf_total_carbohydrate: f.nf_total_carbohydrate,
-                nf_total_fat: f.nf_total_fat,
-            }))
-        };
 
         try {
-            const res = await axios[method](url, payload, { headers: { Authorization: `Bearer ${token}` } });
+            const { data } = await axios.get('/api/meals', {
+                headers: { Authorization: `Bearer ${token}` },
+                params: { date: dateStr }
+            });
+
+            const method = data.items.length ? 'put' : 'post';
+            const url = '/api/meals';
+
+            const payload = {
+                date: dateStr,
+                items: selectedFoods.map(f => {
+                    const scaled = scaleNutrition(f);
+                    return {
+                        food_name: scaled.food_name,
+                        quantity: scaled.quantity ?? 1,
+                        custom_weight: scaled.custom_weight,
+                        nix_item_id: scaled.nix_item_id,
+                        nf_calories: scaled.nf_calories,
+                        nf_protein: scaled.nf_protein,
+                        nf_total_carbohydrate: scaled.nf_total_carbohydrate,
+                        nf_total_fat: scaled.nf_total_fat,
+                    };
+                })
+            };
+
+            const res = await axios[method](url, payload, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+
             setPopup({ open: true, message: res.data.message, success: true });
         } catch {
             setPopup({ open: true, message: '❌ Không thể lưu! Vui lòng thử lại.', success: false });
@@ -222,11 +290,27 @@ const FoodSearch = () => {
         setSelectedDescription(name);
         setQ(name);
         setShowDropdown(false);
+
+        // 1) tìm món
+        const selected = existingFoods.find(item => item.ten_mon === name);
+        if (!selected) return;
+
+        // 2) Gọi backend của bạn (PUT /api/foods/fetch) để fetch nutrition 100g
         try {
-            const foods = await searchFood(name);
-            setResults(foods);
+            const { data: apiFood } = await axios.post(
+                '/api/foods/fetch',
+                { food_name: selected.ten_mon, weight: 100 },
+                { headers: { Authorization: `Bearer ${token}` } }
+            );
+            // apiFood = { food_name, serving_weight_grams:100, nf_calories, nf_protein, ... }
+
+            setResults(prev => {
+                const key = apiFood.food_name;
+                if (prev.some(f => (f.nix_item_id || f.food_name) === key)) return prev;
+                return [apiFood, ...prev];
+            });
         } catch (err) {
-            console.error('Lỗi Nutritionix:', err);
+            console.error('Fetch nutritionix failed', err);
         }
     };
 
@@ -250,7 +334,7 @@ const FoodSearch = () => {
 
     // 16) Lọc món trùng tên
     const uniqueFoods = existingFoods
-        .filter(i => i.ten_mon)               
+        .filter(i => i.ten_mon)
         .reduce((acc, item) => {
             const key = item.ten_mon.trim().toLowerCase();
             if (!acc.map.has(key)) {
@@ -299,11 +383,18 @@ const FoodSearch = () => {
                 {showDropdown && filteredHistory.length > 0 && results.length === 0 && (
                     <ul className="history-dropdown">
                         {filteredHistory.map(item => (
-                            <li key={item.id} className="history-item" onClick={() => handleSelectHistory(item)}>
+                            <li
+                                key={item.id}
+                                className="history-item"
+                                onClick={() => handleSelectHistory(item)}
+                            >
                                 <span>{item.query}</span>
                                 <button
                                     className="history-delete-btn"
-                                    onClick={e => { e.stopPropagation(); handleDeleteHistory(item.id); }}
+                                    onClick={e => {
+                                        e.stopPropagation();
+                                        handleDeleteHistory(item.id);
+                                    }}
                                     title="Xóa khỏi lịch sử"
                                 >
                                     <FontAwesomeIcon icon={faXmark} />
@@ -325,79 +416,108 @@ const FoodSearch = () => {
                             <button onClick={handlePrevDay} className="date-nav-btn">
                                 <FontAwesomeIcon icon={faChevronLeft} />
                             </button>
-
                             <DatePicker
                                 selected={selectedDate}
                                 onChange={date => setSelectedDate(date)}
                                 dateFormat="dd/MM/yyyy"
                                 className="date-input"
                             />
-
                             <button onClick={handleNextDay} className="date-nav-btn">
                                 <FontAwesomeIcon icon={faChevronRight} />
                             </button>
                         </div>
                     </div>
 
-                    <div style={{ display: 'flex', gap: '1rem' }}>
-                        <ul style={{ flex: 1 }}>
-                            {selectedFoods.map((f, i) => {
-                                const key = f.nix_item_id || f.food_name;
-                                return (
-                                    <li
-                                        key={`${key}-${i}`}
-                                        className="selected-item"
-                                        onClick={() => {
-                                            setResults(prev => {
-                                                const exists = prev.some(item => (item.nix_item_id || item.food_name) === key);
-                                                return exists ? prev : [...prev, f];
-                                            });
-                                        }}
-                                    >
-                                        <div className="selected-item-inner">
-                                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                                                <span>
-                                                    {f.food_name} <strong>× {f.quantity}</strong>
-                                                </span>
-                                            </div>
-
-                                            <div className="qty-controls">
-                                                <button onClick={e => { e.stopPropagation(); handleChangeQuantity(key, -1); }}>−</button>
-                                                <button onClick={e => { e.stopPropagation(); handleChangeQuantity(key, 1); }}>+</button>
-
-                                                <input
-                                                    type="number"
-                                                    min="1"
-                                                    placeholder={f.serving_weight_grams ? `${f.serving_weight_grams}g` : 'Khối lượng'}
-                                                    value={f.custom_weight ?? ''}
-                                                    onClick={e => e.stopPropagation()}
-                                                    onChange={e => handleChangeWeight(key, e.target.value)}
-                                                    style={{ width: '70px', padding: '2px 6px', marginLeft: '0.5rem' }}
-                                                />
-
-                                                <span style={{ marginLeft: '0.25rem' }}>(g)</span>
-
-                                                <button
-                                                    className="delete-btn"
-                                                    title="Xóa"
-                                                    onClick={e => {
-                                                        e.stopPropagation();
-                                                        setSelectedFoods(prev => prev.filter(x => (x.nix_item_id || x.food_name) !== key));
-                                                    }}
-                                                >
-                                                    <FontAwesomeIcon icon={faTrash} />
-                                                </button>
-                                            </div>
+                    <ul className="selected-foods-list">
+                        {selectedFoods.map((f, i) => {
+                            const key = f.nix_item_id || f.food_name;
+                            return (
+                                <li
+                                    key={`${key}-${i}`}
+                                    className="selected-item"
+                                    onClick={() => {
+                                        setResults(prev => {
+                                            const exists = prev.some(
+                                                item => (item.nix_item_id || item.food_name) === key
+                                            );
+                                            return exists ? prev : [f, ...prev];
+                                        });
+                                    }}
+                                >
+                                    <div className="selected-item-inner">
+                                        <div
+                                            style={{
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                gap: '0.5rem'
+                                            }}
+                                        >
+                                            <span>
+                                                {f.food_name} <strong>× {f.quantity}</strong> (
+                                                {f.custom_weight ?? f.serving_weight_grams ?? 100}g)
+                                            </span>
                                         </div>
-                                    </li>
-                                );
-                            })}
-                        </ul>
-                    </div>
 
-                    <button className="btn-save-meal" onClick={handleSaveMeal}>Lưu Bữa Ăn</button>
+                                        <div className="qty-controls">
+                                            <button
+                                                onClick={e => {
+                                                    e.stopPropagation();
+                                                    handleChangeQuantity(key, -1);
+                                                }}
+                                            >
+                                                −
+                                            </button>
+                                            <button
+                                                onClick={e => {
+                                                    e.stopPropagation();
+                                                    handleChangeQuantity(key, 1);
+                                                }}
+                                            >
+                                                +
+                                            </button>
+                                            <input
+                                                type="number"
+                                                min="1"
+                                                placeholder={`${f.serving_weight_grams ?? 100}g`}
+                                                value={f.custom_weight ?? ''}
+                                                onClick={e => e.stopPropagation()}
+                                                onChange={e => handleChangeWeight(key, e.target.value)}
+                                                style={{
+                                                    width: '70px',
+                                                    padding: '2px 6px',
+                                                    marginLeft: '0.5rem'
+                                                }}
+                                            />
+                                            <span style={{ marginLeft: '0.25rem' }}>(g)</span>
+                                            <button
+                                                className="delete-btn"
+                                                onClick={e => {
+                                                    e.stopPropagation();
+                                                    setSelectedFoods(prev =>
+                                                        prev.filter(
+                                                            x =>
+                                                                (x.nix_item_id || x.food_name) !== key
+                                                        )
+                                                    );
+                                                }}
+                                                title="Xóa"
+                                            >
+                                                <FontAwesomeIcon icon={faTrash} />
+                                            </button>
+                                        </div>
+                                    </div>
+                                </li>
+                            );
+                        })}
+                    </ul>
 
-                    {/* Popup hiển thị ở cuối cùng */}
+                    <button
+                        className="btn-save-meal"
+                        onClick={handleSaveMeal}
+                    >
+                        Lưu Bữa Ăn
+                    </button>
+
                     {popup.open && (
                         <Popup
                             message={popup.message}
@@ -407,14 +527,15 @@ const FoodSearch = () => {
                     )}
                 </div>
 
-
-                {/* Totals + Pie Chart */}
+                {/* Totals + Pie */}
                 <div className="totals-panel">
                     <h3 className="panel-header">Tổng dinh dưỡng</h3>
                     {['calories', 'protein', 'carbs', 'fat'].map(n => (
                         <div key={n} className="nutrient-line">
                             <span className={`dot dot-${n}`} />
-                            <span className="nutrient-label">{n.charAt(0).toUpperCase() + n.slice(1)}:</span>
+                            <span className="nutrient-label">
+                                {n.charAt(0).toUpperCase() + n.slice(1)}:
+                            </span>
                             <strong>
                                 {n === 'calories'
                                     ? `${totals[n].toFixed(2)} kcal`
@@ -428,18 +549,47 @@ const FoodSearch = () => {
 
             {/* Search Results */}
             <div className="search-results">
-                {results.map((food, i) => (
-                    <div key={`${food.nix_item_id || food.food_name}-${i}`} className="food-card">
-                        <h2>{food.food_name}</h2>
-                        <p>Calo: {food.nf_calories} kcal</p>
-                        <p>Protein: {food.nf_protein} g</p>
-                        <p>Carbs: {food.nf_total_carbohydrate} g</p>
-                        <p>Fat: {food.nf_total_fat} g</p>
-                        <button className="add-food-btn" onClick={() => handleAddFood(food)} title="Thêm">
-                            <FontAwesomeIcon icon={faPlus} />
-                        </button>
-                    </div>
-                ))}
+                {results.map((food, i) => {
+                    const key = food.nix_item_id || food.food_name;
+                    return (
+                        <div
+                            key={`${key}-${i}`}
+                            className="food-card"
+                        >
+                            <h2>{food.food_name}</h2>
+                            <p>Calo: {food.nf_calories} kcal</p>
+                            <p>Protein: {food.nf_protein} g</p>
+                            <p>Carbs: {food.nf_total_carbohydrate} g</p>
+                            <p>Fat: {food.nf_total_fat} g</p>
+
+                            <div className="food-card-actions">
+                                {/* Nút xóa (−) */}
+                                <button
+                                    className="remove-result-btn"
+                                    title="Xóa khỏi kết quả"
+                                    onClick={() => {
+                                        setResults(prev =>
+                                            prev.filter(item =>
+                                                (item.nix_item_id || item.food_name) !== key
+                                            )
+                                        );
+                                    }}
+                                >
+                                    <FontAwesomeIcon icon={faMinus} />
+                                </button>
+
+                                {/* Nút thêm (+) */}
+                                <button
+                                    className="add-food-btn"
+                                    onClick={() => handleAddFood(food)}
+                                    title="Thêm vào bữa ăn"
+                                >
+                                    <FontAwesomeIcon icon={faPlus} />
+                                </button>
+                            </div>
+                        </div>
+                    );
+                })}
             </div>
 
 
@@ -448,7 +598,10 @@ const FoodSearch = () => {
                 <h3 className="panel-header">Món có sẵn</h3>
                 <table className="existing-foods-table">
                     <thead>
-                        <tr><th>Description</th><th>Source</th></tr>
+                        <tr>
+                            <th>Description</th>
+                            <th>Source</th>
+                        </tr>
                     </thead>
                     <tbody>
                         {uniqueFoods.map(item => (
@@ -466,6 +619,7 @@ const FoodSearch = () => {
             </div>
         </div>
     );
+
 };
 
 export default FoodSearch;

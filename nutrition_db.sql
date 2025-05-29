@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Máy chủ: 127.0.0.1
--- Thời gian đã tạo: Th5 22, 2025 lúc 10:14 AM
+-- Thời gian đã tạo: Th5 29, 2025 lúc 08:57 AM
 -- Phiên bản máy phục vụ: 10.4.32-MariaDB
 -- Phiên bản PHP: 8.0.30
 
@@ -26,6 +26,8 @@ SET time_zone = "+00:00";
 --
 -- Cấu trúc bảng cho bảng `bua_an`
 --
+CREATE DATABASE nutrition_db;
+USE nutrition_db;
 
 CREATE TABLE `bua_an` (
   `id` int(11) NOT NULL,
@@ -38,7 +40,7 @@ CREATE TABLE `bua_an` (
 --
 
 INSERT INTO `bua_an` (`id`, `user_id`, `date`) VALUES
-(22, 29, '2025-05-30 00:00:00');
+(80, 29, '2025-05-29 00:00:00');
 
 -- --------------------------------------------------------
 
@@ -77,15 +79,15 @@ CREATE TABLE `lich_su_bua_an` (
   `id` int(11) NOT NULL,
   `user_id` int(11) DEFAULT NULL,
   `danh_sach_bua_an` text DEFAULT NULL,
-  `thoi_gian` datetime DEFAULT NULL
+  `date` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Đang đổ dữ liệu cho bảng `lich_su_bua_an`
 --
 
-INSERT INTO `lich_su_bua_an` (`id`, `user_id`, `danh_sach_bua_an`, `thoi_gian`) VALUES
-(7, 29, '[{\"food_name\":\"egg\",\"quantity\":1,\"calo\":71.5,\"protein\":6.28,\"carb\":0.36,\"fat\":4.76}]', '2025-05-30 00:00:00');
+INSERT INTO `lich_su_bua_an` (`id`, `user_id`, `danh_sach_bua_an`, `date`) VALUES
+(28, 29, '[{\"food_name\":\"apple\",\"quantity\":2,\"custom_weight\":100}]', '2025-05-29 00:00:00');
 
 -- --------------------------------------------------------
 
@@ -105,9 +107,10 @@ CREATE TABLE `lich_su_tim_kiem` (
 --
 
 INSERT INTO `lich_su_tim_kiem` (`id`, `user_id`, `query`, `created_at`) VALUES
-(1, 29, 'Chicken Breast cooked', '2025-05-19 14:20:27'),
-(2, 29, 'Chicken Breast cook', '2025-05-19 14:20:35'),
-(3, 29, 'apple', '2025-05-19 15:57:41');
+(5, 29, 'pho', '2025-05-28 06:35:09'),
+(6, 29, '200g rice', '2025-05-28 08:47:05'),
+(7, 32, '100000g chicken', '2025-05-28 08:50:56'),
+(8, 29, '100g chicken breast raw', '2025-05-28 16:50:57');
 
 -- --------------------------------------------------------
 
@@ -130,21 +133,25 @@ INSERT INTO `mon_an` (`id`, `ten_mon`) VALUES
 (6, 'Chicken Breast, Raw'),
 (7, 'Egg, Whole, Raw'),
 (10, 'chicken breast raw'),
-(11, 'egg'),
 (12, 'apple'),
 (13, 'Big Mac'),
 (14, 'Egg McMuffin'),
-(15, 'Chicken McNuggets (10 piece)'),
 (16, 'Filet-O-Fish'),
 (17, 'McChicken'),
-(18, 'Quarter Pounder with Cheese'),
 (19, 'Sausage McMuffin'),
 (20, 'Hotcakes'),
 (21, 'Hash Browns'),
 (22, 'McFlurry with M&M\'s Candies'),
 (23, 'mcmuffin'),
 (24, 'sausage'),
-(25, 'chicken mcnuggets');
+(25, 'chicken mcnuggets'),
+(27, NULL),
+(28, NULL),
+(29, NULL),
+(30, NULL),
+(31, NULL),
+(32, NULL),
+(33, NULL);
 
 -- --------------------------------------------------------
 
@@ -156,15 +163,16 @@ CREATE TABLE `mon_an_bua_an` (
   `id` int(11) NOT NULL,
   `bua_an_id` int(11) NOT NULL,
   `mon_an_id` int(11) NOT NULL,
-  `quantity` int(11) NOT NULL DEFAULT 1
+  `quantity` int(11) NOT NULL DEFAULT 1,
+  `custom_weight` float DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Đang đổ dữ liệu cho bảng `mon_an_bua_an`
 --
 
-INSERT INTO `mon_an_bua_an` (`id`, `bua_an_id`, `mon_an_id`, `quantity`) VALUES
-(25, 22, 11, 1);
+INSERT INTO `mon_an_bua_an` (`id`, `bua_an_id`, `mon_an_id`, `quantity`, `custom_weight`) VALUES
+(96, 80, 12, 2, 100);
 
 -- --------------------------------------------------------
 
@@ -227,7 +235,30 @@ CREATE TABLE `thong_tin_dinh_duong` (
 --
 
 INSERT INTO `thong_tin_dinh_duong` (`id`, `mon_an_id`, `calo`, `protein`, `carb`, `fat`) VALUES
-(11, 11, 71.5, 6.28, 0.36, 4.76);
+(30, 12, 94.64, 0.47, 25.13, 0.31);
+
+-- --------------------------------------------------------
+
+--
+-- Cấu trúc bảng cho bảng `thong_tin_dinh_duong_bua_an`
+--
+
+CREATE TABLE `thong_tin_dinh_duong_bua_an` (
+  `id` int(11) NOT NULL,
+  `bua_an_id` int(11) DEFAULT NULL,
+  `mon_an_id` int(11) DEFAULT NULL,
+  `calo` float DEFAULT NULL,
+  `protein` float DEFAULT NULL,
+  `carb` float DEFAULT NULL,
+  `fat` float DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Đang đổ dữ liệu cho bảng `thong_tin_dinh_duong_bua_an`
+--
+
+INSERT INTO `thong_tin_dinh_duong_bua_an` (`id`, `bua_an_id`, `mon_an_id`, `calo`, `protein`, `carb`, `fat`) VALUES
+(17, 80, 12, 189.28, 0.94, 50.26, 0.62);
 
 -- --------------------------------------------------------
 
@@ -269,9 +300,10 @@ CREATE TABLE `user` (
 --
 
 INSERT INTO `user` (`id`, `name`, `email`, `password`, `age`, `weight`, `height`, `avatarUrl`, `gender`, `goal`, `allergies`) VALUES
-(29, 'TRUONG VU MINH VAN', 'sieumc1990@gmail.com', '$2b$10$RwFUFSy.VyJ/0OBhGP8EN.loHGnBKUWbdLhM9UJFnDVVESWPWAk4y', 13, 0, 0, '/avatars/avatar_29.jpg', 'male', '', ''),
+(29, 'TRUONG VU MINH VAN', 'sieumc1990@gmail.com', '$2b$10$RwFUFSy.VyJ/0OBhGP8EN.loHGnBKUWbdLhM9UJFnDVVESWPWAk4y', 32, 51, 189, '/avatars/avatar_29.jpg', 'male', '', ''),
 (30, 'VO NGUYEN MINH NHAT', 'minhnhat2611@gmail.com', '$2b$10$UsMqLI04hwDRBBIYKPHnHOtG/G9ZHxiUPF4tFpcHyPm1.YqKs1k0q', 16, 12, 13, '/avatars/default.png', 'male', NULL, NULL),
-(31, 'NGUYEN QUOC TUAN', 'quoctuan333@gmail.com', '$2b$10$eXhocazmku7XrGAOtaacju91iwEApfxeJuh5ouBTh4YA2SERtKjTS', 51, 51, 51, '/avatars/default.png', 'male', NULL, NULL);
+(31, 'NGUYEN QUOC TUAN', 'quoctuan333@gmail.com', '$2b$10$eXhocazmku7XrGAOtaacju91iwEApfxeJuh5ouBTh4YA2SERtKjTS', 51, 51, 51, '/avatars/default.png', 'male', NULL, NULL),
+(32, 'Nguyen Quoc Tuan', 'tuannq2209@gmail.com', '$2b$10$xWEFuWFhGSVcbi/rM2uH6O1G4I57qPDGNe1rWgRbc1SAh/nvxvuWe', 22, 61, 170, '/avatars/avatar_32.jpg', 'male', NULL, NULL);
 
 --
 -- Chỉ mục cho các bảng đã đổ
@@ -357,6 +389,14 @@ ALTER TABLE `thong_tin_dinh_duong`
   ADD KEY `mon_an_id` (`mon_an_id`);
 
 --
+-- Chỉ mục cho bảng `thong_tin_dinh_duong_bua_an`
+--
+ALTER TABLE `thong_tin_dinh_duong_bua_an`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `bua_an_id` (`bua_an_id`),
+  ADD KEY `mon_an_id` (`mon_an_id`);
+
+--
 -- Chỉ mục cho bảng `thuc_don`
 --
 ALTER TABLE `thuc_don`
@@ -378,7 +418,7 @@ ALTER TABLE `user`
 -- AUTO_INCREMENT cho bảng `bua_an`
 --
 ALTER TABLE `bua_an`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=81;
 
 --
 -- AUTO_INCREMENT cho bảng `goi_y_mon_an`
@@ -396,25 +436,25 @@ ALTER TABLE `ke_hoach_dinh_duong`
 -- AUTO_INCREMENT cho bảng `lich_su_bua_an`
 --
 ALTER TABLE `lich_su_bua_an`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=29;
 
 --
 -- AUTO_INCREMENT cho bảng `lich_su_tim_kiem`
 --
 ALTER TABLE `lich_su_tim_kiem`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT cho bảng `mon_an`
 --
 ALTER TABLE `mon_an`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=26;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=34;
 
 --
 -- AUTO_INCREMENT cho bảng `mon_an_bua_an`
 --
 ALTER TABLE `mon_an_bua_an`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=26;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=97;
 
 --
 -- AUTO_INCREMENT cho bảng `phan_tich_dinh_duong`
@@ -432,7 +472,13 @@ ALTER TABLE `thong_ke_dinh_duong`
 -- AUTO_INCREMENT cho bảng `thong_tin_dinh_duong`
 --
 ALTER TABLE `thong_tin_dinh_duong`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=31;
+
+--
+-- AUTO_INCREMENT cho bảng `thong_tin_dinh_duong_bua_an`
+--
+ALTER TABLE `thong_tin_dinh_duong_bua_an`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
 
 --
 -- AUTO_INCREMENT cho bảng `thuc_don`
@@ -444,7 +490,7 @@ ALTER TABLE `thuc_don`
 -- AUTO_INCREMENT cho bảng `user`
 --
 ALTER TABLE `user`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=32;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=33;
 
 --
 -- Các ràng buộc cho các bảng đã đổ
@@ -512,6 +558,13 @@ ALTER TABLE `thong_ke_dinh_duong`
 --
 ALTER TABLE `thong_tin_dinh_duong`
   ADD CONSTRAINT `thong_tin_dinh_duong_ibfk_1` FOREIGN KEY (`mon_an_id`) REFERENCES `mon_an` (`id`);
+
+--
+-- Các ràng buộc cho bảng `thong_tin_dinh_duong_bua_an`
+--
+ALTER TABLE `thong_tin_dinh_duong_bua_an`
+  ADD CONSTRAINT `thong_tin_dinh_duong_bua_an_ibfk_1` FOREIGN KEY (`bua_an_id`) REFERENCES `bua_an` (`id`),
+  ADD CONSTRAINT `thong_tin_dinh_duong_bua_an_ibfk_2` FOREIGN KEY (`mon_an_id`) REFERENCES `mon_an` (`id`);
 
 --
 -- Các ràng buộc cho bảng `thuc_don`

@@ -63,7 +63,7 @@
 
 .totals-panel {
     grid-column: 5 / span 3;
-    grid-row: 1 / span 7; 
+    grid-row: 1 / span 7;
     padding: 1rem;
     background: #d1fae5;
     border: 1px solid #a7f3d0;
@@ -190,12 +190,12 @@
 .panel-title {
     margin: 0;
     padding: 0.75rem 1rem;
-    background: #cffafe; 
-    color: #025e68; 
+    background: #cffafe;
+    color: #025e68;
     font-size: 1.125rem;
     font-weight: 650;
     border-bottom: 0.5px solid #a5f3fc;
-    border-radius: 0.5rem 0.5rem 0.5rem 0.5rem; 
+    border-radius: 0.5rem 0.5rem 0.5rem 0.5rem;
 }
 
 .panel-header {
@@ -315,6 +315,14 @@
     transition: box-shadow 0.2s ease;
 }
 
+.food-card-actions {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    display: flex;
+    gap: 0.5rem;
+}
+
 @keyframes fadeSlideIn {
     to {
         opacity: 1;
@@ -345,6 +353,27 @@
 
     .add-food-btn:hover {
         background-color: #0e9b6d;
+    }
+
+.remove-result-btn {
+    position: absolute;
+    top: 3rem;
+    right: 0.75rem;
+    background: #ef4444;
+    color: #fff;
+    border: none;
+    border-radius: 50%;
+    width: 1.75rem;
+    height: 1.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+    .remove-result-btn:hover {
+        background: #dc2626;
     }
 
 .history-dropdown {
@@ -525,5 +554,3 @@
     border-radius: 50%;
     margin-right: 0.5rem;
 }
-
-
