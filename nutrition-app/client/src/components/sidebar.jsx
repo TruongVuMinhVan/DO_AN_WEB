@@ -43,6 +43,12 @@ const Sidebar = ({ collapsed, toggleSidebar }) => {
                     </Link>
                 </li>
                 <li>
+                    <Link to="/physical-info" className="flex items-center gap-2 hover:text-teal-400">
+                        <i className="fas fa-heartbeat"></i> {/* icon phù hợp thể chất */}
+                        {!collapsed && <span>physical</span>}
+                    </Link>
+                </li>
+                <li>
                     <Link to="/report">
                         <i className="fas fa-chart-line" />
                         <span>Reports</span>
@@ -54,6 +60,9 @@ const Sidebar = ({ collapsed, toggleSidebar }) => {
                         <span>Logout</span>
                     </button>
                 </li>
+
+
+
             </ul>
         </div>
     );

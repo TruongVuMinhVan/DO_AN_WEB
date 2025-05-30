@@ -9,11 +9,17 @@ const SignUpPage = () => {
 
     const handleNext = (e) => {
         e.preventDefault();
+
+        // Kiểm tra đơn giản
         if (!formData.name || !formData.email || !formData.password) {
             alert('Vui lòng điền đầy đủ thông tin.');
             return;
         }
+
+        // Lưu tạm thông tin vào localStorage
         localStorage.setItem('signup_basic', JSON.stringify(formData));
+
+        // Điều hướng sang trang nhập thông tin cá nhân
         navigate('/signup-info');
     };
 

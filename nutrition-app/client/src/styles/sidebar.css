@@ -12,6 +12,7 @@
     z-index: 20;
 }
 
+    /* Khi thu gọn */
     .sidebar.collapsed {
         width: 4rem;
     }
@@ -25,9 +26,10 @@
 }
 
     .sidebar-header .title {
-        font-size: 1.5rem;
-        font-weight: bold;
-    }
+    font-size: 1.5rem;
+    font-weight: bold;
+    white-space: nowrap;
+}
 
 .toggle-btn {
     background: none;
@@ -67,22 +69,22 @@
         .menu-list a:hover,
         .menu-list button:hover {
             background: rgba(255,255,255,0.1);
-        }
+}
 
     .menu-list i {
         font-size: 1.25rem;
         margin-right: 1rem;
-    }
+}
 
     .menu-list span {
         transition: opacity 0.3s;
-    }
+}
 
 /* Collapsed */
 .sidebar.collapsed .sidebar-header .title,
 .sidebar.collapsed .menu-list span {
     display: none;
-}
+    }
 
 .sidebar.collapsed .menu-list a,
 .sidebar.collapsed .menu-list button {
@@ -100,6 +102,7 @@
     transition: margin-left 0.3s;
 }
 
+/* Khi sidebar thu gọn */
 .sidebar.collapsed ~ .main-content {
     margin-left: 4rem;
 }

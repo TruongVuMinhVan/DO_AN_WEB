@@ -1,7 +1,7 @@
 ﻿const express = require("express");
 const router = express.Router();
 const db = require("../db");
-const verifyToken = require('../middleware/auth');
+const verifyToken = require('../middleware/auth'); 
 const bcrypt = require('bcrypt');
 const jwt = require("jsonwebtoken");
 const SECRET_KEY = process.env.SECRET_KEY || "your_secret_key";
@@ -21,6 +21,7 @@ router.get("/user", (req, res) => {
 });
 
 // 📝 Đăng ký người dùng
+// POST /api/register
 router.post("/register", async (req, res) => {
     const { name, email, password, age, weight, height, gender } = req.body;
     if (!name || !email || !password || !age || !weight || !height || !gender) {
@@ -44,14 +45,14 @@ router.post("/register", async (req, res) => {
             sql,
             [name, email, hash, age, weight, height, gender, defaultAvatar],
             (err, result) => {
-                if (err) {
-                    console.error("❌ Lỗi khi thêm người dùng:", err.message);
-                    return res.status(500).json({ error: "Đăng ký thất bại.", details: err.message });
-                }
+            if (err) {
+                console.error("❌ Lỗi khi thêm người dùng:", err.message);
+                return res.status(500).json({ error: "Đăng ký thất bại.", details: err.message });
+            }
                 res.status(201).json({
                     message: "Đăng ký thành công!",
                     userId: result.insertId
-                });
+        });
             }
         );
     } catch (e) {

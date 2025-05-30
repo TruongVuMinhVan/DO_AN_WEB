@@ -55,6 +55,7 @@ const Dashboard = () => {
     });
     const weightMap = Object.fromEntries(weightArr.map(w => [w.date, w.weight]));
 
+    // Chuẩn bị dữ liệu cho Chart.js
     const chartData = {
         labels: dates,
         datasets: [
@@ -82,7 +83,9 @@ const Dashboard = () => {
         scales: {
             y: { title: { display: true, text: 'kcal' } },
             y1: {
+                beginAtZero: false,
                 position: 'right',
+                
                 grid: { drawOnChartArea: false },
                 title: { display: true, text: 'kg' }
             }
@@ -101,31 +104,31 @@ const Dashboard = () => {
                             {/* Biểu đồ */}
                             <div className="bg-white rounded-xl shadow p-4 h-96 overflow-x-auto">
                                 <h2 className="font-medium mb-2">Năng lượng &amp; Cân nặng</h2>
-                                <Line data={chartData} options={options} />
-                            </div>
+                            <Line data={chartData} options={options} />
+                        </div>
 
                             {/* Bảng dữ liệu */}
                             <div className="bg-white rounded-xl shadow p-4 overflow-x-auto">
                                 <h2 className="font-medium mb-2">Bảng tổng hợp</h2>
                                 <table className="min-w-full text-center border">
-                                    <thead>
-                                        <tr>
-                                            <th className="border px-4 py-2">Ngày</th>
+                                <thead>
+                                    <tr>
+                                        <th className="border px-4 py-2">Ngày</th>
                                             <th className="border px-4 py-2">Kcal</th>
                                             <th className="border px-4 py-2">Kg</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
+                                    </tr>
+                                </thead>
+                                <tbody>
                                         {dates.map((d, i) => (
                                             <tr key={i}>
                                                 <td className="border px-4 py-2">{d}</td>
                                                 <td className="border px-4 py-2">{energyMap[d] || 0}</td>
                                                 <td className="border px-4 py-2">{weightMap[d]}</td>
-                                            </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
-                            </div>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
                         </>
                     )
                 }

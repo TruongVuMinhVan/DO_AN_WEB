@@ -13,12 +13,12 @@ const db = mysql.createPool({
 
 // Test kết nối một lần khi khởi động
 db.getConnection((err, connection) => {
-    if (err) {
+  if (err) {
         console.error('❌ Kết nối MySQL thất bại:', err.message);
-    } else {
+  } else {
         console.log('✅ Đã kết nối MySQL thành công!');
         connection.release();
-    }
+  }
 });
 
 module.exports = db;

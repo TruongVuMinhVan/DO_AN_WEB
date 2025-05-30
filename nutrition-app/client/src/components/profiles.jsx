@@ -123,30 +123,30 @@ const Profile = () => {
         <div className="profile-container">
             {/* LEFT: Form hồ sơ */}
             <div className="profile-left">
-                <div className="profile-header">
+            <div className="profile-header">
                     <h2 className="profile-title">Cập nhật hồ sơ</h2>
-                    <button
-                        onClick={togglePwdForm}
-                        className="repeat-btn"
+                <button
+                    onClick={togglePwdForm}
+                    className="repeat-btn"
                         title={showPwdForm ? 'Huỷ đổi mật khẩu' : 'Đổi mật khẩu'}
-                    >
-                        <FontAwesomeIcon icon={faRepeat} />
-                    </button>
-                </div>
+                >
+                    <FontAwesomeIcon icon={faRepeat} />
+                </button>
+            </div>
 
-                <form onSubmit={saveProfile} className="profile-form">
+            <form onSubmit={saveProfile} className="profile-form">
                     <input name="name" type="text" placeholder="Họ và tên" value={user.name} onChange={handleChange} className="profile-input" />
 
-                    <input name="email" type="email" placeholder="Email" value={user.email} onChange={handleChange} className="profile-input" />
+                <input name="email" type="email" placeholder="Email" value={user.email} onChange={handleChange} className="profile-input" />
 
                     <input name="age" type="number" placeholder="Tuổi" value={user.age} onChange={handleChange} className="profile-input" />
 
-                    <select name="gender" value={user.gender} onChange={handleChange} className="profile-input">
+                <select name="gender" value={user.gender} onChange={handleChange} className="profile-input">
                         <option value="">Chọn giới tính</option>
                         <option value="male">Nam</option>
                         <option value="female">Nữ</option>
                         <option value="other">Khác</option>
-                    </select>
+                </select>
 
                     <input name="goal" type="text" placeholder="Mục tiêu sức khoẻ" value={user.goal} onChange={handleChange} className="profile-input" />
 
@@ -163,7 +163,7 @@ const Profile = () => {
                         />
                         <span className="unit-label">kg</span>
                     </div>
-
+                
                     <div className="input-with-unit">
                         <input
                             name="height"
@@ -176,62 +176,62 @@ const Profile = () => {
                         <span className="unit-label">cm</span>
                     </div>
 
-                    {showPwdForm && (
+            {showPwdForm && (
                         <>
                             <h3 className="profile-subtitle">Đổi mật khẩu</h3>
-                            <div className="relative">
-                                <input
-                                    name="oldPassword"
-                                    type={showPwd.old ? 'text' : 'password'}
+                    <div className="relative">
+                        <input
+                            name="oldPassword"
+                            type={showPwd.old ? 'text' : 'password'}
                                     placeholder="Mật khẩu hiện tại"
-                                    value={pwdData.oldPassword}
-                                    onChange={handlePwdChange}
-                                    className="profile-input pr-10"
-                                    required
-                                />
-                                <button
-                                    type="button"
-                                    onClick={() => setShowPwd(prev => ({ ...prev, old: !prev.old }))}
-                                    className="toggle-pwd-btn"
-                                >
-                                    <FontAwesomeIcon icon={showPwd.old ? faEye : faEyeSlash} />
-                                </button>
-                            </div>
-                            <div className="relative">
-                                <input
-                                    name="newPassword"
-                                    type={showPwd.new ? 'text' : 'password'}
+                            value={pwdData.oldPassword}
+                            onChange={handlePwdChange}
+                            className="profile-input pr-10"
+                            required
+                        />
+                        <button
+                            type="button"
+                            onClick={() => setShowPwd(prev => ({ ...prev, old: !prev.old }))}
+                            className="toggle-pwd-btn"
+                        >
+                            <FontAwesomeIcon icon={showPwd.old ? faEye : faEyeSlash} />
+                        </button>
+                    </div>
+                    <div className="relative">
+                        <input
+                            name="newPassword"
+                            type={showPwd.new ? 'text' : 'password'}
                                     placeholder="Mật khẩu mới"
-                                    value={pwdData.newPassword}
-                                    onChange={handlePwdChange}
-                                    className="profile-input pr-10"
-                                    required
-                                />
-                                <button
-                                    type="button"
-                                    onClick={() => setShowPwd(prev => ({ ...prev, new: !prev.new }))}
-                                    className="toggle-pwd-btn"
-                                >
-                                    <FontAwesomeIcon icon={showPwd.new ? faEye : faEyeSlash} />
-                                </button>
-                            </div>
-                            {pwdError && <p className="text-red-500">{pwdError}</p>}
-                            <button type="submit" className="profile-btn btn-password">
-                                <FontAwesomeIcon icon={faSave} className="mr-2" />
+                            value={pwdData.newPassword}
+                            onChange={handlePwdChange}
+                            className="profile-input pr-10"
+                            required
+                        />
+                        <button
+                            type="button"
+                            onClick={() => setShowPwd(prev => ({ ...prev, new: !prev.new }))}
+                            className="toggle-pwd-btn"
+                        >
+                            <FontAwesomeIcon icon={showPwd.new ? faEye : faEyeSlash} />
+                        </button>
+                    </div>
+                    {pwdError && <p className="text-red-500">{pwdError}</p>}
+                    <button type="submit" className="profile-btn btn-password">
+                        <FontAwesomeIcon icon={faSave} className="mr-2" />
                                 Lưu mật khẩu
-                            </button>
+                    </button>
                         </>
-                    )}
+            )}
 
                     <button type="submit" className="profile-btn btn-save">
-                        <FontAwesomeIcon icon={faSave} className="mr-2" />
+                <FontAwesomeIcon icon={faSave} className="mr-2" />
                         Lưu hồ sơ
                     </button>
 
                     <button onClick={deleteAccount} type="button" className="profile-btn btn-delete mt-4">
                         <FontAwesomeIcon icon={faTrashAlt} className="mr-2" />
                         Xoá tài khoản
-                    </button>
+            </button>
                 </form>
             </div>
 
@@ -252,7 +252,7 @@ const Profile = () => {
                     {avatarFile && (
                         <button onClick={saveAvatar} className="btn-avatar-save">
                             Lưu ảnh
-                        </button>
+            </button>
                     )}
                 </div>
 

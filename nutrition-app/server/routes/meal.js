@@ -184,15 +184,15 @@ router.post('/meals', verifyToken, async (req, res) => {
             await db.promise().query(
                 `INSERT INTO thong_tin_dinh_duong_bua_an (bua_an_id, mon_an_id, calo, protein, carb, fat)
                  VALUES (?, ?, ?, ?, ?, ?)`,
-                [
+                        [
                     mealId,
-                    monAnId,
+                            monAnId,
                     nutri.calo * factor,
                     nutri.protein * factor,
                     nutri.carb * factor,
                     nutri.fat * factor
-                ]
-            );
+                        ]
+                    );
 
             lich_su_items.push({ food_name, quantity, custom_weight });
         }
@@ -204,11 +204,11 @@ router.post('/meals', verifyToken, async (req, res) => {
 
         await db.promise().query('COMMIT');
         res.status(201).json({ message: 'Lưu bữa ăn thành công', mealId });
-    } catch (err) {
+                } catch (err) {
         await db.promise().query('ROLLBACK');
         console.error('Lỗi khi lưu bữa ăn:', err);
         res.status(500).json({ message: 'Server error', error: err.message });
-    }
+                }
 });
 
 // PUT /meals - Cập nhật hoặc tạo mới bữa ăn và thông tin dinh dưỡng
@@ -236,12 +236,12 @@ router.put('/meals', verifyToken, async (req, res) => {
                 'UPDATE lich_su_bua_an SET danh_sach_bua_an = ?, `date` = ? WHERE id = ?',
                 [JSON.stringify(simplifiedItems), date + ' 00:00:00', exists.id]
             );
-        } else {
+            } else {
             await db.promise().query(
                 'INSERT INTO lich_su_bua_an (user_id, danh_sach_bua_an, `date`) VALUES (?, ?, ?)',
                 [userId, JSON.stringify(simplifiedItems), date + ' 00:00:00']
             );
-        }
+            }
 
         const [[mealRow]] = await db.promise().query(
             'SELECT id FROM bua_an WHERE user_id = ? AND DATE(`date`) = ?',
@@ -278,7 +278,8 @@ router.put('/meals', verifyToken, async (req, res) => {
 
                 const weightRatio = (weight * quantity) / 100;
 
-                await db.promise().query(
+        // Lưu vào lich_su_bua_an (lúc này items đã có đủ dinh dưỡng)
+        await db.promise().query(
                     `INSERT INTO thong_tin_dinh_duong_bua_an (bua_an_id, mon_an_id, calo, protein, carb, fat)
                      VALUES (?, ?, ?, ?, ?, ?)`,
                     [
@@ -289,7 +290,7 @@ router.put('/meals', verifyToken, async (req, res) => {
                         nutri.carb * weightRatio,
                         nutri.fat * weightRatio
                     ]
-                );
+        );
             }
         }
 
@@ -370,6 +371,71 @@ router.get('/user/profile', verifyToken, async (req, res) => {
         res.status(500).json({ message: 'Server error', error: err.message });
     }
 });
+// Gợi ý món ăn lành mạnh hơn
+router.post('/foods/suggest-healthier', verifyToken, async (req, res) => {
+    const { food_name, currentNutrition, userGoal } = req.body;
+    if (!food_name || !currentNutrition) {
+        return res.status(400).json({ message: 'Thiếu thông tin món ăn hoặc dinh dưỡng hiện tại.' });
+    }
+
+    try {
+        // Gọi Nutritionix để tìm các món tương tự
+        const APP_ID = '54ad9056';
+        const API_KEY = 'fc86a343882b8a1f25a02bbd028f6c1c';
+        const searchRes = await fetch(`https://trackapi.nutritionix.com/v2/search/instant?query=${encodeURIComponent(food_name)}`, {
+            headers: {
+                'x-app-id': APP_ID,
+                'x-app-key': API_KEY
+            }
+        });
+        const searchData = await searchRes.json();
+        const commonFoods = searchData.common.slice(0, 5); // Lấy 5 món tương tự
+
+        const suggestions = [];
+
+        // Gọi dinh dưỡng chi tiết từng món
+        for (const food of commonFoods) {
+            const nutriRes = await fetch(`https://trackapi.nutritionix.com/v2/natural/nutrients`, {
+                method: 'POST',
+                headers: {
+                    'x-app-id': APP_ID,
+                    'x-app-key': API_KEY,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ query: food.food_name })
+            });
+            const nutriData = await nutriRes.json();
+            if (!nutriData.foods || !nutriData.foods.length) continue;
+
+            const f = nutriData.foods[0];
+            const isHealthier =
+                f.nf_calories < currentNutrition.calo &&
+                f.nf_total_fat < currentNutrition.fat &&
+                f.nf_protein >= currentNutrition.protein * 0.8;
+
+            if (isHealthier) {
+                suggestions.push({
+                    food_name: f.food_name,
+                    photo: f.photo?.thumb,
+                    calo: f.nf_calories,
+                    protein: f.nf_protein,
+                    fat: f.nf_total_fat,
+                    carb: f.nf_total_carbohydrate
+                });
+            }
+        }
+
+        if (!suggestions.length) {
+            return res.json({ message: 'Không tìm thấy món thay thế lành mạnh hơn.' });
+        }
+
+        res.json({ suggestions });
+    } catch (err) {
+        console.error('Lỗi khi đề xuất món ăn:', err);
+        res.status(500).json({ message: 'Lỗi server', error: err.message });
+    }
+});
+
 
 module.exports = router;
 

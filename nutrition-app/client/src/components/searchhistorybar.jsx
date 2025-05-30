@@ -17,5 +17,5 @@ const SearchHistoryBar = ({ history, onSelect }) => {
         </ul>
     </div>
 )}
-
+}
 export default SearchHistoryBar;

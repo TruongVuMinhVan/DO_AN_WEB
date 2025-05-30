@@ -6,6 +6,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSearch, faPlus, faMinus, faTrash, faXmark, faChevronLeft, faChevronRight } from '@fortawesome/free-solid-svg-icons';
 import { searchFood } from '../api/food';
 import NutritionPie from '../components/NutritionPie';
+import HealthierFoodSuggestions from '../components/HealthierFoodSuggestions';
 import '../styles/foodSearch.css';
 //Import lịch ngày/tháng/năm
 import DatePicker from "react-datepicker";
@@ -56,6 +57,7 @@ const FoodSearch = () => {
     const [popup, setPopup] = useState({ open: false, message: '', success: true });
     const [showDropdown, setShowDropdown] = useState(false);
     const [selectedDate, setSelectedDate] = useState(new Date());
+    const [autoSuggest, setAutoSuggest] = useState(true);
     const wrapperRef = useRef(null);
     const navigate = useNavigate();
     const token = localStorage.getItem('token');
@@ -129,6 +131,7 @@ const FoodSearch = () => {
             fat: Math.round(sums.fat * 100) / 100,
         });
     }, [selectedFoods]);
+
 
     // 6) Thêm effect để tải các món ăn theo ngày đã chọn
     useEffect(() => {
@@ -213,6 +216,7 @@ const FoodSearch = () => {
             }
             return [...prev, { ...food, quantity: 1 }];
         });
+        setShowDropdown(false);
     };
 
     // 9) Tăng/giảm số lượng đã chọn
@@ -616,6 +620,18 @@ const FoodSearch = () => {
                         ))}
                     </tbody>
                 </table>
+            </div>
+
+            {/* Phần gợi ý món ăn khỏe mạnh */}
+            <div className="suggestions-section">
+                <HealthierFoodSuggestions
+                    selectedFoods={selectedFoods}
+                    totals={totals}
+                    token={token}
+                    onAddFood={handleAddFood}
+                    autoSuggest={autoSuggest}
+                    onToggleAutoSuggest={() => setAutoSuggest((prev) => !prev)}
+                />
             </div>
         </div>
     );

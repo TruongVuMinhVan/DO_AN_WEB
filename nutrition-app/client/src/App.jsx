@@ -13,6 +13,8 @@ import FoodSearch from './pages/foodSearch';
 import Header from './components/Header';
 import Report from './pages/Report';
 import IndexPage from './pages/Index'; // ✅ Trang giới thiệu
+import PhysicalInfo from './pages/physicalInfo';
+import Home from './pages/Home';
 
 // Layout Component chứa Sidebar + Outlet
 const Layout = () => {
@@ -44,7 +46,10 @@ const App = () => {
             <Route path="/signup-info" element={<SignUpInfoPage />} />
 
             {/* Protected Routes */}
-            <Route path="/" element={<Layout />}>
+            <Route path="/app" element={<Layout />}>
+                <Route index element={<Home />} />
+                <Route path="home" element={<Home />} />
+                <Route path="physical-info" element={<PhysicalInfo />} /> {/* ✅ sửa đường dẫn */}
                 <Route path="dashboard" element={<Dashboard />} />
                 <Route path="food" element={<FoodSearch />} />
                 <Route path="charts" element={<Charts />} />
