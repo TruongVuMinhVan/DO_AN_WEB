@@ -46,7 +46,7 @@ const App = () => {
             <Route path="/signup-info" element={<SignUpInfoPage />} />
 
             {/* Protected Routes */}
-            <Route path="/app" element={<Layout />}>
+            <Route path="/" element={<Layout />}>
                 <Route index element={<Home />} />
                 <Route path="home" element={<Home />} />
                 <Route path="physical-info" element={<PhysicalInfo />} /> {/* ✅ sửa đường dẫn */}

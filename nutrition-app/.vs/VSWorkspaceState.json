@@ -3,7 +3,8 @@
     "",
     "\\client",
     "\\client\\src",
-    "\\client\\src\\pages"
+    "\\client\\src\\styles"
   ],
+  "SelectedNode": "\\client\\src\\styles\\foodSearch.css",
   "PreviewInSolutionExplorer": false
 }
