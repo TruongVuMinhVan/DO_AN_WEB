@@ -1,18 +1,18 @@
-﻿const mysql = require("mysql2");
+﻿const mysql = require('mysql2');
 
-const connection = mysql.createConnection({
-    host: "localhost",
-    user: "root",
-    password: "", // XAMPP mặc định là rỗng
-    database: "nutrition_db", // thay bằng tên CSDL của bạn
+const db = mysql.createConnection({
+  host: 'localhost',  // Kiểm tra đúng tên host
+  user: 'root',       // Đảm bảo đúng username
+  password: '',       // Kiểm tra password
+  database: 'nutrition_db'
 });
 
-connection.connect((err) => {
-    if (err) {
-        console.error("❌ Kết nối thất bại:", err.message);
-    } else {
-        console.log("✅ Đã kết nối MySQL thành công!");
-    }
+db.connect((err) => {
+  if (err) {
+    console.error('❌ Kết nối MySQL thất bại:', err);
+  } else {
+    console.log('✅ Đã kết nối MySQL thành công');
+  }
 });
 
-module.exports = connection;
+module.exports = db;

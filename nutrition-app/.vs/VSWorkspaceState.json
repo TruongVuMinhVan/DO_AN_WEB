@@ -3,19 +3,9 @@
     "",
     "\\client",
     "\\client\\src",
-<<<<<<< HEAD
-    "\\client\\src\\components",
-    "\\client\\src\\styles",
-    "\\server",
-    "\\server\\public\\avatars",
-    "\\server\\routes"
-  ],
-  "SelectedNode": "\\client\\src",
-=======
     "\\server",
     "\\server\\routes"
   ],
   "SelectedNode": "\\server\\routes\\food.js",
->>>>>>> f217226a2968b9de084227ab6b12b5c643e17947
   "PreviewInSolutionExplorer": false
 }
