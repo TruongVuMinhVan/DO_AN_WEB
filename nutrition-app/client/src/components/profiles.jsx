@@ -45,7 +45,7 @@ const Profile = () => {
                     avatarUrl: data.avatarUrl || ''
                 });
             })
-            .catch(() => setError('Không tải được hồ sơ'))
+            .catch(() => setError("Failed to load profile"))
             .finally(() => setLoading(false));
     }, [navigate, token]);
 
@@ -55,9 +55,9 @@ const Profile = () => {
         e.preventDefault();
         try {
             await axios.put('/api/profile', user, { headers: { Authorization: `Bearer ${token}` } });
-            alert('✅ Lưu hồ sơ thành công!');
+            alert('✅ Profile saved successfully!');
         } catch {
-            alert('❌ Lưu hồ sơ thất bại!');
+            alert('❌ Failed to save profile!');
         }
     };
 
@@ -81,7 +81,7 @@ const Profile = () => {
                 'Content-Type': 'multipart/form-data'
             }
         });
-        alert('✅ Ảnh đại diện đã được cập nhật!');
+        alert('✅ Avatar updated successfully!');
     };
 
     const togglePwdForm = () => {
@@ -97,78 +97,78 @@ const Profile = () => {
         setPwdError('');
         try {
             await axios.put('/api/profile/password', pwdData, { headers: { Authorization: `Bearer ${token}` } });
-            alert('✅ Đổi mật khẩu thành công!');
+            alert('✅ Password changed successfully!');
             togglePwdForm();
         } catch (err) {
-            setPwdError(err.response?.data?.message || '❌ Đổi mật khẩu thất bại!');
+            setPwdError(err.response?.data?.message || '❌ Failed to change password!');
         }
     };
 
     const deleteAccount = async () => {
-        if (!window.confirm('Bạn có chắc muốn xoá tài khoản? Hành động này không thể hoàn tác.')) return;
+        if (!window.confirm('Are you sure you want to delete your account? This action cannot be undone.')) return;
         try {
             await axios.delete('/api/profile', { headers: { Authorization: `Bearer ${token}` } });
-            alert('✅ Đã xoá tài khoản!');
+            alert('✅ Account deleted successfully!');
             localStorage.removeItem('token');
             navigate('/login');
         } catch {
-            alert('❌ Xoá tài khoản thất bại!');
+            alert('❌ Failed to delete account!');
         }
     };
 
-    if (loading) return <p className="text-center mt-6">⏳ Đang tải...</p>;
+    if (loading) return <p className="text-center mt-6">⏳ Loading...</p>;
     if (error) return <p className="text-center mt-6 text-red-500">{error}</p>;
 
     return (
         <div className="profile-container">
-            {/* LEFT: Form hồ sơ */}
+            {/* LEFT: Profile Form */}
             <div className="profile-left">
-            <div className="profile-header">
-                    <h2 className="profile-title">Cập nhật hồ sơ</h2>
-                <button
-                    onClick={togglePwdForm}
-                    className="repeat-btn"
-                        title={showPwdForm ? 'Huỷ đổi mật khẩu' : 'Đổi mật khẩu'}
-                >
-                    <FontAwesomeIcon icon={faRepeat} />
-                </button>
-            </div>
+                <div className="profile-header">
+                    <h2 className="profile-title">Update Profile</h2>
+                    <button
+                        onClick={togglePwdForm}
+                        className="repeat-btn"
+                        title={showPwdForm ? 'Cancel password change' : 'Change password'}
+                    >
+                        <FontAwesomeIcon icon={faRepeat} />
+                    </button>
+                </div>
 
-            <form onSubmit={saveProfile} className="profile-form">
-                    <input name="name" type="text" placeholder="Họ và tên" value={user.name} onChange={handleChange} className="profile-input" />
+                <form onSubmit={saveProfile} className="profile-form">
+                    <input name="name" type="text" placeholder="Full Name" value={user.name} onChange={handleChange} className="profile-input" />
 
-                <input name="email" type="email" placeholder="Email" value={user.email} onChange={handleChange} className="profile-input" />
+                    <input name="email" type="email" placeholder="Email" value={user.email} onChange={handleChange} className="profile-input" />
 
-                    <input name="age" type="number" placeholder="Tuổi" value={user.age} onChange={handleChange} className="profile-input" />
+                    <input name="age" type="number" placeholder="Age" value={user.age} onChange={handleChange} className="profile-input" />
 
-                <select name="gender" value={user.gender} onChange={handleChange} className="profile-input">
-                        <option value="">Chọn giới tính</option>
-                        <option value="male">Nam</option>
-                        <option value="female">Nữ</option>
-                        <option value="other">Khác</option>
-                </select>
+                    <select name="gender" value={user.gender} onChange={handleChange} className="profile-input">
+                        <option value="">Select Gender</option>
+                        <option value="male">Male</option>
+                        <option value="female">Female</option>
+                        <option value="other">Other</option>
+                    </select>
 
-                    <input name="goal" type="text" placeholder="Mục tiêu sức khoẻ" value={user.goal} onChange={handleChange} className="profile-input" />
+                    <input name="goal" type="text" placeholder="Health Goal" value={user.goal} onChange={handleChange} className="profile-input" />
 
-                    <input name="allergies" type="text" placeholder="Dị ứng (nếu có)" value={user.allergies} onChange={handleChange} className="profile-input" />
+                    <input name="allergies" type="text" placeholder="Allergies (if any)" value={user.allergies} onChange={handleChange} className="profile-input" />
 
                     <div className="input-with-unit">
                         <input
                             name="weight"
                             type="number"
-                            placeholder="Cân nặng"
+                            placeholder="Weight"
                             value={user.weight}
                             onChange={handleChange}
                             className="profile-input"
                         />
                         <span className="unit-label">kg</span>
                     </div>
-                
+
                     <div className="input-with-unit">
                         <input
                             name="height"
                             type="number"
-                            placeholder="Chiều cao"
+                            placeholder="Height"
                             value={user.height}
                             onChange={handleChange}
                             className="profile-input"
@@ -176,62 +176,62 @@ const Profile = () => {
                         <span className="unit-label">cm</span>
                     </div>
 
-            {showPwdForm && (
+                    {showPwdForm && (
                         <>
-                            <h3 className="profile-subtitle">Đổi mật khẩu</h3>
-                    <div className="relative">
-                        <input
-                            name="oldPassword"
-                            type={showPwd.old ? 'text' : 'password'}
-                                    placeholder="Mật khẩu hiện tại"
-                            value={pwdData.oldPassword}
-                            onChange={handlePwdChange}
-                            className="profile-input pr-10"
-                            required
-                        />
-                        <button
-                            type="button"
-                            onClick={() => setShowPwd(prev => ({ ...prev, old: !prev.old }))}
-                            className="toggle-pwd-btn"
-                        >
-                            <FontAwesomeIcon icon={showPwd.old ? faEye : faEyeSlash} />
-                        </button>
-                    </div>
-                    <div className="relative">
-                        <input
-                            name="newPassword"
-                            type={showPwd.new ? 'text' : 'password'}
-                                    placeholder="Mật khẩu mới"
-                            value={pwdData.newPassword}
-                            onChange={handlePwdChange}
-                            className="profile-input pr-10"
-                            required
-                        />
-                        <button
-                            type="button"
-                            onClick={() => setShowPwd(prev => ({ ...prev, new: !prev.new }))}
-                            className="toggle-pwd-btn"
-                        >
-                            <FontAwesomeIcon icon={showPwd.new ? faEye : faEyeSlash} />
-                        </button>
-                    </div>
-                    {pwdError && <p className="text-red-500">{pwdError}</p>}
-                    <button type="submit" className="profile-btn btn-password">
-                        <FontAwesomeIcon icon={faSave} className="mr-2" />
-                                Lưu mật khẩu
-                    </button>
+                            <h3 className="profile-subtitle">Change Password</h3>
+                            <div className="relative">
+                                <input
+                                    name="oldPassword"
+                                    type={showPwd.old ? 'text' : 'password'}
+                                    placeholder="Current Password"
+                                    value={pwdData.oldPassword}
+                                    onChange={handlePwdChange}
+                                    className="profile-input pr-10"
+                                    required
+                                />
+                                <button
+                                    type="button"
+                                    onClick={() => setShowPwd(prev => ({ ...prev, old: !prev.old }))}
+                                    className="toggle-pwd-btn"
+                                >
+                                    <FontAwesomeIcon icon={showPwd.old ? faEye : faEyeSlash} />
+                                </button>
+                            </div>
+                            <div className="relative">
+                                <input
+                                    name="newPassword"
+                                    type={showPwd.new ? 'text' : 'password'}
+                                    placeholder="New Password"
+                                    value={pwdData.newPassword}
+                                    onChange={handlePwdChange}
+                                    className="profile-input pr-10"
+                                    required
+                                />
+                                <button
+                                    type="button"
+                                    onClick={() => setShowPwd(prev => ({ ...prev, new: !prev.new }))}
+                                    className="toggle-pwd-btn"
+                                >
+                                    <FontAwesomeIcon icon={showPwd.new ? faEye : faEyeSlash} />
+                                </button>
+                            </div>
+                            {pwdError && <p className="text-red-500">{pwdError}</p>}
+                            <button type="submit" className="profile-btn btn-password">
+                                <FontAwesomeIcon icon={faSave} className="mr-2" />
+                                Save Password
+                            </button>
                         </>
-            )}
+                    )}
 
                     <button type="submit" className="profile-btn btn-save">
-                <FontAwesomeIcon icon={faSave} className="mr-2" />
-                        Lưu hồ sơ
+                        <FontAwesomeIcon icon={faSave} className="mr-2" />
+                        Save Profile
                     </button>
 
                     <button onClick={deleteAccount} type="button" className="profile-btn btn-delete mt-4">
                         <FontAwesomeIcon icon={faTrashAlt} className="mr-2" />
-                        Xoá tài khoản
-            </button>
+                        Delete Account
+                    </button>
                 </form>
             </div>
 
@@ -251,21 +251,20 @@ const Profile = () => {
 
                     {avatarFile && (
                         <button onClick={saveAvatar} className="btn-avatar-save">
-                            Lưu ảnh
-            </button>
+                            Save Avatar
+                        </button>
                     )}
                 </div>
 
                 <ul className="info-list">
-                    <li><strong>Tên:</strong> {user.name}</li>
-                    <li><strong>Tuổi:</strong> {user.age}</li>
-                    <li><strong>Cân nặng:</strong> {user.weight} kg</li>
-                    <li><strong>Chiều cao:</strong> {user.height} cm</li>
-                    <li><strong>Giới tính:</strong> {user.gender === 'male' ? 'Nam' : user.gender === 'female' ? 'Nữ' : 'Khác'}</li>
+                    <li><strong>Name:</strong> {user.name}</li>
+                    <li><strong>Age:</strong> {user.age}</li>
+                    <li><strong>Weight:</strong> {user.weight} kg</li>
+                    <li><strong>Height:</strong> {user.height} cm</li>
+                    <li><strong>Gender:</strong> {user.gender === 'male' ? 'Male' : user.gender === 'female' ? 'Female' : 'Other'}</li>
                 </ul>
             </div>
         </div>
-
     );
 };
 

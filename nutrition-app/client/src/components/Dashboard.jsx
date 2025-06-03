@@ -11,7 +11,7 @@ const Dashboard = () => {
     const [initialWeight, setInitialWeight] = useState(60);
     const [loading, setLoading] = useState(true);
 
-    // Nếu chưa login, redirect về login
+    // Redirect to login if not logged in
     useEffect(() => {
         if (!localStorage.getItem('token')) navigate('/login');
     }, [navigate]);
@@ -22,13 +22,13 @@ const Dashboard = () => {
             setLoading(true);
             try {
                 const token = localStorage.getItem('token');
-                // Lấy profile user
+                // Get user profile
                 const u = await fetch('/api/profile', {
                     headers: { Authorization: 'Bearer ' + token }
                 }).then(r => r.json());
                 setInitialWeight(u.weight || 60);
 
-                // Lấy lịch sử năng lượng
+                // Get energy history
                 const e = await fetch('/api/meals/energy-history', {
                     headers: { Authorization: 'Bearer ' + token }
                 }).then(r => r.json());
@@ -42,7 +42,7 @@ const Dashboard = () => {
         fetchData();
     }, []);
 
-    // Chuẩn bị dữ liệu cho chart
+    // Prepare data for chart
     const dates = energyHistory.map(e => e.date);
     const energyMap = Object.fromEntries(energyHistory.map(e => [e.date, e.consumed]));
 
@@ -55,12 +55,12 @@ const Dashboard = () => {
     });
     const weightMap = Object.fromEntries(weightArr.map(w => [w.date, w.weight]));
 
-    // Chuẩn bị dữ liệu cho Chart.js
+    // Prepare data for Chart.js
     const chartData = {
         labels: dates,
         datasets: [
             {
-                label: 'Năng lượng (kcal)',
+                label: 'Energy (kcal)',
                 data: dates.map(d => energyMap[d] || 0),
                 borderColor: 'rgba(75,192,192,1)',
                 backgroundColor: 'rgba(75,192,192,0.2)',
@@ -68,7 +68,7 @@ const Dashboard = () => {
                 yAxisID: 'y',
             },
             {
-                label: 'Cân nặng (kg)',
+                label: 'Weight (kg)',
                 data: dates.map(d => weightMap[d]),
                 borderColor: 'rgba(255,99,132,1)',
                 backgroundColor: 'rgba(255,99,132,0.2)',
@@ -85,7 +85,6 @@ const Dashboard = () => {
             y1: {
                 beginAtZero: false,
                 position: 'right',
-                
                 grid: { drawOnChartArea: false },
                 title: { display: true, text: 'kg' }
             }
@@ -98,37 +97,37 @@ const Dashboard = () => {
                 <h1 className="text-2xl font-semibold">Dashboard</h1>
 
                 {loading
-                    ? <div className="text-center text-gray-500">Đang tải...</div>
+                    ? <div className="text-center text-gray-500">Loading...</div>
                     : (
                         <>
-                            {/* Biểu đồ */}
+                            {/* Chart */}
                             <div className="bg-white rounded-xl shadow p-4 h-96 overflow-x-auto">
-                                <h2 className="font-medium mb-2">Năng lượng &amp; Cân nặng</h2>
-                            <Line data={chartData} options={options} />
-                        </div>
+                                <h2 className="font-medium mb-2">Energy & Weight</h2>
+                                <Line data={chartData} options={options} />
+                            </div>
 
-                            {/* Bảng dữ liệu */}
+                            {/* Data Table */}
                             <div className="bg-white rounded-xl shadow p-4 overflow-x-auto">
-                                <h2 className="font-medium mb-2">Bảng tổng hợp</h2>
+                                <h2 className="font-medium mb-2">Summary Table</h2>
                                 <table className="min-w-full text-center border">
-                                <thead>
-                                    <tr>
-                                        <th className="border px-4 py-2">Ngày</th>
+                                    <thead>
+                                        <tr>
+                                            <th className="border px-4 py-2">Date</th>
                                             <th className="border px-4 py-2">Kcal</th>
                                             <th className="border px-4 py-2">Kg</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
                                         {dates.map((d, i) => (
                                             <tr key={i}>
                                                 <td className="border px-4 py-2">{d}</td>
                                                 <td className="border px-4 py-2">{energyMap[d] || 0}</td>
                                                 <td className="border px-4 py-2">{weightMap[d]}</td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        </div>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
                         </>
                     )
                 }

@@ -3,8 +3,8 @@
     "",
     "\\client",
     "\\client\\src",
-    "\\client\\src\\styles"
+    "\\client\\src\\pages"
   ],
-  "SelectedNode": "\\client\\src\\styles\\foodSearch.css",
+  "SelectedNode": "\\client\\src\\pages\\signUpPage.jsx",
   "PreviewInSolutionExplorer": false
 }

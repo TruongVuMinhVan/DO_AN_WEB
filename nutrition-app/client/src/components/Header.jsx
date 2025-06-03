@@ -1,4 +1,4 @@
-﻿/* src/components/Header.jsx */
+﻿// src/components/Header.jsx
 import React, { useState, useRef, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBell, faTimes } from '@fortawesome/free-solid-svg-icons';
@@ -23,7 +23,7 @@ const Header = () => {
             <button
                 className="notif-btn"
                 onClick={() => setOpen(prev => !prev)}
-                title="Thông báo"
+                title="Notifications"
             >
                 <FontAwesomeIcon icon={faBell} />
             </button>
@@ -31,17 +31,17 @@ const Header = () => {
             {open && (
                 <div className="notif-panel">
                     <div className="panel-header">
-                        <span>Thông Báo</span>
+                        <span>Notifications</span>
                         <button
                             className="close-btn"
                             onClick={() => setOpen(false)}
-                            title="Đóng"
+                            title="Close"
                         >
                             <FontAwesomeIcon icon={faTimes} />
                         </button>
                     </div>
                     <div className="notif-content">
-                        <p>Chưa có thông báo mới.</p>
+                        <p>No new notifications.</p>
                     </div>
                 </div>
             )}

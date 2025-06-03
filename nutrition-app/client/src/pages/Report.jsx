@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 
-// Nutritionix API credentials (thay bằng của bạn)
+// Nutritionix API credentials (replace with yours)
 // const APP_ID = '54ad9056';
 // const API_KEY = 'fc86a343882b8a1f25a02bbd028f6c1c';
 
-// Giá trị mục tiêu mặc định
+// Default target values
 const targetValues = {
     energy: 1725,
     protein: 107.8,
@@ -12,7 +12,7 @@ const targetValues = {
     fat: 57.5,
 };
 
-// Hàm lấy ngày đầu và cuối theo số ngày
+// Function to get start and end date by number of days
 function getDateRange(days) {
     const end = new Date();
     const start = new Date();
@@ -29,7 +29,7 @@ const Report = () => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
 
-    // State dữ liệu dinh dưỡng
+    // Nutrition data state
     const [data, setData] = useState({
         consumed: 0,
         expenditure: 1725,
@@ -40,45 +40,45 @@ const Report = () => {
     });
 
     useEffect(() => {
-    const fetchReport = async () => {
-        setLoading(true);
-        setError('');
-        try {
-            const res = await fetch('/api/meals/report', {
-                headers: {
-                    'Authorization': 'Bearer ' + localStorage.getItem('token')
-                }
-            });
-            const rows = await res.json();
-            // Lấy các bữa ăn gần nhất theo số ngày
-            const recent = rows.slice(0, parseInt(days));
-            let total = { calo: 0, protein: 0, carb: 0, fat: 0 };
-            let count = 0;
-            recent.forEach(row => {
-                total.calo += (row.calo || 0) * (row.quantity || 1);
-                total.protein += (row.protein || 0) * (row.quantity || 1);
-                total.carb += (row.carb || 0) * (row.quantity || 1);
-                total.fat += (row.fat || 0) * (row.quantity || 1);
-                count++;
-            });
-            setData({
-                consumed: Math.round(total.calo / (count || 1)),
-                expenditure: 1725,
-                remaining: Math.max(0, 1725 - Math.round(total.calo / (count || 1))),
-                protein: Math.round(total.protein / (count || 1)),
-                carbs: Math.round(total.carb / (count || 1)),
-                fat: Math.round(total.fat / (count || 1)),
-            });
-        } catch (err) {
-            setError('Không thể lấy dữ liệu từ máy chủ!');
-            setData({
-                consumed: 0, expenditure: 1725, remaining: 1725, protein: 0, carbs: 0, fat: 0
-            });
-        }
-        setLoading(false);
-    };
-    fetchReport();
-}, [days, includeToday, includeSupplements, filter]);
+        const fetchReport = async () => {
+            setLoading(true);
+            setError('');
+            try {
+                const res = await fetch('/api/meals/report', {
+                    headers: {
+                        'Authorization': 'Bearer ' + localStorage.getItem('token')
+                    }
+                });
+                const rows = await res.json();
+                // Get recent meals by number of days
+                const recent = rows.slice(0, parseInt(days));
+                let total = { calo: 0, protein: 0, carb: 0, fat: 0 };
+                let count = 0;
+                recent.forEach(row => {
+                    total.calo += (row.calo || 0) * (row.quantity || 1);
+                    total.protein += (row.protein || 0) * (row.quantity || 1);
+                    total.carb += (row.carb || 0) * (row.quantity || 1);
+                    total.fat += (row.fat || 0) * (row.quantity || 1);
+                    count++;
+                });
+                setData({
+                    consumed: Math.round(total.calo / (count || 1)),
+                    expenditure: 1725,
+                    remaining: Math.max(0, 1725 - Math.round(total.calo / (count || 1))),
+                    protein: Math.round(total.protein / (count || 1)),
+                    carbs: Math.round(total.carb / (count || 1)),
+                    fat: Math.round(total.fat / (count || 1)),
+                });
+            } catch (err) {
+                setError('Unable to fetch data from the server!');
+                setData({
+                    consumed: 0, expenditure: 1725, remaining: 1725, protein: 0, carbs: 0, fat: 0
+                });
+            }
+            setLoading(false);
+        };
+        fetchReport();
+    }, [days, includeToday, includeSupplements, filter]);
 
     const targets = [
         { label: 'Energy', value: data.consumed, target: targetValues.energy, unit: 'kcal' },
@@ -97,7 +97,7 @@ const Report = () => {
                     View daily averages for a selected period of time.
                 </p>
 
-                {/* Bộ lọc */}
+                {/* Filters */}
                 <div className="bg-white rounded-2xl shadow p-8 mb-10 flex flex-col md:flex-row md:items-center md:justify-between gap-8">
                     <div className="flex flex-col gap-4">
                         <div className="flex items-center gap-3">
@@ -143,13 +143,13 @@ const Report = () => {
                     </div>
                 </div>
 
-                {/* Thời gian */}
+                {/* Date Range */}
                 <div className="text-center font-bold text-3xl mb-8">
                     {getDateRange(days)}
                 </div>
 
                 {/* Loading/Error */}
-                {loading && <div className="text-center text-gray-500 mb-4">Đang tải dữ liệu từ Nutritionix...</div>}
+                {loading && <div className="text-center text-gray-500 mb-4">Loading data from Nutritionix...</div>}
                 {error && <div className="text-center text-red-500 mb-4">{error}</div>}
 
                 {/* Energy Summary */}
@@ -187,7 +187,7 @@ const Report = () => {
     );
 };
 
-// Component vòng tròn năng lượng
+// Circle stat component
 function CircleStat({ value, label, color }) {
     let borderColor = "border-gray-300 text-gray-700";
     if (color === "purple") borderColor = "border-purple-400 text-purple-700";

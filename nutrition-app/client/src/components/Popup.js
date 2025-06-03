@@ -1,29 +1,52 @@
-﻿// components/Popup.js
-import React from 'react';
-import '../styles/Popup.css';
+﻿// src/components/Header.jsx
+import React, { useState, useRef, useEffect } from 'react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faBell, faTimes } from '@fortawesome/free-solid-svg-icons';
+import '../styles/Header.css';
 
-export default function Popup({ message, onClose, success = true }) {
-    // Đóng popup khi click ra ngoài
-    const handleOverlayClick = (e) => {
-        if (e.target.classList.contains('popup-overlay')) {
-            onClose();
-        }
-    };
+const Header = () => {
+    const [open, setOpen] = useState(false);
+    const panelRef = useRef();
+
+    useEffect(() => {
+        const handleClickOutside = e => {
+            if (open && panelRef.current && !panelRef.current.contains(e.target)) {
+                setOpen(false);
+            }
+        };
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, [open]);
 
     return (
-        <div className="popup-overlay" onClick={handleOverlayClick}>
-            <div className={`popup-box ${success ? 'success' : 'error'}`}>
-                <h2 className="text-xl font-semibold mb-4" style={{ color: success ? 'green' : 'red' }}>
-                    {success ? 'Thành công' : 'Lỗi'}
-                </h2>
-                <p className="mb-6 text-gray-700">{message}</p>
-                <button
-                    onClick={onClose}
-                    className="bg-blue-600 hover:bg-blue-700 text-white font-medium px-4 py-2 rounded-xl"
-                >
-                    Đóng
-                </button>
-            </div>
+        <div className="notif-container" ref={panelRef}>
+            <button
+                className="notif-btn"
+                onClick={() => setOpen(prev => !prev)}
+                title="Notifications"
+            >
+                <FontAwesomeIcon icon={faBell} />
+            </button>
+
+            {open && (
+                <div className="notif-panel">
+                    <div className="panel-header">
+                        <span>Notifications</span>
+                        <button
+                            className="close-btn"
+                            onClick={() => setOpen(false)}
+                            title="Close"
+                        >
+                            <FontAwesomeIcon icon={faTimes} />
+                        </button>
+                    </div>
+                    <div className="notif-content">
+                        <p>No new notifications.</p>
+                    </div>
+                </div>
+            )}
         </div>
     );
-}
+};
+
+export default Header;

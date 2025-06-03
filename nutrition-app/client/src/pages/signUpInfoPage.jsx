@@ -15,7 +15,7 @@ const SignUpInfoPage = () => {
     useEffect(() => {
         const basic = localStorage.getItem("signup_basic");
         if (!basic) {
-            alert("Thiếu thông tin cơ bản, vui lòng đăng ký lại.");
+            alert("Missing basic information. Please register again.");
             navigate("/signUpPage");
         }
     }, [navigate]);
@@ -28,14 +28,14 @@ const SignUpInfoPage = () => {
         e.preventDefault();
         const basic = JSON.parse(localStorage.getItem("signup_basic") || "{}");
         if (!basic.email || !basic.password) {
-            alert("Thiếu thông tin cơ bản, vui lòng đăng ký lại.");
+            alert("Missing basic information. Please register again.");
             return navigate("/signUpPage");
         }
 
         const payload = { ...basic, ...info };
 
         try {
-            // Đăng ký
+            // Register
             let res = await fetch("/api/register", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -43,10 +43,10 @@ const SignUpInfoPage = () => {
             });
             if (!res.ok) {
                 const { error } = await res.json();
-                throw new Error(error || "Đăng ký thất bại.");
+                throw new Error(error || "Registration failed.");
             }
 
-            // Tự động đăng nhập
+            // Auto login
             res = await fetch("/api/login", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -56,12 +56,12 @@ const SignUpInfoPage = () => {
                 })
             });
             const loginData = await res.json();
-            if (!res.ok) throw new Error(loginData.message || "Đăng nhập thất bại.");
+            if (!res.ok) throw new Error(loginData.message || "Login failed.");
 
-            // Lưu token & chuyển hướng
+            // Save token and redirect
             localStorage.setItem("token", loginData.token);
             localStorage.removeItem("signup_basic");
-            alert("🎉 Đăng ký và đăng nhập thành công!");
+            alert("🎉 Registration and login successful!");
             navigate("/login");
         } catch (err) {
             alert("❌ " + err.message);
@@ -71,14 +71,14 @@ const SignUpInfoPage = () => {
     return (
         <div className="info-nensignup">
             <div className="info-form-khung">
-                <h2 className="info-tieude">Thông Tin Cá Nhân</h2>
+                <h2 className="info-tieude">Personal Information</h2>
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <input
                         type="number"
                         name="age"
                         value={info.age}
                         onChange={handleChange}
-                        placeholder="Tuổi"
+                        placeholder="Age"
                         required
                         className="info-input"
                     />
@@ -87,7 +87,7 @@ const SignUpInfoPage = () => {
                         name="weight"
                         value={info.weight}
                         onChange={handleChange}
-                        placeholder="Cân nặng (kg)"
+                        placeholder="Weight (kg)"
                         required
                         className="info-input"
                     />
@@ -96,7 +96,7 @@ const SignUpInfoPage = () => {
                         name="height"
                         value={info.height}
                         onChange={handleChange}
-                        placeholder="Chiều cao (cm)"
+                        placeholder="Height (cm)"
                         required
                         className="info-input"
                     />
@@ -107,16 +107,16 @@ const SignUpInfoPage = () => {
                         required
                         className="info-select"
                     >
-                        <option value="">Chọn giới tính</option>
-                        <option value="male">Nam</option>
-                        <option value="female">Nữ</option>
-                        <option value="other">Khác</option>
+                        <option value="">Select Gender</option>
+                        <option value="male">Male</option>
+                        <option value="female">Female</option>
+                        <option value="other">Other</option>
                     </select>
                     <button
                         type="submit"
                         className="info-submit-btn"
                     >
-                        Tiếp tục
+                        Continue
                     </button>
                 </form>
             </div>

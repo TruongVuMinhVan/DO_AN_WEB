@@ -24,46 +24,45 @@ const LoginPage = () => {
                 body: JSON.stringify(formData),
             });
 
-
             const data = await res.json();
             if (res.ok) {
                 localStorage.setItem('token', data.token);
                 navigate('/home');
             } else {
-                setError(data.message || 'Đăng nhập thất bại');
+                setError(data.message || 'Login failed');
             }
         } catch {
-            setError('Lỗi kết nối server');
+            setError('Server connection error');
         }
     };
 
     return (
         <div className="nen-dang-nhap min-h-screen flex items-center justify-center">
             <div className="dangnhap-khung-chinh w-4/5 max-w-5xl flex overflow-hidden bg-white rounded-2xl shadow-2xl">
-                {/* Bên trái: Form Đăng Nhập */}
+                {/* Left: Login Form */}
                 <div className="dangnhap-form-benh w-3/4 p-12 flex flex-col justify-center">
                     <h1 className="dangnhap-tieu-de text-4xl font-bold text-center mb-4">
-                        ĐĂNG NHẬP TÀI KHOẢN
+                        LOGIN TO YOUR ACCOUNT
                     </h1>
                     <p className="dangnhap-mo-ta text-center mb-6 text-gray-500">
-                        Đăng nhập qua mạng xã hội
+                        Login with social media
                     </p>
 
-                    {/* Nút MXH */}
+                    {/* Social Media Buttons */}
                     <div className="dangnhap-mxh-khung flex gap-4 mb-6 justify-center">
                         <button className="mxh-facebook bg-[#3b5998] text-white rounded-full w-10 h-10">f</button>
                         <button className="mxh-google bg-[#db4437] text-white rounded-full w-10 h-10">G+</button>
                         <button className="mxh-linkedin bg-[#0077b5] text-white rounded-full w-10 h-10">in</button>
                     </div>
 
-                    {/* HOẶC */}
+                    {/* OR Divider */}
                     <div className="dangnhap-hoac-khung flex items-center my-6">
                         <div className="dangnhap-hoac-duong-ke flex-grow h-px bg-gray-300"></div>
-                        <span className="dangnhap-hoac-chu px-4 text-gray-400">HOẶC</span>
+                        <span className="dangnhap-hoac-chu px-4 text-gray-400">OR</span>
                         <div className="dangnhap-hoac-duong-ke flex-grow h-px bg-gray-300"></div>
                     </div>
 
-                    {/* Form */}
+                    {/* Login Form */}
                     <form onSubmit={handleSubmit} className="dangnhap-form space-y-4 mx-auto max-w-md">
                         <input
                             type="email"
@@ -79,7 +78,7 @@ const LoginPage = () => {
                             name="password"
                             value={formData.password}
                             onChange={handleChange}
-                            placeholder="Mật khẩu"
+                            placeholder="Password"
                             className="dangnhap-input w-full px-3 py-2 rounded bg-gray-100"
                             required
                         />
@@ -88,24 +87,24 @@ const LoginPage = () => {
                             type="submit"
                             className="dangnhap-nut mx-auto block bg-gray-700 text-white px-12 py-2 rounded-full mt-4"
                         >
-                            Đăng Nhập
+                            Login
                         </button>
                     </form>
                 </div>
 
-                {/* Bên phải: Chưa có tài khoản */}
+                {/* Right: No Account Yet */}
                 <div className="dangnhap-chuakco w-1/4 bg-gradient-to-br from-blue-400 to-green-500 text-white p-10 flex flex-col justify-center items-center">
                     <h2 className="chuakco-tieu-de text-2xl font-bold mb-4">
-                        CHƯA CÓ TÀI KHOẢN?
+                        DON'T HAVE AN ACCOUNT?
                     </h2>
                     <p className="chuakco-mo-ta mb-6 text-center">
-                        Đăng ký để khám phá thêm
+                        Sign up to explore more
                     </p>
                     <button
                         onClick={() => navigate('/signUpPage')}
                         className="chuakco-nut-dangky bg-white text-teal-600 px-6 py-2 rounded-full font-medium"
                     >
-                        Đăng Ký
+                        Sign Up
                     </button>
                 </div>
             </div>

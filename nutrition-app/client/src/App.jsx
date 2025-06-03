@@ -7,7 +7,6 @@ import Sidebar from './components/sidebar';
 import Dashboard from './components/Dashboard';
 import Charts from './components/charts';
 import Profile from './components/profiles';
-import Reports from './components/reports';
 import NotFound from './pages/notFound';
 import FoodSearch from './pages/foodSearch';
 import Header from './components/Header';
@@ -40,7 +39,7 @@ const App = () => {
     return (
         <Routes>
             {/* Public Routes */}
-            <Route path="/" element={<IndexPage />} /> {/* ✅ Trang landing */}
+            <Route path="/index" element={<IndexPage />} /> {/* ✅ Trang landing */}
             <Route path="/login" element={<Login />} />
             <Route path="/signUpPage" element={<Signup />} />
             <Route path="/signup-info" element={<SignUpInfoPage />} />

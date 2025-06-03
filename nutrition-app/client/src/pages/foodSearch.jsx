@@ -248,7 +248,7 @@ const FoodSearch = () => {
     // 12) Lưu bữa ăn
     const handleSaveMeal = async () => {
         if (!selectedFoods.length) {
-            return setPopup({ open: true, message: 'Chưa có món nào để lưu!', success: false });
+            return setPopup({ open: true, message: 'There are no meals to save yet!', success: false });
         }
 
         const dateStr = selectedDate.toISOString().slice(0, 10);
@@ -285,7 +285,7 @@ const FoodSearch = () => {
 
             setPopup({ open: true, message: res.data.message, success: true });
         } catch {
-            setPopup({ open: true, message: '❌ Không thể lưu! Vui lòng thử lại.', success: false });
+            setPopup({ open: true, message: '❌ Unable to save! Please try again.', success: false });
         }
     };
 
@@ -350,7 +350,7 @@ const FoodSearch = () => {
 
     // 17) Tính theo gam món
     const handleChangeWeight = (key, newWeightStr) => {
-        const newWeight = Math.max(1, parseFloat(newWeightStr) || 0); // Ensure minimum weight is 1g
+        const newWeight = Math.max(1, parseFloat(newWeightStr) || 0); 
         setSelectedFoods(prev =>
             prev.map(f => {
                 const fKey = f.nix_item_id || f.food_name;
@@ -364,7 +364,7 @@ const FoodSearch = () => {
 
     return (
         <div className="food-search-container">
-            <h1 className="food-search-title">Tìm Kiếm Thức Ăn</h1>
+            <h1 className="food-search-title">Search Food</h1>
 
             {/* Search + dropdown lịch sử */}
             <div ref={wrapperRef} className="food-search-wrapper">
@@ -399,7 +399,7 @@ const FoodSearch = () => {
                                         e.stopPropagation();
                                         handleDeleteHistory(item.id);
                                     }}
-                                    title="Xóa khỏi lịch sử"
+                                    title="Remove from history"
                                 >
                                     <FontAwesomeIcon icon={faXmark} />
                                 </button>
@@ -415,7 +415,7 @@ const FoodSearch = () => {
                 {/* Selected Foods Panel */}
                 <div className="selected-list-panel">
                     <div className="selected-panel-top">
-                        <h3 className="panel-header">Thức ăn đã chọn</h3>
+                        <h3 className="panel-header">Selected food</h3>
                         <div className="meal-date-picker-fixed">
                             <button onClick={handlePrevDay} className="date-nav-btn">
                                 <FontAwesomeIcon icon={faChevronLeft} />
@@ -519,7 +519,7 @@ const FoodSearch = () => {
                         className="btn-save-meal"
                         onClick={handleSaveMeal}
                     >
-                        Lưu Bữa Ăn
+                        Save meal
                     </button>
 
                     {popup.open && (
@@ -533,7 +533,7 @@ const FoodSearch = () => {
 
                 {/* Totals + Pie */}
                 <div className="totals-panel">
-                    <h3 className="panel-header">Tổng dinh dưỡng</h3>
+                    <h3 className="panel-header">Total nutrition</h3>
                     {['calories', 'protein', 'carbs', 'fat'].map(n => (
                         <div key={n} className="nutrient-line">
                             <span className={`dot dot-${n}`} />
@@ -570,7 +570,7 @@ const FoodSearch = () => {
                                 {/* Nút xóa (−) */}
                                 <button
                                     className="remove-result-btn"
-                                    title="Xóa khỏi kết quả"
+                                    title="Remove from results"
                                     onClick={() => {
                                         setResults(prev =>
                                             prev.filter(item =>
@@ -586,7 +586,7 @@ const FoodSearch = () => {
                                 <button
                                     className="add-food-btn"
                                     onClick={() => handleAddFood(food)}
-                                    title="Thêm vào bữa ăn"
+                                    title="Add to meal"
                                 >
                                     <FontAwesomeIcon icon={faPlus} />
                                 </button>
@@ -599,7 +599,7 @@ const FoodSearch = () => {
 
             {/* Existing Foods Table */}
             <div className="existing-foods-table-container">
-                <h3 className="panel-header">Món có sẵn</h3>
+                <h3 className="panel-header">Available dish</h3>
                 <table className="existing-foods-table">
                     <thead>
                         <tr>

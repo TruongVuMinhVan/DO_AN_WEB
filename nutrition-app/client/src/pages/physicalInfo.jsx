@@ -3,32 +3,32 @@ import PhysicalInfoForm from '../components/physicalInfoForm';
 import PhysicalInfoHistory from '../components/PhysicalInfoHistory';
 
 const PhysicalInfoPage = () => {
-  return (
-    <div className="container my-5">
-      <h2 className="page-title mb-4 text-center">Theo dõi thông tin thể chất</h2>
-      <div className="layout-wrapper">
-        <section className="form-section card shadow-lg rounded-4">
-          <header className="card-header text-white rounded-top-4">
-            <h4 className="mb-1">Cập nhật thông tin thể chất</h4>
-            <small>Điền các thông tin cơ bản để theo dõi sức khỏe của bạn.</small>
-          </header>
-          <div className="card-body">
-            <PhysicalInfoForm />
-          </div>
-        </section>
+    return (
+        <div className="container my-5">
+            <h2 className="page-title mb-4 text-center">Track Physical Information</h2>
+            <div className="layout-wrapper">
+                <section className="form-section card shadow-lg rounded-4">
+                    <header className="card-header text-white rounded-top-4">
+                        <h4 className="mb-1">Update Physical Information</h4>
+                        <small>Fill in the basic information to monitor your health.</small>
+                    </header>
+                    <div className="card-body">
+                        <PhysicalInfoForm />
+                    </div>
+                </section>
 
-        <section className="history-section card shadow-lg rounded-4">
-          <header className="card-header text-white rounded-top-4">
-            <h4 className="mb-1">Lịch sử thay đổi</h4>
-            <small>Xem lại các lần cập nhật thể chất trước đây.</small>
-          </header>
-          <div className="card-body overflow-auto content-scroll">
-            <PhysicalInfoHistory />
-          </div>
-        </section>
-      </div>
+                <section className="history-section card shadow-lg rounded-4">
+                    <header className="card-header text-white rounded-top-4">
+                        <h4 className="mb-1">Change History</h4>
+                        <small>Review your past physical updates.</small>
+                    </header>
+                    <div className="card-body overflow-auto content-scroll">
+                        <PhysicalInfoHistory />
+                    </div>
+                </section>
+            </div>
 
-      <style>{`
+            <style>{`
         .page-title {
           font-weight: 700;
           font-size: 2rem;
@@ -103,9 +103,8 @@ const PhysicalInfoPage = () => {
           }
         }
       `}</style>
-    </div>
-  );
+        </div>
+    );
 };
 
 export default PhysicalInfoPage;
-

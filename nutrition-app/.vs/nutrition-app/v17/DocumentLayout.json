@@ -3,8 +3,16 @@
   "WorkspaceRootPath": "D:\\STUDY\\DACS\\nutrition-app\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|D:\\STUDY\\DACS\\nutrition-app\\client\\src\\styles\\foodSearch.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:client\\src\\styles\\foodSearch.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}"
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|D:\\STUDY\\DACS\\nutrition-app\\client\\src\\pages\\signUpPage.jsx||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:client\\src\\pages\\signUpPage.jsx||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|D:\\STUDY\\DACS\\nutrition-app\\client\\src\\pages\\signUpInfoPage.jsx||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:client\\src\\pages\\signUpInfoPage.jsx||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|D:\\STUDY\\DACS\\nutrition-app\\client\\src\\pages\\login.jsx||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:client\\src\\pages\\login.jsx||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
     }
   ],
   "DocumentGroupContainers": [
@@ -35,14 +43,40 @@
             {
               "$type": "Document",
               "DocumentIndex": 0,
-              "Title": "foodSearch.css",
-              "DocumentMoniker": "D:\\STUDY\\DACS\\nutrition-app\\client\\src\\styles\\foodSearch.css",
-              "RelativeDocumentMoniker": "client\\src\\styles\\foodSearch.css",
-              "ToolTip": "D:\\STUDY\\DACS\\nutrition-app\\client\\src\\styles\\foodSearch.css",
-              "RelativeToolTip": "client\\src\\styles\\foodSearch.css",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003000|",
-              "WhenOpened": "2025-05-30T18:03:40.966Z",
+              "Title": "signUpPage.jsx",
+              "DocumentMoniker": "D:\\STUDY\\DACS\\nutrition-app\\client\\src\\pages\\signUpPage.jsx",
+              "RelativeDocumentMoniker": "client\\src\\pages\\signUpPage.jsx",
+              "ToolTip": "D:\\STUDY\\DACS\\nutrition-app\\client\\src\\pages\\signUpPage.jsx",
+              "RelativeToolTip": "client\\src\\pages\\signUpPage.jsx",
+              "ViewState": "AgIAAFEAAAAAAAAAAAAAAHMAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003663|",
+              "WhenOpened": "2025-06-03T13:54:12.715Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "login.jsx",
+              "DocumentMoniker": "D:\\STUDY\\DACS\\nutrition-app\\client\\src\\pages\\login.jsx",
+              "RelativeDocumentMoniker": "client\\src\\pages\\login.jsx",
+              "ToolTip": "D:\\STUDY\\DACS\\nutrition-app\\client\\src\\pages\\login.jsx",
+              "RelativeToolTip": "client\\src\\pages\\login.jsx",
+              "ViewState": "AgIAAEEAAAAAAAAAAAAuwFsAAAAbAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003663|",
+              "WhenOpened": "2025-06-03T13:54:02.492Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "signUpInfoPage.jsx",
+              "DocumentMoniker": "D:\\STUDY\\DACS\\nutrition-app\\client\\src\\pages\\signUpInfoPage.jsx",
+              "RelativeDocumentMoniker": "client\\src\\pages\\signUpInfoPage.jsx",
+              "ToolTip": "D:\\STUDY\\DACS\\nutrition-app\\client\\src\\pages\\signUpInfoPage.jsx",
+              "RelativeToolTip": "client\\src\\pages\\signUpInfoPage.jsx",
+              "ViewState": "AgIAABsAAAAAAAAAAAAAAFkAAAAxAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003663|",
+              "WhenOpened": "2025-06-03T13:53:49.977Z",
               "EditorCaption": ""
             }
           ]
