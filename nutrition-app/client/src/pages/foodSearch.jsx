@@ -12,7 +12,7 @@ import '../styles/foodSearch.css';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 //Import cảnh báo popup
-import Popup from '../components/Popup';
+import Popup from '../components/Popup';    
 
 function scaleNutrition(food) {
     const weight = Number(food.custom_weight);
@@ -524,6 +524,7 @@ const FoodSearch = () => {
 
                     {popup.open && (
                         <Popup
+                            open={popup.open} 
                             message={popup.message}
                             success={popup.success}
                             onClose={() => setPopup({ ...popup, open: false })}
@@ -533,21 +534,30 @@ const FoodSearch = () => {
 
                 {/* Totals + Pie */}
                 <div className="totals-panel">
-                    <h3 className="panel-header">Total nutrition</h3>
-                    {['calories', 'protein', 'carbs', 'fat'].map(n => (
-                        <div key={n} className="nutrient-line">
-                            <span className={`dot dot-${n}`} />
-                            <span className="nutrient-label">
-                                {n.charAt(0).toUpperCase() + n.slice(1)}:
-                            </span>
-                            <strong>
-                                {n === 'calories'
-                                    ? `${totals[n].toFixed(2)} kcal`
-                                    : `${totals[n].toFixed(2)} g`}
-                            </strong>
-                        </div>
-                    ))}
-                    <NutritionPie data={totals} />
+                    <div className="totals-panel-top">
+                        <h3 className="panel-header">Total nutrition</h3>
+                    </div>
+
+                    <ul className="totals-nutrients-list">
+                        {['calories', 'protein', 'carbs', 'fat'].map(n => (
+                            <li key={n} className="nutrient-line">
+                                <span className={`dot dot-${n}`} />
+                                <span className="nutrient-label">
+                                    {n.charAt(0).toUpperCase() + n.slice(1)}:
+                                </span>
+                                <strong>
+                                    {n === 'calories'
+                                        ? `${totals[n].toFixed(2)} kcal`
+                                        : `${totals[n].toFixed(2)} g`}
+                                </strong>
+                            </li>
+                        ))}
+                    </ul>
+
+                    {/* Pie chart vẫn để nguyên, nhưng sẽ nằm ở dưới cùng, bên ngoài <ul> */}
+                    <div style={{ padding: '1rem' }}>
+                        <NutritionPie data={totals} />
+                    </div>
                 </div>
             </div>
 

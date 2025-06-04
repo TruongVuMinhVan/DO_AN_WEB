@@ -1,4 +1,4 @@
-﻿﻿ /* ==== LAYOUT CORE ==== */
+﻿/* ==== LAYOUT CORE ==== */
 .food-search-container {
     padding: 2rem 1rem;
     max-width: 1300px;
@@ -67,10 +67,10 @@
 /* ==== GRID LAYOUT ==== */
 .grid-container {
     display: grid;
-    grid-template-columns: 2.4fr 1.2fr;
+    grid-template-columns: 1fr 1fr;
     gap: 1.5rem;
     margin-top: 2rem;
-    align-items: flex-start;
+    align-items: stretch;
 }
 
 @media (max-width: 900px) {
@@ -94,6 +94,7 @@
 }
 
 .selected-panel-top {
+    @extend .panel-top;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -101,9 +102,10 @@
     background: #e0f2fe;
     border-radius: 1rem 1rem 0 0;
     border-bottom: 1px solid #bae6fd;
-    position: sticky;
-    top: 0;
-    z-index: 2;
+    /* Đặt height cố định để sau này dễ so bằng .totals-panel-top */
+    /* Ở đây mình đo thử .selected-panel-top (bao gồm .meal-date-picker-fixed) ≈ 3.8rem */
+    box-sizing: border-box;
+    height: 3.8rem;
 }
 
 .selected-foods-list {
@@ -113,7 +115,7 @@
     list-style: none;
     overflow-y: auto;
     min-height: 200px;
-    max-height: 320px;
+    max-height: 400px;
     background: transparent;
 }
 
@@ -155,6 +157,9 @@
     gap: 1rem;
 }
 
+.selected-list-panel .panel-header {
+    background: #e0f2fe;
+}
 .qty-controls {
     display: flex;
     align-items: center;
@@ -206,6 +211,7 @@
     transition: background 0.2s;
     align-self: flex-end;
     box-shadow: 0 2px 8px #0ea5e92a;
+    margin-top: auto;
 }
 
     .btn-save-meal:hover {
@@ -253,34 +259,63 @@
 
 /* ==== TOTALS PANEL ==== */
 .totals-panel {
-    background: #f0fdf4;
-    border: 1.5px solid #6ee7b7;
-    border-radius: 0.9rem;
-    padding: 1.5rem 1.2rem 1.2rem 1.2rem;
-    min-width: 270px;
-    box-shadow: 0 2px 12px #10b98112;
     display: flex;
     flex-direction: column;
-    align-items: stretch;
-    min-height: 320px;
-    margin-bottom: 1.5rem;
+    background: #f0fdf4;
+    border: 1.5px solid #6ee7b7;
+    border-radius: 1rem;
+    /* Kích thước tương đương */
+    min-height: 500px;
+    max-height: 650px;
+    /* Shadow giống selected-list-panel */
+    box-shadow: 0 2px 8px #10b98112;
+    /* Padding bottom giống selected-list-panel */
+    padding-bottom: 1rem;
+    /* Ẩn overflow chung, phần danh sách sẽ scroll riêng */
+    overflow: hidden;
 }
 
-.panel-header {
-    margin: 0;
-    padding: 0.85rem 1rem;
-    background: #a7f3d0;
-    color: #025e68;
-    font-size: 1.18rem;
-    font-weight: 700;
+.totals-panel-top {
+    @extend .panel-top;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.1rem 1rem 0.5rem 1rem;
+    background: #d1fae5;
+    border-radius: 1rem 1rem 0 0;
     border-bottom: 1px solid #6ee7b7;
-    border-radius: 0.7rem 0.7rem 0 0;
-    text-align: left;
-    letter-spacing: 0.02em;
+    /* ***** PHẦN ĐÃ SỬA: ÉP chiều cao cố định y chang .selected-panel-top ***** */
+    box-sizing: border-box;
+    height: 3.8rem; /* <-- giá trị này phải khớp với .selected-panel-top */
 }
 
 .totals-panel .panel-header {
-    background: #bbf7d0;
+    background: #d1fae5;
+}
+
+/* Nếu cần canh giữa nội dung h3, đảm bảo không có margin mặc định */
+.totals-panel-top .panel-header {
+    margin: 0;
+    line-height: 1.25;
+}
+
+.totals-nutrients-list {
+    flex: 1 1 auto;
+    margin: 0;
+    padding: 1rem 1rem 0 1rem;
+    list-style: none;
+    /* Cho phép scroll dọc */
+    overflow-y: auto;
+    min-height: 200px;
+    max-height: 320px;
+    background: transparent;
+}
+
+/* Các dòng nutrient (giữ nguyên hoặc có thể điều chỉnh spacing) */
+.nutrient-line {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.75rem;
 }
 
 /* ==== NUTRIENT LINES ==== */
@@ -544,12 +579,26 @@
         font-size: 0.98rem;
     }
 
-    .selected-list-panel, .totals-panel {
-        padding: 1rem 0.5rem;
+    .selected-list-panel,
+    .totals-panel {
+        padding: 1.5rem 1.2rem 1.2rem 1.2rem;
+        border-radius: 0.9rem;
+        box-shadow: 0 2px 12px #10b98112; /* cùng shadow */
+        min-height: 500px;
     }
 
-    .selected-panel-top {
-        padding: 0.8rem 0.4rem;
+    .selected-panel-top,
+    .totals-panel-top {
+        padding: 1.1rem 1rem 0.5rem 1rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: #e0f2fe; /* Với selected */
+        border-radius: 1rem 1rem 0 0;
+        border-bottom: 1px solid #bae6fd;
+        /* Chỉnh lại height trong media query để match nhau */
+        box-sizing: border-box;
+        height: 3.8rem;
     }
 }
 

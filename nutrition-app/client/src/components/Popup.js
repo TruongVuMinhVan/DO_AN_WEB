@@ -1,52 +1,35 @@
-﻿// src/components/Header.jsx
-import React, { useState, useRef, useEffect } from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBell, faTimes } from '@fortawesome/free-solid-svg-icons';
-import '../styles/Header.css';
+﻿// src/components/Popup.jsx
+import React, { useEffect, useRef } from 'react';
+import '../styles/Popup.css';
 
-const Header = () => {
-    const [open, setOpen] = useState(false);
+const Popup = ({ open, message, success, onClose }) => {
     const panelRef = useRef();
 
+    // Đóng popup khi click ra ngoài
     useEffect(() => {
-        const handleClickOutside = e => {
+        const handleClickOutside = (e) => {
             if (open && panelRef.current && !panelRef.current.contains(e.target)) {
-                setOpen(false);
+                onClose();
             }
         };
         document.addEventListener('mousedown', handleClickOutside);
         return () => document.removeEventListener('mousedown', handleClickOutside);
-    }, [open]);
+    }, [open, onClose]);
+
+    // Nếu open === false, không render gì
+    if (!open) return null;
 
     return (
-        <div className="notif-container" ref={panelRef}>
-            <button
-                className="notif-btn"
-                onClick={() => setOpen(prev => !prev)}
-                title="Notifications"
+        <div className="popup-overlay">
+            <div
+                ref={panelRef}
+                className={`popup-box ${success ? 'success' : 'error'}`}
             >
-                <FontAwesomeIcon icon={faBell} />
-            </button>
-
-            {open && (
-                <div className="notif-panel">
-                    <div className="panel-header">
-                        <span>Notifications</span>
-                        <button
-                            className="close-btn"
-                            onClick={() => setOpen(false)}
-                            title="Close"
-                        >
-                            <FontAwesomeIcon icon={faTimes} />
-                        </button>
-                    </div>
-                    <div className="notif-content">
-                        <p>No new notifications.</p>
-                    </div>
-                </div>
-            )}
+                <p>{message}</p>
+                <button onClick={onClose}>Close</button>
+            </div>
         </div>
     );
 };
 
-export default Header;
+export default Popup;

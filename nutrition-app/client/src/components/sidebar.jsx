@@ -7,7 +7,7 @@ const Sidebar = ({ collapsed, toggleSidebar }) => {
 
     const handleLogout = () => {
         localStorage.removeItem('token');
-        navigate('/login');
+        navigate('/index');
     };
 
     return (
