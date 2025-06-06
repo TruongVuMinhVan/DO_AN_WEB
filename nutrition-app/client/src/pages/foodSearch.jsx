@@ -6,7 +6,6 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSearch, faPlus, faMinus, faTrash, faXmark, faChevronLeft, faChevronRight } from '@fortawesome/free-solid-svg-icons';
 import { searchFood } from '../api/food';
 import NutritionPie from '../components/NutritionPie';
-import HealthierFoodSuggestions from '../components/HealthierFoodSuggestions';
 import '../styles/foodSearch.css';
 //Import lịch ngày/tháng/năm
 import DatePicker from "react-datepicker";
@@ -17,11 +16,8 @@ import Popup from '../components/Popup';
 function scaleNutrition(food) {
     const weight = Number(food.custom_weight);
     const baseWeight = food.serving_weight_grams || 100;
-
     if (!weight || weight <= 0 || !baseWeight) return food;
-
     const ratio = weight / baseWeight;
-
     return {
         ...food,
         nf_calories: Number((food.nf_calories * ratio).toFixed(2)),
@@ -57,7 +53,6 @@ const FoodSearch = () => {
     const [popup, setPopup] = useState({ open: false, message: '', success: true });
     const [showDropdown, setShowDropdown] = useState(false);
     const [selectedDate, setSelectedDate] = useState(new Date());
-    const [autoSuggest, setAutoSuggest] = useState(true);
     const wrapperRef = useRef(null);
     const navigate = useNavigate();
     const token = localStorage.getItem('token');
@@ -131,7 +126,6 @@ const FoodSearch = () => {
             fat: Math.round(sums.fat * 100) / 100,
         });
     }, [selectedFoods]);
-
 
     // 6) Thêm effect để tải các món ăn theo ngày đã chọn
     useEffect(() => {
@@ -248,18 +242,23 @@ const FoodSearch = () => {
     // 12) Lưu bữa ăn
     const handleSaveMeal = async () => {
         if (!selectedFoods.length) {
-            return setPopup({ open: true, message: 'There are no meals to save yet!', success: false });
+            return setPopup({
+                open: true,
+                message: '❗ There are no meals to save yet!',
+                success: false
+            });
         }
 
         const dateStr = selectedDate.toISOString().slice(0, 10);
 
         try {
-            const { data } = await axios.get('/api/meals', {
+            // 1) Kiểm tra xem bữa ăn của ngày đó đã tồn tại chưa
+            const { data: existing } = await axios.get('/api/meals', {
                 headers: { Authorization: `Bearer ${token}` },
                 params: { date: dateStr }
             });
 
-            const method = data.items.length ? 'put' : 'post';
+            const method = existing.items.length ? 'put' : 'post';
             const url = '/api/meals';
 
             const payload = {
@@ -269,23 +268,137 @@ const FoodSearch = () => {
                     return {
                         food_name: scaled.food_name,
                         quantity: scaled.quantity ?? 1,
-                        custom_weight: scaled.custom_weight,
-                        nix_item_id: scaled.nix_item_id,
+                        custom_weight: scaled.custom_weight ?? 100,
                         nf_calories: scaled.nf_calories,
                         nf_protein: scaled.nf_protein,
                         nf_total_carbohydrate: scaled.nf_total_carbohydrate,
-                        nf_total_fat: scaled.nf_total_fat,
+                        nf_total_fat: scaled.nf_total_fat
                     };
                 })
             };
 
-            const res = await axios[method](url, payload, {
+            // Gửi lên server POST/PUT /api/meals
+            await axios[method](url, payload, {
                 headers: { Authorization: `Bearer ${token}` }
             });
 
-            setPopup({ open: true, message: res.data.message, success: true });
-        } catch {
-            setPopup({ open: true, message: '❌ Unable to save! Please try again.', success: false });
+            // 2) Sau khi lưu bữa, fetch goal & summary
+            const [resGoal, resSum] = await Promise.all([
+                axios.get('/api/profile-goal', { headers: { Authorization: `Bearer ${token}` } }),
+                axios.get('/api/nutrition-summary', {
+                    headers: { Authorization: `Bearer ${token}` },
+                    params: { date: dateStr }
+                })
+            ]);
+
+            const { calo_goal, protein_goal, carb_goal, fat_goal } = resGoal.data;
+            // resSum.data có { calo, protein, carb, fat }
+            const {
+                calo: totalCalories,
+                protein: totalProtein,
+                carb: totalCarbs,
+                fat: totalFat
+            } = resSum.data;
+
+            // 3) Tính phần vượt/thấp
+            const warnings = [];
+            if (totalCalories > calo_goal) {
+                warnings.push(`Calories: ${totalCalories} kcal > ${calo_goal} kcal`);
+            }
+            if (totalProtein > protein_goal) {
+                warnings.push(`Protein: ${totalProtein} g > ${protein_goal} g`);
+            }
+            if (totalCarbs > carb_goal) {
+                warnings.push(`Carbs: ${totalCarbs} g > ${carb_goal} g`);
+            }
+            if (totalFat > fat_goal) {
+                warnings.push(`Fat: ${totalFat} g > ${fat_goal} g`);
+            }
+
+            // 4) Tính ratio macronutrient
+            let proteinCal = totalProtein * 4;
+            let carbCal = totalCarbs * 4;
+            let fatCal = totalFat * 9;
+
+            // Nếu do làm tròn, tổng calo macro vượt tổng calo, ép lại
+            if (proteinCal > totalCalories) proteinCal = totalCalories;
+            if (carbCal > totalCalories) carbCal = totalCalories;
+            if (fatCal > totalCalories) fatCal = totalCalories;
+
+            let proteinRatio = 0,
+                carbRatio = 0,
+                fatRatio = 0;
+            if (totalCalories > 0) {
+                proteinRatio = (proteinCal / totalCalories) * 100;
+                carbRatio = (carbCal / totalCalories) * 100;
+                fatRatio = (fatCal / totalCalories) * 100;
+            }
+
+            if (totalCalories > 0) {
+                if (proteinRatio < 10 || proteinRatio > 35) {
+                    warnings.push(
+                        `Protein ratio: ${proteinRatio.toFixed(0)}% (Recommended 10‒35%)`
+                    );
+                }
+                if (carbRatio < 45 || carbRatio > 65) {
+                    warnings.push(
+                        `Carbs ratio: ${carbRatio.toFixed(0)}% (Recommended 45‒65%)`
+                    );
+                }
+                if (fatRatio < 20 || fatRatio > 35) {
+                    warnings.push(
+                        `Fat ratio: ${fatRatio.toFixed(0)}% (Recommended 20‒35%)`
+                    );
+                }
+            }
+
+            // 5) Tạo popup và thông báo
+            if (warnings.length > 0) {
+                // --- A) Popup hiển thị message ngắn gọn ---
+                setPopup({
+                    open: true,
+                    message:
+                        '❗ Your meal exceeds your nutrition goals. Tap the bell icon for details.',
+                    success: false
+                });
+
+                // --- B) Gửi notification lên backend, format detail gọn hơn ---
+                try {
+                    // Dùng dấu • để gạch đầu dòng, xuống dòng giữa các item
+                    const detailText =
+                        warnings.map(w => `• ${w}`).join('\n');
+
+                    await axios.post(
+                        '/api/notifications',
+                        {
+                            message: 'Your meal exceeds your nutrition goals!',
+                            detail: detailText
+                        },
+                        {
+                            headers: { Authorization: `Bearer ${token}` }
+                        }
+                    );
+
+                    // Bắn event để Header lắng nghe
+                    localStorage.setItem('new-notification', Date.now());
+                } catch (err) {
+                    console.error('Error sending notification:', err);
+                }
+            } else {
+                // Nếu không có cảnh báo, thông báo thành công
+                setPopup({
+                    open: true,
+                    message: '✅ Meal saved and within nutritional goals!',
+                    success: true
+                });
+            }
+        } catch (err) {
+            console.error('Error in handleSaveMeal:', err);
+            setPopup({
+                open: true,
+                message: '❌ Unable to save! Please try again.',
+                success: false
+            });
         }
     };
 
@@ -630,18 +743,6 @@ const FoodSearch = () => {
                         ))}
                     </tbody>
                 </table>
-            </div>
-
-            {/* Phần gợi ý món ăn khỏe mạnh */}
-            <div className="suggestions-section">
-                <HealthierFoodSuggestions
-                    selectedFoods={selectedFoods}
-                    totals={totals}
-                    token={token}
-                    onAddFood={handleAddFood}
-                    autoSuggest={autoSuggest}
-                    onToggleAutoSuggest={() => setAutoSuggest((prev) => !prev)}
-                />
             </div>
         </div>
     );

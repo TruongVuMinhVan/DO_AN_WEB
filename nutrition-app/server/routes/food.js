@@ -5,8 +5,8 @@ const verifyToken = require('../middleware/auth');   // ← Thêm import này
 const fetch = require('node-fetch');
 
 async function fetchNutritionix(foodName) {
-    const APP_ID = '54ad9056';
-    const API_KEY = 'fc86a343882b8a1f25a02bbd028f6c1c';
+    const APP_ID = '80ee36fb';
+    const API_KEY = '9af2d3d982a7b28c2a4beac4e634ef99';
     const url = 'https://trackapi.nutritionix.com/v2/natural/nutrients';
 
     const res = await fetch(url, {

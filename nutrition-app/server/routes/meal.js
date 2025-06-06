@@ -5,8 +5,8 @@ const verifyToken = require('../middleware/auth');
 const fetch = require('node-fetch'); 
 
 async function fetchNutritionix(foodName) {
-    const APP_ID = '54ad9056';
-    const API_KEY = 'fc86a343882b8a1f25a02bbd028f6c1c';
+    const APP_ID = '80ee36fb';
+    const API_KEY = '9af2d3d982a7b28c2a4beac4e634ef99';
     const url = 'https://trackapi.nutritionix.com/v2/natural/nutrients';
 
     const res = await fetch(url, {
@@ -117,196 +117,322 @@ router.get('/meals/report', verifyToken, async (req, res) => {
 });
 
 // Lưu lịch sử bữa ăn vào lich_su_bua_an (dùng cho dashboard/report)
-router.post('/meals', verifyToken, async (req, res) => {
+router.post("/meals", verifyToken, async (req, res) => {
     const userId = req.user.id;
-    const { items, date } = req.body;
+    const { date, items } = req.body;
 
-    if (!Array.isArray(items) || !items.length) {
-        return res.status(400).json({ message: 'Chưa có món ăn nào để lưu.' });
+    if (!date || !Array.isArray(items) || items.length === 0) {
+        return res
+            .status(400)
+            .json({ message: "Thiếu date hoặc items không hợp lệ" });
     }
 
     try {
-        await db.promise().query('START TRANSACTION');
+        await db.promise().query("START TRANSACTION");
 
-        const [mealInsert] = await db.promise().query(
-            'INSERT INTO bua_an (user_id, date) VALUES (?, ?)',
-            [userId, date ? date + ' 00:00:00' : new Date()]
+        // 1) Tạo bữa ăn (bua_an)
+        const [buaAnResult] = await db.promise().query(
+            "INSERT INTO bua_an (user_id, date) VALUES (?, ?)",
+            [userId, `${date} 00:00:00`]
         );
-        const mealId = mealInsert.insertId;
+        const mealId = buaAnResult.insertId;
 
-        const lich_su_items = [];
+        // Mảng để lưu lịch sử (chỉ cần food_name, quantity, custom_weight)
+        const lichSuItems = [];
 
+        // 2) Với mỗi item, kiểm tra/insert mon_an, rồi insert mon_an_bua_an và thong_tin_dinh_duong_bua_an
         for (let item of items) {
-            const { food_name, quantity, custom_weight } = item;
+            // Chỉ lấy 3 field quan trọng
+            const foodName = item.food_name;
+            const quantity = item.quantity || 1;
+            const customWeight = item.custom_weight || 100; // nếu null thì mặc định 100
 
+            if (!foodName) continue;
+
+            // 2a) Lấy hoặc tạo mon_an (bảng mon_an) để lấy monAnId
             let [[found]] = await db.promise().query(
-                'SELECT id FROM mon_an WHERE ten_mon = ? LIMIT 1',
-                [food_name]
+                "SELECT id FROM mon_an WHERE ten_mon = ? LIMIT 1",
+                [foodName]
             );
-            let monAnId = found ? found.id : null;
-            if (!monAnId) {
-                const [inserted] = await db.promise().query(
-                    'INSERT INTO mon_an (ten_mon) VALUES (?)',
-                    [food_name]
+            let monAnId;
+            if (found) {
+                monAnId = found.id;
+            } else {
+                const [ins] = await db.promise().query(
+                    "INSERT INTO mon_an (ten_mon) VALUES (?)",
+                    [foodName]
                 );
-                monAnId = inserted.insertId;
+                monAnId = ins.insertId;
             }
 
+            // 2b) Insert vào mon_an_bua_an (liên kết bữa ăn – món ăn)
             await db.promise().query(
-                'INSERT INTO mon_an_bua_an (bua_an_id, mon_an_id, quantity, custom_weight) VALUES (?, ?, ?, ?)',
-                [mealId, monAnId, quantity, custom_weight || null]
+                "INSERT INTO mon_an_bua_an (bua_an_id, mon_an_id, quantity, custom_weight) VALUES (?, ?, ?, ?)",
+                [mealId, monAnId, quantity, customWeight]
             );
 
-            let [nutriRows] = await db.promise().query(
-                'SELECT calo, protein, carb, fat FROM thong_tin_dinh_duong WHERE mon_an_id = ? LIMIT 1',
+            // 2c) Lấy thông tin dinh dưỡng gốc cho món (trong 100g) từ bảng thong_tin_dinh_duong
+            const [[nutriRow]] = await db.promise().query(
+                "SELECT calo, protein, carb, fat FROM thong_tin_dinh_duong WHERE mon_an_id = ? LIMIT 1",
                 [monAnId]
             );
+            let calo100 = 0,
+                protein100 = 0,
+                carb100 = 0,
+                fat100 = 0;
 
-            let nutri;
-            if (!nutriRows.length) {
+            if (nutriRow) {
+                calo100 = nutriRow.calo;
+                protein100 = nutriRow.protein;
+                carb100 = nutriRow.carb;
+                fat100 = nutriRow.fat;
+            } else {
+                // Nếu chưa có trong DB thì fetch từ Nutritionix rồi insert vào thong_tin_dinh_duong
                 try {
-                    nutri = await fetchNutritionix(food_name);
+                    const fetched = await fetchNutritionix(foodName);
+                    calo100 = fetched.calo;
+                    protein100 = fetched.protein;
+                    carb100 = fetched.carb;
+                    fat100 = fetched.fat;
+
                     await db.promise().query(
                         `INSERT INTO thong_tin_dinh_duong (mon_an_id, calo, protein, carb, fat)
-                         VALUES (?, ?, ?, ?, ?)`,
-                        [monAnId, nutri.calo, nutri.protein, nutri.carb, nutri.fat]
+             VALUES (?, ?, ?, ?, ?)
+             ON DUPLICATE KEY UPDATE
+               calo = VALUES(calo),
+               protein = VALUES(protein),
+               carb = VALUES(carb),
+               fat = VALUES(fat)`,
+                        [monAnId, calo100, protein100, carb100, fat100]
                     );
-                } catch {
-                    nutri = { calo: 0, protein: 0, carb: 0, fat: 0 };
+                } catch (e) {
+                    console.error("Fetch nutritionix error:", e);
+                    // Để 0 nếu fetch lỗi
                 }
-            } else {
-                nutri = nutriRows[0];
             }
 
-            const weight = custom_weight || 100;
-            const factor = (weight * quantity) / 100;
+            // 2d) Tính trọng số: factor = (customWeight * quantity) / 100
+            const factor = (customWeight * quantity) / 100;
 
+            // 2e) Insert vào thong_tin_dinh_duong_bua_an
             await db.promise().query(
-                `INSERT INTO thong_tin_dinh_duong_bua_an (bua_an_id, mon_an_id, calo, protein, carb, fat)
-                 VALUES (?, ?, ?, ?, ?, ?)`,
-                        [
+                `INSERT INTO thong_tin_dinh_duong_bua_an 
+          (bua_an_id, mon_an_id, calo, protein, carb, fat)
+         VALUES (?, ?, ?, ?, ?, ?)`,
+                [
                     mealId,
-                            monAnId,
-                    nutri.calo * factor,
-                    nutri.protein * factor,
-                    nutri.carb * factor,
-                    nutri.fat * factor
-                        ]
-                    );
+                    monAnId,
+                    calo100 * factor,
+                    protein100 * factor,
+                    carb100 * factor,
+                    fat100 * factor
+                ]
+            );
 
-            lich_su_items.push({ food_name, quantity, custom_weight });
+            // Đẩy item gốc (chỉ 3 trường) vào lichSuItems để lưu trong lich_su_bua_an
+            lichSuItems.push({ food_name: foodName, quantity, custom_weight: customWeight });
         }
 
+        // 3) Lưu vào lich_su_bua_an (lưu cả JSON của lichSuItems để dùng cho report)
         await db.promise().query(
-            'INSERT INTO lich_su_bua_an (user_id, danh_sach_bua_an, date) VALUES (?, ?, ?)',
-            [userId, JSON.stringify(lich_su_items), date ? date + ' 00:00:00' : new Date()]
+            "INSERT INTO lich_su_bua_an (user_id, danh_sach_bua_an, date) VALUES (?, ?, ?)",
+            [userId, JSON.stringify(lichSuItems), `${date} 00:00:00`]
         );
 
-        await db.promise().query('COMMIT');
-        res.status(201).json({ message: 'Lưu bữa ăn thành công', mealId });
-                } catch (err) {
-        await db.promise().query('ROLLBACK');
-        console.error('Lỗi khi lưu bữa ăn:', err);
-        res.status(500).json({ message: 'Server error', error: err.message });
-                }
+        await db.promise().query("COMMIT");
+        return res.status(201).json({ message: "Lưu bữa ăn thành công", mealId });
+    } catch (err) {
+        await db.promise().query("ROLLBACK");
+        console.error("POST /api/meals error:", err);
+        return res
+            .status(500)
+            .json({ message: "Server error", error: err.message });
+    }
 });
 
 // PUT /meals - Cập nhật hoặc tạo mới bữa ăn và thông tin dinh dưỡng
-router.put('/meals', verifyToken, async (req, res) => {
+router.put("/meals", verifyToken, async (req, res) => {
     const userId = req.user.id;
     const { date, items } = req.body;
+
     if (!date || !Array.isArray(items)) {
-        return res.status(400).json({ message: 'Thiếu date hoặc items không hợp lệ' });
+        return res
+            .status(400)
+            .json({ message: "Thiếu date hoặc items không hợp lệ" });
     }
 
     try {
+        // 1) Kiểm tra trong lich_su_bua_an xem user + date đã có chưa
         const [[exists]] = await db.promise().query(
-            'SELECT id FROM lich_su_bua_an WHERE user_id = ? AND DATE(`date`) = ?',
+            `SELECT id 
+       FROM lich_su_bua_an 
+       WHERE user_id = ? AND DATE(date) = ?
+       LIMIT 1`,
             [userId, date]
         );
 
+        // Chuẩn bị simplifiedItems (chỉ 3 field) để lưu vào lich_su_bua_an
         const simplifiedItems = items.map(item => ({
             food_name: item.food_name,
             quantity: item.quantity,
-            custom_weight: item.custom_weight || null
+            custom_weight: item.custom_weight
         }));
 
         if (exists) {
+            // 2a) Nếu đã có lịch sử, update danh_sach_bua_an
             await db.promise().query(
-                'UPDATE lich_su_bua_an SET danh_sach_bua_an = ?, `date` = ? WHERE id = ?',
-                [JSON.stringify(simplifiedItems), date + ' 00:00:00', exists.id]
+                `UPDATE lich_su_bua_an 
+         SET danh_sach_bua_an = ?, date = ? 
+         WHERE id = ?`,
+                [JSON.stringify(simplifiedItems), `${date} 00:00:00`, exists.id]
             );
-            } else {
+        } else {
+            // 2b) Nếu chưa có, insert mới vào lich_su_bua_an
             await db.promise().query(
-                'INSERT INTO lich_su_bua_an (user_id, danh_sach_bua_an, `date`) VALUES (?, ?, ?)',
-                [userId, JSON.stringify(simplifiedItems), date + ' 00:00:00']
+                `INSERT INTO lich_su_bua_an (user_id, danh_sach_bua_an, date)
+         VALUES (?, ?, ?)`,
+                [userId, JSON.stringify(simplifiedItems), `${date} 00:00:00`]
             );
-            }
+        }
 
+        // 3) Tìm trong bua_an xem có bữa ăn chưa
         const [[mealRow]] = await db.promise().query(
-            'SELECT id FROM bua_an WHERE user_id = ? AND DATE(`date`) = ?',
+            `SELECT id 
+       FROM bua_an 
+       WHERE user_id = ? AND DATE(date) = ?
+       LIMIT 1`,
             [userId, date]
         );
 
         if (mealRow) {
+            // 4a) Nếu có bữa ăn, lấy mealId
             const mealId = mealRow.id;
 
-            await db.promise().query('DELETE FROM mon_an_bua_an WHERE bua_an_id = ?', [mealId]);
-            await db.promise().query('DELETE FROM thong_tin_dinh_duong_bua_an WHERE bua_an_id = ?', [mealId]);
+            // 5) Xóa hết các mon_an_bua_an và thong_tin_dinh_duong_bua_an cũ của meal này
+            await db
+                .promise()
+                .query("DELETE FROM mon_an_bua_an WHERE bua_an_id = ?", [mealId]);
+            await db
+                .promise()
+                .query("DELETE FROM thong_tin_dinh_duong_bua_an WHERE bua_an_id = ?", [
+                    mealId
+                ]);
 
+            // 6) Thêm lại tất cả các item mới (giống logic ở POST)
             for (let item of items) {
-                const [rows] = await db.promise().query(
-                    'SELECT id FROM mon_an WHERE ten_mon = ? LIMIT 1',
-                    [item.food_name]
-                );
-                if (!rows.length) continue;
-                const monAnId = rows[0].id;
+                const foodName = item.food_name;
+                const quantity = item.quantity || 1;
+                const customWeight = item.custom_weight || 100;
 
+                // Lấy/insert mon_an để lấy monAnId
+                let [[found]] = await db.promise().query(
+                    "SELECT id FROM mon_an WHERE ten_mon = ? LIMIT 1",
+                    [foodName]
+                );
+                let monAnId;
+                if (found) {
+                    monAnId = found.id;
+                } else {
+                    const [ins] = await db.promise().query(
+                        "INSERT INTO mon_an (ten_mon) VALUES (?)",
+                        [foodName]
+                    );
+                    monAnId = ins.insertId;
+                }
+
+                // Insert vào mon_an_bua_an
                 await db.promise().query(
-                    'INSERT INTO mon_an_bua_an (bua_an_id, mon_an_id, quantity, custom_weight) VALUES (?, ?, ?, ?)',
-                    [mealId, monAnId, item.quantity, item.custom_weight || null]
+                    "INSERT INTO mon_an_bua_an (bua_an_id, mon_an_id, quantity, custom_weight) VALUES (?, ?, ?, ?)",
+                    [mealId, monAnId, quantity, customWeight]
                 );
 
-                const [[nutri]] = await db.promise().query(
-                    'SELECT calo, protein, carb, fat FROM thong_tin_dinh_duong WHERE mon_an_id = ?',
+                // Lấy nutrition gốc
+                const [[nutriRow]] = await db.promise().query(
+                    "SELECT calo, protein, carb, fat FROM thong_tin_dinh_duong WHERE mon_an_id = ? LIMIT 1",
                     [monAnId]
                 );
-                if (!nutri) continue;
+                let calo100 = 0, protein100 = 0, carb100 = 0, fat100 = 0;
+                if (nutriRow) {
+                    calo100 = nutriRow.calo;
+                    protein100 = nutriRow.protein;
+                    carb100 = nutriRow.carb;
+                    fat100 = nutriRow.fat;
+                } else {
+                    // Nếu chưa có, fetch rồi insert
+                    try {
+                        const fetched = await fetchNutritionix(foodName);
+                        calo100 = fetched.calo;
+                        protein100 = fetched.protein;
+                        carb100 = fetched.carb;
+                        fat100 = fetched.fat;
 
-                const weight = item.custom_weight ?? 100;
-                const quantity = item.quantity ?? 1;
+                        await db.promise().query(
+                            `INSERT INTO thong_tin_dinh_duong (mon_an_id, calo, protein, carb, fat)
+               VALUES (?, ?, ?, ?, ?)
+               ON DUPLICATE KEY UPDATE
+                 calo = VALUES(calo),
+                 protein = VALUES(protein),
+                 carb = VALUES(carb),
+                 fat = VALUES(fat)`,
+                            [monAnId, calo100, protein100, carb100, fat100]
+                        );
+                    } catch (e) {
+                        console.error("Fetch nutritionix error:", e);
+                    }
+                }
 
-                const weightRatio = (weight * quantity) / 100;
+                // Tính factor
+                const factor = (customWeight * quantity) / 100;
 
-        // Lưu vào lich_su_bua_an (lúc này items đã có đủ dinh dưỡng)
-        await db.promise().query(
-                    `INSERT INTO thong_tin_dinh_duong_bua_an (bua_an_id, mon_an_id, calo, protein, carb, fat)
-                     VALUES (?, ?, ?, ?, ?, ?)`,
+                // Insert vào thong_tin_dinh_duong_bua_an
+                await db.promise().query(
+                    `INSERT INTO thong_tin_dinh_duong_bua_an 
+             (bua_an_id, mon_an_id, calo, protein, carb, fat)
+           VALUES (?, ?, ?, ?, ?, ?)`,
                     [
                         mealId,
                         monAnId,
-                        nutri.calo * weightRatio,
-                        nutri.protein * weightRatio,
-                        nutri.carb * weightRatio,
-                        nutri.fat * weightRatio
+                        calo100 * factor,
+                        protein100 * factor,
+                        carb100 * factor,
+                        fat100 * factor
                     ]
-        );
+                );
             }
+
+            // 7) Trả về success
+            return res.json({ message: "Cập nhật bữa ăn thành công" });
+        } else {
+            // 8a) Nếu chưa có bữa ăn nào trong bua_an, ta sẽ tạo y hệt giống POST
+            await db.promise().query(
+                "INSERT INTO bua_an (user_id, date) VALUES (?, ?)",
+                [userId, `${date} 00:00:00`]
+            );
+            // Giống y logic POST, nhưng để gọn tôi sẽ gọi lại POST - Cách nhanh:
+            // Chuyển hướng nội bộ sang POST /api/meals để xử lý tiếp
+            req.body = { date, items };
+            return router.handle(req, res);
         }
-
-        return res.json({ message: 'Cập nhật bữa ăn thành công' });
-
     } catch (err) {
-        console.error('Lỗi PUT /api/meals:', err);
-        return res.status(500).json({ message: 'Server error', error: err.message });
+        console.error("PUT /api/meals error:", err);
+        return res
+            .status(500)
+            .json({ message: "Server error", error: err.message });
     }
 });
 
 // routes/meal.js (hoặc file tương ứng)
-router.get('/meals', verifyToken, async (req, res) => {
+router.get("/meals", verifyToken, async (req, res) => {
     const userId = req.user.id;
-    const { date } = req.query; // ví dụ '2025-05-23'
+    const date = req.query.date; // ví dụ '2025-06-06'
+    if (!date) {
+        return res
+            .status(400)
+            .json({ message: "Missing date query parameter" });
+    }
+
     try {
+        // Lấy record trong lich_su_bua_an (lưu danh_sach_bua_an) của user tại ngày 'date'
         const sql = `
       SELECT danh_sach_bua_an
       FROM lich_su_bua_an
@@ -317,15 +443,16 @@ router.get('/meals', verifyToken, async (req, res) => {
         const [rows] = await db.promise().query(sql, [userId, date]);
 
         if (rows.length) {
-            // parses JSON string từ cột danh_sach_bua_an
+            // các item lúc lưu đã JSON.stringify(...) nên giờ parse lại
             const items = JSON.parse(rows[0].danh_sach_bua_an);
             return res.json({ items });
         }
-        // chưa có bữa ăn nào
-        return res.json({ items: [] });
+        return res.json({ items: [] }); // chưa có bữa ăn nào
     } catch (err) {
-        console.error('❌ Lỗi GET /api/meals:', err);
-        res.status(500).json({ message: 'Lỗi server', error: err.message });
+        console.error("GET /api/meals error:", err);
+        return res
+            .status(500)
+            .json({ message: "Server error", error: err.message });
     }
 });
 
@@ -371,71 +498,6 @@ router.get('/user/profile', verifyToken, async (req, res) => {
         res.status(500).json({ message: 'Server error', error: err.message });
     }
 });
-// Gợi ý món ăn lành mạnh hơn
-router.post('/foods/suggest-healthier', verifyToken, async (req, res) => {
-    const { food_name, currentNutrition, userGoal } = req.body;
-    if (!food_name || !currentNutrition) {
-        return res.status(400).json({ message: 'Thiếu thông tin món ăn hoặc dinh dưỡng hiện tại.' });
-    }
-
-    try {
-        // Gọi Nutritionix để tìm các món tương tự
-        const APP_ID = '54ad9056';
-        const API_KEY = 'fc86a343882b8a1f25a02bbd028f6c1c';
-        const searchRes = await fetch(`https://trackapi.nutritionix.com/v2/search/instant?query=${encodeURIComponent(food_name)}`, {
-            headers: {
-                'x-app-id': APP_ID,
-                'x-app-key': API_KEY
-            }
-        });
-        const searchData = await searchRes.json();
-        const commonFoods = searchData.common.slice(0, 5); // Lấy 5 món tương tự
-
-        const suggestions = [];
-
-        // Gọi dinh dưỡng chi tiết từng món
-        for (const food of commonFoods) {
-            const nutriRes = await fetch(`https://trackapi.nutritionix.com/v2/natural/nutrients`, {
-                method: 'POST',
-                headers: {
-                    'x-app-id': APP_ID,
-                    'x-app-key': API_KEY,
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ query: food.food_name })
-            });
-            const nutriData = await nutriRes.json();
-            if (!nutriData.foods || !nutriData.foods.length) continue;
-
-            const f = nutriData.foods[0];
-            const isHealthier =
-                f.nf_calories < currentNutrition.calo &&
-                f.nf_total_fat < currentNutrition.fat &&
-                f.nf_protein >= currentNutrition.protein * 0.8;
-
-            if (isHealthier) {
-                suggestions.push({
-                    food_name: f.food_name,
-                    photo: f.photo?.thumb,
-                    calo: f.nf_calories,
-                    protein: f.nf_protein,
-                    fat: f.nf_total_fat,
-                    carb: f.nf_total_carbohydrate
-                });
-            }
-        }
-
-        if (!suggestions.length) {
-            return res.json({ message: 'Không tìm thấy món thay thế lành mạnh hơn.' });
-        }
-
-        res.json({ suggestions });
-    } catch (err) {
-        console.error('Lỗi khi đề xuất món ăn:', err);
-        res.status(500).json({ message: 'Lỗi server', error: err.message });
-    }
-});
-
 
 module.exports = router;
 

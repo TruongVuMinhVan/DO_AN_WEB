@@ -1,13 +1,12 @@
 ﻿const express = require("express");
 const router = express.Router();
 const db = require("../db");
-const verifyToken = require('../middleware/auth'); 
+const verifyToken = require('../middleware/auth');
 const bcrypt = require('bcrypt');
 const jwt = require("jsonwebtoken");
 const SECRET_KEY = process.env.SECRET_KEY || "your_secret_key";
 const multer = require('multer');
 const path = require('path');
-
 
 // 🧑 Lấy danh sách người dùng
 router.get("/user", (req, res) => {
@@ -21,7 +20,6 @@ router.get("/user", (req, res) => {
 });
 
 // 📝 Đăng ký người dùng
-// POST /api/register
 router.post("/register", async (req, res) => {
     const { name, email, password, age, weight, height, gender } = req.body;
     if (!name || !email || !password || !age || !weight || !height || !gender) {
@@ -29,32 +27,24 @@ router.post("/register", async (req, res) => {
     }
 
     try {
-        // Hash mật khẩu
         const hash = await bcrypt.hash(password, 10);
-
-        // Đường dẫn avatar mặc định (file default.png nằm trong public/avatars)
         const defaultAvatar = "/avatars/default.png";
 
-        // Chèn thêm cột avatarUrl
         const sql = `
-      INSERT INTO user
-        (name, email, password, age, weight, height, gender, avatarUrl)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-    `;
-        db.query(
-            sql,
-            [name, email, hash, age, weight, height, gender, defaultAvatar],
-            (err, result) => {
+            INSERT INTO user (name, email, password, age, weight, height, gender, avatarUrl)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        `;
+
+        db.query(sql, [name, email, hash, age, weight, height, gender, defaultAvatar], (err, result) => {
             if (err) {
                 console.error("❌ Lỗi khi thêm người dùng:", err.message);
                 return res.status(500).json({ error: "Đăng ký thất bại.", details: err.message });
             }
-                res.status(201).json({
-                    message: "Đăng ký thành công!",
-                    userId: result.insertId
+            res.status(201).json({
+                message: "Đăng ký thành công!",
+                userId: result.insertId
+            });
         });
-            }
-        );
     } catch (e) {
         console.error("❌ Hash error:", e.message);
         res.status(500).json({ error: "Lỗi khi mã hóa mật khẩu" });
@@ -78,10 +68,10 @@ router.post("/login", (req, res) => {
 router.get("/profile", verifyToken, (req, res) => {
     const userId = req.user.id;
     const sql = `
-    SELECT id, name, email, age, weight, height, gender, goal, allergies, avatarUrl
-    FROM user
-    WHERE id = ?
-  `;
+        SELECT id, name, email, age, weight, height, gender, goal, activity_level, avatarUrl
+        FROM user
+        WHERE id = ?
+    `;
     db.query(sql, [userId], (err, results) => {
         if (err) return res.status(500).json({ error: err.message });
         if (!results.length) return res.status(404).json({ message: "User not found" });
@@ -92,15 +82,15 @@ router.get("/profile", verifyToken, (req, res) => {
 // Cập nhật profile (không password)
 router.put("/profile", verifyToken, (req, res) => {
     const userId = req.user.id;
-    const { name, email, age, gender, goal, allergies, weight, height } = req.body;
+    const { name, email, age, gender, goal, activity_level, weight, height } = req.body;
 
     const sql = `
         UPDATE user
-        SET name = ?, email = ?, age = ?, gender = ?, goal = ?, allergies = ?, weight = ?, height = ?
+        SET name = ?, email = ?, age = ?, gender = ?, goal = ?, activity_level = ?, weight = ?, height = ?
         WHERE id = ?
     `;
 
-    db.query(sql, [name, email, age, gender, goal, allergies, weight, height, userId], (err, result) => {
+    db.query(sql, [name, email, age, gender, goal, activity_level, weight, height, userId], (err, result) => {
         if (err) {
             console.error("❌ Lỗi khi cập nhật profile:", err.message);
             return res.status(500).json({ error: err.message });
@@ -180,6 +170,7 @@ const storage = multer.diskStorage({
         cb(null, `avatar_${req.user.id}${ext}`);
     }
 });
+
 const upload = multer({ storage });
 
 // POST /api/profile/avatar
@@ -191,7 +182,6 @@ router.post(
         if (!req.file) return res.status(400).json({ message: 'Chưa chọn file' });
         const avatarUrl = `/avatars/${req.file.filename}`;
 
-        // Lưu đường dẫn vào database
         db.query(
             'UPDATE user SET avatarUrl = ? WHERE id = ?',
             [avatarUrl, req.user.id],
@@ -203,4 +193,35 @@ router.post(
     }
 );
 
-module.exports = router; 
+const addNotification = (userId, message) => {
+    const sql = 'INSERT INTO notifications (user_id, message) VALUES (?, ?)';
+    db.query(sql, [userId, message], (err) => {
+        if (err) {
+            console.error("Không thể thêm thông báo", err.message);
+        }
+    });
+};
+
+// POST /api/nutrition-goal
+router.post('/nutrition-goal', verifyToken, async (req, res) => {
+    const { calories, protein, fat, carbs } = req.body;
+    const userId = req.user.id;
+
+    // Logic thêm vào bảng ke_hoach_dinh_duong
+    await db.promise().query(`
+        INSERT INTO ke_hoach_dinh_duong (user_id, calo_goal, protein_goal, fat_goal, carb_goal)
+        VALUES (?, ?, ?, ?, ?)
+        ON DUPLICATE KEY UPDATE
+        calo_goal = VALUES(calo_goal),
+        protein_goal = VALUES(protein_goal),
+        fat_goal = VALUES(fat_goal),
+        carb_goal = VALUES(carb_goal)
+    `, [userId, calories, protein, fat, carbs]);
+
+    // Thêm thông báo
+    addNotification(userId, "Your nutrition goals have been updated.");
+
+    res.json({ message: 'Your nutrition goals have been saved.' });
+});
+
+module.exports = router;

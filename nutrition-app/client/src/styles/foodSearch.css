@@ -91,6 +91,8 @@
     box-shadow: 0 2px 8px #60a5fa12;
     padding-bottom: 1rem;
     overflow: hidden;
+    width: 100%;
+    max-width: 800px;
 }
 
 .selected-panel-top {

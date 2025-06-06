@@ -3,31 +3,31 @@ import { useNavigate } from 'react-router-dom';
 import '../styles/login.css';
 
 const LoginPage = () => {
+    const [error, setError] = useState('');
     const navigate = useNavigate();
+
     const [formData, setFormData] = useState({
         email: '',
         password: '',
     });
-    const [error, setError] = useState('');
 
     const handleChange = e => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
 
-    const handleSubmit = async e => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-
         try {
             const res = await fetch('/api/login', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(formData),
             });
-
             const data = await res.json();
             if (res.ok) {
                 localStorage.setItem('token', data.token);
-                navigate('/home');
+                // Navigate to "/" (which the router will redirect to "/home" if token exists)
+                navigate('/app/home', { replace: true });
             } else {
                 setError(data.message || 'Login failed');
             }

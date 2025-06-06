@@ -10,6 +10,8 @@ const userRoutes = require("./routes/user");
 const historyRoutes = require('./routes/history');
 const mealRoutes = require('./routes/meal');
 const physicalInfoRoutes = require('./routes/physicalInfo');
+const nutritionRoutes = require("./routes/nutrition");
+const notificationRoutes = require("./routes/notifications");
 app.use(cors());
 app.use(express.json());
 
@@ -39,8 +41,15 @@ app.use("/api", historyRoutes);
 // ✅ Dùng server/meal.js
 app.use('/api', mealRoutes);
 
+// ✅ Dùng server/nutrition.js
+app.use('/api', nutritionRoutes);
+
+// ✅ Dùng server/notification.js
+app.use('/api', notificationRoutes);
+
 // ✅ Dùng server/food.js
 app.use('/api/foods', require('./routes/food'));
+
 // ✅ Dùng server/physical-info.js
 app.use('/api/physicalInfo', physicalInfoRoutes);
 // ✅ Start server
