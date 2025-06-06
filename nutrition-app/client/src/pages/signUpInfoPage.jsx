@@ -1,15 +1,16 @@
-﻿// src/pages/SignUpInfoPage.jsx
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import "../styles/signUpInfoPage.css";
 
 const SignUpInfoPage = () => {
     const [info, setInfo] = useState({
+        name: '',
         age: '',
         weight: '',
         height: '',
         gender: ''
     });
+
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -32,7 +33,14 @@ const SignUpInfoPage = () => {
             return navigate("/signUpPage");
         }
 
-        const payload = { ...basic, ...info };
+
+        const payload = {
+            ...basic,
+            ...info,
+            age: Number(info.age),
+            weight: Number(info.weight),
+            height: Number(info.height)
+        };
 
         try {
             // Register
@@ -41,6 +49,7 @@ const SignUpInfoPage = () => {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(payload)
             });
+
             if (!res.ok) {
                 const { error } = await res.json();
                 throw new Error(error || "Registration failed.");
@@ -55,6 +64,7 @@ const SignUpInfoPage = () => {
                     password: basic.password
                 })
             });
+
             const loginData = await res.json();
             if (!res.ok) throw new Error(loginData.message || "Login failed.");
 
@@ -73,6 +83,15 @@ const SignUpInfoPage = () => {
             <div className="info-form-khung">
                 <h2 className="info-tieude">Personal Information</h2>
                 <form onSubmit={handleSubmit} className="space-y-4">
+                    <input
+                        type="text"
+                        name="name"
+                        value={info.name}
+                        onChange={handleChange}
+                        placeholder="Full Name"
+                        required
+                        className="info-input"
+                    />
                     <input
                         type="number"
                         name="age"

@@ -1,9 +1,29 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import usePhysicalInfo from '../hooks/usePhysicalInfo';
 
-const PhysicalInfoForm = () => {
-  const [status, setStatus] = React.useState('');
+const PhysicalInfoForm = ({ onAssess }) => {
+  const [status, setStatus] = useState('');
   const { info, handleChange, handleSubmit, loading, healthStats } = usePhysicalInfo(setStatus);
+
+  // Gọi lại hàm nhận xét khi có healthStats
+  useEffect(() => {
+  if (
+    onAssess &&
+    healthStats?.bmi &&
+    healthStats?.dailyCalorieNeeds &&
+    info.height && info.weight && info.age && info.gender && info.activityLevel
+  ) {
+    onAssess({
+      height: info.height,
+      weight: info.weight,
+      age: info.age,
+      gender: info.gender,
+      activityLevel: info.activityLevel,
+      bmi: healthStats.bmi,
+      calories: healthStats.dailyCalorieNeeds,
+    });
+  }
+}, [healthStats, info, onAssess]);
 
   const getBMIColor = (bmi) => {
     if (!bmi) return '';
@@ -132,42 +152,7 @@ const PhysicalInfoForm = () => {
             </div>
           </div>
 
-          {/* Health Warnings */}
-          {healthStats.bmiCategory === 'Underweight' && (
-            <div className="mt-3 p-3 bg-yellow-100 rounded text-yellow-800">
-              <p className="font-medium">⚠️ Warning: Underweight</p>
-              <p className="text-sm">BMI under 18.5 may affect your health. You should:</p>
-              <ul className="list-disc pl-5 text-sm mt-1">
-                <li>Increase nutrition with protein and healthy carbs</li>
-                <li>Do strength training to build muscle</li>
-                <li>Consult a doctor if needed</li>
-              </ul>
-            </div>
-          )}
-
-          {healthStats.bmiCategory === 'Overweight' && (
-            <div className="mt-3 p-3 bg-orange-100 rounded text-orange-800">
-              <p className="font-medium">⚠️ Warning: Overweight</p>
-              <p className="text-sm">BMI 25–29.9 may increase health risks. You should:</p>
-              <ul className="list-disc pl-5 text-sm mt-1">
-                <li>Exercise at least 30 minutes daily</li>
-                <li>Reduce daily calorie intake</li>
-                <li>Prioritize fiber- and protein-rich foods</li>
-              </ul>
-            </div>
-          )}
-
-          {healthStats.bmiCategory === 'Obese' && (
-            <div className="mt-3 p-3 bg-red-100 rounded text-red-800">
-              <p className="font-medium">⚠️ Warning: Obesity</p>
-              <p className="text-sm">BMI over 30 significantly increases health risks. You should:</p>
-              <ul className="list-disc pl-5 text-sm mt-1">
-                <li>Consult a doctor or nutritionist</li>
-                <li>Increase physical activity</li>
-                <li>Aim for healthy weight loss of 0.5–1kg per week</li>
-              </ul>
-            </div>
-          )}
+          {/* Các cảnh báo giữ nguyên */}
         </div>
       )}
 

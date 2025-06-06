@@ -1,4 +1,5 @@
-﻿const express = require('express');
+﻿
+const express = require('express');
 const router = express.Router();
 const db = require('../db'); // hoặc đường dẫn tới module DB bạn dùng
 const verifyToken = require('../middleware/auth');   // ← Thêm import này

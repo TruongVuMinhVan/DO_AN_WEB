@@ -3,9 +3,8 @@
     "",
     "\\client",
     "\\client\\src",
-    "\\client\\src\\styles",
-    "\\server\\routes"
+    "\\client\\src\\styles"
   ],
-  "SelectedNode": "\\client\\src\\styles\\Popup.css",
+  "SelectedNode": "\\client\\src\\styles\\dashboard.css",
   "PreviewInSolutionExplorer": false
 }

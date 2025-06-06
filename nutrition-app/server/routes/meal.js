@@ -162,7 +162,7 @@ router.post("/meals", verifyToken, async (req, res) => {
                     "INSERT INTO mon_an (ten_mon) VALUES (?)",
                     [foodName]
                 );
-                monAnId = ins.insertId;
+                monAnId = inserted.insertId;
             }
 
             // 2b) Insert vào mon_an_bua_an (liên kết bữa ăn – món ăn)

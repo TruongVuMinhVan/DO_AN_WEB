@@ -1,4 +1,4 @@
-﻿// src/components/NutritionPie.jsx
+// src/components/NutritionPie.jsx
 import React from 'react';
 import {
     Chart as ChartJS,

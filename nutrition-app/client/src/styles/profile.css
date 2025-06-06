@@ -276,6 +276,15 @@
     text-align: center;
 }
 
+    .info-list li {
+        margin-bottom: 0.75rem;
+        font-size: 0.95rem;
+    }
+
+        .info-list li strong {
+            color: #374151;
+        }
+
 .btn-save {
     background-color: #14b8a6;
     color: white;

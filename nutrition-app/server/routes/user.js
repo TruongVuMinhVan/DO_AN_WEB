@@ -8,6 +8,8 @@ const SECRET_KEY = process.env.SECRET_KEY || "your_secret_key";
 const multer = require('multer');
 const path = require('path');
 
+const JWT_SECRET = process.env.JWT_SECRET || "your_secret_key";
+
 // 🧑 Lấy danh sách người dùng
 router.get("/user", (req, res) => {
     db.query("SELECT * FROM user", (err, results) => {
@@ -51,20 +53,37 @@ router.post("/register", async (req, res) => {
     }
 });
 
-// Đăng nhập
+// 🔐 Đăng nhập
 router.post("/login", (req, res) => {
     const { email, password } = req.body;
-    db.query("SELECT * FROM user WHERE email = ?", [email], async (err, rows) => {
-        if (err) return res.status(500).json({ message: "Lỗi server" });
-        if (rows.length === 0) return res.status(401).json({ message: "Email không tồn tại" });
+    if (!email || !password) {
+        return res.status(400).json({ message: "Thiếu email hoặc mật khẩu" });
+    }
+
+    db.query("SELECT * FROM user WHERE email = ?", [email], (err, rows) => {
+        if (err) {
+            console.error("❌ Lỗi truy vấn:", err.message);
+            return res.status(500).json({ message: "Lỗi server" });
+        }
+        if (!rows.length) {
+            return res.status(401).json({ message: "Email không tồn tại" });
+        }
         const user = rows[0];
-        const match = await bcrypt.compare(password, user.password);
-        if (!match) return res.status(401).json({ message: "Sai mật khẩu" });
-        const token = jwt.sign({ id: user.id }, SECRET_KEY, { expiresIn: "1h" });
-        res.json({ token });
+        bcrypt.compare(password, user.password, (err, match) => {
+            if (err) {
+                console.error("❌ Lỗi khi so sánh mật khẩu:", err.message);
+                return res.status(500).json({ message: "Lỗi khi xác thực người dùng" });
+            }
+            if (!match) {
+                return res.status(401).json({ message: "Sai mật khẩu" });
+            }
+            const token = jwt.sign({ id: user.id }, JWT_SECRET, { expiresIn: "2h" });
+            res.json({ token });
+        });
     });
 });
 
+// 👤 Lấy thông tin profile
 router.get("/profile", verifyToken, (req, res) => {
     const userId = req.user.id;
     const sql = `
@@ -79,7 +98,7 @@ router.get("/profile", verifyToken, (req, res) => {
     });
 });
 
-// Cập nhật profile (không password)
+// ✏️ Cập nhật profile
 router.put("/profile", verifyToken, (req, res) => {
     const userId = req.user.id;
     const { name, email, age, gender, goal, activity_level, weight, height } = req.body;
@@ -99,7 +118,8 @@ router.put("/profile", verifyToken, (req, res) => {
     });
 });
 
-router.put("/profile/password", verifyToken, async (req, res) => {
+// 🔑 Đổi mật khẩu
+router.put("/profile/password", verifyToken, (req, res) => {
     const userId = req.user.id;
     const { oldPassword, newPassword } = req.body;
 
@@ -107,48 +127,38 @@ router.put("/profile/password", verifyToken, async (req, res) => {
         return res.status(400).json({ message: "Both old and new passwords are required" });
     }
 
-    try {
-        db.query("SELECT password FROM user WHERE id = ?", [userId], async (err, results) => {
-            if (err) return res.status(500).json({ error: err.message });
-            if (!results.length) return res.status(404).json({ message: "User not found" });
+    db.query("SELECT password FROM user WHERE id = ?", [userId], (err, results) => {
+        if (err) return res.status(500).json({ error: err.message });
+        if (!results.length) return res.status(404).json({ message: "User not found" });
 
-            const currentHash = results[0].password;
-
-            let match;
-            try {
-                if (!currentHash || typeof currentHash !== 'string') {
-                    throw new Error("Invalid password hash from DB");
-                }
-                match = await bcrypt.compare(oldPassword, currentHash);
-            } catch (err) {
+        const currentHash = results[0].password;
+        if (!currentHash || typeof currentHash !== 'string') {
+            return res.status(500).json({ message: "Invalid password hash from DB" });
+        }
+        bcrypt.compare(oldPassword, currentHash, (err, match) => {
+            if (err) {
                 console.error("Compare error:", err.message);
                 return res.status(500).json({ message: "Error comparing passwords" });
             }
-
             if (!match) {
                 return res.status(403).json({ message: "Old password is incorrect" });
             }
-
-            try {
-                const newHash = await bcrypt.hash(newPassword, 10);
+            bcrypt.hash(newPassword, 10, (err, newHash) => {
+                if (err) return res.status(500).json({ message: "Error hashing new password" });
                 db.query("UPDATE user SET password = ? WHERE id = ?", [newHash, userId], (err) => {
                     if (err) return res.status(500).json({ error: err.message });
                     return res.json({ message: "Password changed successfully" });
                 });
-            } catch (err) {
-                return res.status(500).json({ message: "Error hashing new password" });
-            }
+            });
         });
-    } catch (err) {
-        console.error("Unexpected error:", err);
-        return res.status(500).json({ message: "Unexpected server error" });
-    }
+    });
 });
 
+// ❌ Xoá tài khoản
 router.delete('/profile', verifyToken, (req, res) => {
     const userId = req.user.id;
-    console.log("🧠 User nhận được từ token:", req.user);
     const sql = "DELETE FROM user WHERE id = ?";
+
     db.query(sql, [userId], (err, result) => {
         if (err) {
             console.error("❌ Xoá thất bại:", err.message);
@@ -220,6 +230,11 @@ router.post('/nutrition-goal', verifyToken, async (req, res) => {
 
     // Thêm thông báo
     addNotification(userId, "Your nutrition goals have been updated.");
+const upload = multer({ storage });
+
+router.post('/profile/avatar', verifyToken, upload.single('avatar'), (req, res) => {
+    if (!req.file) return res.status(400).json({ message: 'Chưa chọn file' });
+    const avatarUrl = `/avatars/${req.file.filename}`;
 
     res.json({ message: 'Your nutrition goals have been saved.' });
 });

@@ -5,11 +5,15 @@ const db = require("./db");
 const path = require('path');
 const app = express();
 const PORT = 5000;
-// ✅ Import các route
-const userRoutes = require("./routes/user"); 
+const verifyToken = require('./middleware/auth');
+
+const userRoutes = require("./routes/user");
 const historyRoutes = require('./routes/history');
 const mealRoutes = require('./routes/meal');
 const physicalInfoRoutes = require('./routes/physicalInfo');
+const explainAlternativeRoute = require('./routes/explainAlternative');
+const aiSuggestionRouter = require('./routes/AI-suggestion');
+const authRoutes = require('./routes/auth');
 const nutritionRoutes = require("./routes/nutrition");
 const notificationRoutes = require("./routes/notifications");
 app.use(cors());
@@ -31,14 +35,13 @@ app.get("/test-db", (req, res) => {
         res.json({ status: "success", result: result[0].result });
     });
 });
+app.use('/api', authRoutes);
+app.use('/api/foods/explain-alternative', explainAlternativeRoute);
 
 // ✅ Dùng routes/user.js
 app.use('/api', userRoutes);
-
-// ✅ Dùng server/history.js
+app.use('/api/foods/ai-suggestions', verifyToken, aiSuggestionRouter);
 app.use("/api", historyRoutes);
-
-// ✅ Dùng server/meal.js
 app.use('/api', mealRoutes);
 
 // ✅ Dùng server/nutrition.js
@@ -52,7 +55,7 @@ app.use('/api/foods', require('./routes/food'));
 
 // ✅ Dùng server/physical-info.js
 app.use('/api/physicalInfo', physicalInfoRoutes);
-// ✅ Start server
+
 app.listen(PORT, () => {
     console.log(`🚀 Server is running at http://localhost:${PORT}`);
 });

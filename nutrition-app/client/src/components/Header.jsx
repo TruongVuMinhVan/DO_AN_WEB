@@ -125,30 +125,30 @@ const Header = () => {
 
     return (
         <>
-            <div className="notif-container" ref={panelRef}>
-                <button
-                    className="notif-btn"
-                    onClick={() => setOpen(prev => !prev)}
-                    title="Notifications"
-                >
-                    <FontAwesomeIcon icon={faBell} />
+        <div className="notif-container" ref={panelRef}>
+            <button
+                className="notif-btn"
+                onClick={() => setOpen(prev => !prev)}
+                title="Notifications"
+            >
+                <FontAwesomeIcon icon={faBell} />
                     {notifications.some(n => n.is_read === 0) && <span className="notif-dot" />}
-                </button>
+            </button>
 
-                {open && (
-                    <div className="notif-panel">
-                        <div className="panel-header">
-                            <span>Notifications</span>
-                            <button
-                                className="close-btn"
-                                onClick={() => setOpen(false)}
-                                title="Close"
-                            >
-                                <FontAwesomeIcon icon={faTimes} />
-                            </button>
-                        </div>
+            {open && (
+                <div className="notif-panel">
+                    <div className="panel-header">
+                        <span>Notifications</span>
+                        <button
+                            className="close-btn"
+                            onClick={() => setOpen(false)}
+                            title="Close"
+                        >
+                            <FontAwesomeIcon icon={faTimes} />
+                        </button>
+                    </div>
 
-                        <div className="notif-content">
+                    <div className="notif-content">
                             {notifications.length === 0 ? (
                                 <p>No notifications.</p>
                             ) : (
@@ -181,10 +181,10 @@ const Header = () => {
                                     Mark all as read
                                 </button>
                             )}
-                        </div>
                     </div>
-                )}
-            </div>
+                </div>
+            )}
+        </div>
 
             {/* Popup hiển thị chi tiết thông báo */}
             <Popup

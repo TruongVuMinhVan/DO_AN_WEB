@@ -25,7 +25,7 @@ const Popup = ({ open, message, success, onClose }) => {
             <div
                 ref={panelRef}
                 className={`popup-box ${success ? 'success' : 'error'}`}
-            >
+                        >
                 {/* 
           Sửa ở đây: thêm style white-space: pre-wrap 
           để giữ nguyên dấu xuống dòng (\n) trong message 
@@ -35,8 +35,13 @@ const Popup = ({ open, message, success, onClose }) => {
                 </div>
                 <button onClick={onClose} className="popup-close-btn">
                     Close
-                </button>
-            </div>
+                        </button>
+                    </div>
+                    <div className="notif-content">
+                        <p>No new notifications.</p>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

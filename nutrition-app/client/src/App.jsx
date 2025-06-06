@@ -1,8 +1,7 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Routes, Route, Outlet, Navigate } from 'react-router-dom';
-
-import Login from './pages/login';
-import Signup from './pages/signUpPage';
+import Login from "./pages/login";
+import Signup from "./pages/signUpPage";
 import SignUpInfoPage from './pages/signUpInfoPage';
 import Sidebar from './components/sidebar';
 import Dashboard from './components/Dashboard';
@@ -19,6 +18,10 @@ import NotFound from './pages/notFound';
 import RequireAuth from './components/RequireAuth';
 
 // Layout wrapper for all protected pages
+import Home from './pages/Home';
+import HealthierSuggestionsPage from './pages/HealthierSuggestionsPage';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import 'bootstrap-icons/font/bootstrap-icons.css';
 const Layout = () => {
     const [collapsed, setCollapsed] = useState(false);
     const toggleSidebar = () => setCollapsed(!collapsed);

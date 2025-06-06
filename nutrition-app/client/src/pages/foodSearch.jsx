@@ -1,4 +1,4 @@
-﻿// src/pages/FoodSearch.jsx
+// src/pages/FoodSearch.jsx
 import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
