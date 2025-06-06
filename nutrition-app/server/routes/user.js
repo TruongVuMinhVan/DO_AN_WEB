@@ -22,35 +22,76 @@ router.get("/user", (req, res) => {
 });
 
 // 📝 Đăng ký người dùng
-router.post("/register", async (req, res) => {
+//router.post("/register", async (req, res) => {
+//    const { name, email, password, age, weight, height, gender } = req.body;
+//    if (!name || !email || !password || !age || !weight || !height || !gender) {
+//        return res.status(400).json({ error: "Vui lòng nhập đầy đủ tất cả thông tin." });
+//    }
+
+//    try {
+//        const hash = await bcrypt.hash(password, 10);
+//        const defaultAvatar = "/avatars/default.png";
+
+//        const sql = `
+//            INSERT INTO user (name, email, password, age, weight, height, gender, avatarUrl)
+//            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+//        `;
+
+//        db.query(sql, [name, email, hash, age, weight, height, gender, defaultAvatar], (err, result) => {
+//            if (err) {
+//                console.error("❌ Lỗi khi thêm người dùng:", err.message);
+//                return res.status(500).json({ error: "Đăng ký thất bại.", details: err.message });
+//            }
+//            res.status(201).json({
+//                message: "Đăng ký thành công!",
+//                userId: result.insertId
+//            });
+//        });
+//    } catch (e) {
+//        console.error("❌ Hash error:", e.message);
+//        res.status(500).json({ error: "Lỗi khi mã hóa mật khẩu" });
+//    }
+//});
+
+router.post("/register", (req, res) => {
     const { name, email, password, age, weight, height, gender } = req.body;
     if (!name || !email || !password || !age || !weight || !height || !gender) {
         return res.status(400).json({ error: "Vui lòng nhập đầy đủ tất cả thông tin." });
     }
 
-    try {
-        const hash = await bcrypt.hash(password, 10);
-        const defaultAvatar = "/avatars/default.png";
+    // Kiểm tra email đã tồn tại
+    db.query('SELECT id FROM user WHERE email = ?', [email], (err, results) => {
+        if (err) {
+            console.error("❌ Lỗi khi kiểm tra email:", err.message);
+            return res.status(500).json({ error: "Lỗi khi kiểm tra email!" });
+        }
+        if (results.length > 0) {
+            return res.status(400).json({ error: "Email đã tồn tại!" });
+        }
 
-        const sql = `
-            INSERT INTO user (name, email, password, age, weight, height, gender, avatarUrl)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-        `;
-
-        db.query(sql, [name, email, hash, age, weight, height, gender, defaultAvatar], (err, result) => {
+        // Hash password và insert user mới
+        bcrypt.hash(password, 10, (err, hash) => {
             if (err) {
-                console.error("❌ Lỗi khi thêm người dùng:", err.message);
-                return res.status(500).json({ error: "Đăng ký thất bại.", details: err.message });
+                console.error("❌ Hash error:", err.message);
+                return res.status(500).json({ error: "Lỗi khi mã hóa mật khẩu" });
             }
-            res.status(201).json({
-                message: "Đăng ký thành công!",
-                userId: result.insertId
+            const defaultAvatar = "/avatars/default.png";
+            const sql = `
+                INSERT INTO user (name, email, password, age, weight, height, gender, avatarUrl)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            `;
+            db.query(sql, [name, email, hash, age, weight, height, gender, defaultAvatar], (err, result) => {
+                if (err) {
+                    console.error("❌ Lỗi khi thêm người dùng:", err.message);
+                    return res.status(500).json({ error: "Đăng ký thất bại.", details: err.message });
+                }
+                res.status(201).json({
+                    message: "Đăng ký thành công!",
+                    userId: result.insertId
+                });
             });
         });
-    } catch (e) {
-        console.error("❌ Hash error:", e.message);
-        res.status(500).json({ error: "Lỗi khi mã hóa mật khẩu" });
-    }
+    });
 });
 
 // 🔐 Đăng nhập
@@ -230,13 +271,14 @@ router.post('/nutrition-goal', verifyToken, async (req, res) => {
 
     // Thêm thông báo
     addNotification(userId, "Your nutrition goals have been updated.");
-const upload = multer({ storage });
+    const upload = multer({ storage });
 
-router.post('/profile/avatar', verifyToken, upload.single('avatar'), (req, res) => {
-    if (!req.file) return res.status(400).json({ message: 'Chưa chọn file' });
-    const avatarUrl = `/avatars/${req.file.filename}`;
+    router.post('/profile/avatar', verifyToken, upload.single('avatar'), (req, res) => {
+        if (!req.file) return res.status(400).json({ message: 'Chưa chọn file' });
+        const avatarUrl = `/avatars/${req.file.filename}`;
 
-    res.json({ message: 'Your nutrition goals have been saved.' });
+        res.json({ message: 'Your nutrition goals have been saved.' });
+    });
 });
 
 module.exports = router;

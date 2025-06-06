@@ -24,7 +24,6 @@ const Profile = () => {
     const [popupSuccess, setPopupSuccess] = useState(true);
     const navigate = useNavigate();
     const token = localStorage.getItem('token');
-    const [avatarFile, setAvatarFile] = useState(null);
 
     //useEffect(() => {
     //    if (!token) return navigate('/login');

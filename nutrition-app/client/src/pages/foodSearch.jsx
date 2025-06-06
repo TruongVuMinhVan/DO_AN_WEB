@@ -11,7 +11,7 @@ import '../styles/foodSearch.css';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 //Import cảnh báo popup
-import Popup from '../components/Popup';    
+import Popup from '../components/Popup';
 
 function scaleNutrition(food) {
     const weight = Number(food.custom_weight);
@@ -45,7 +45,7 @@ const FoodSearch = () => {
     const [q, setQ] = useState('');
     const [results, setResults] = useState([]);
     const [history, setHistory] = useState([]);
-    const [detail, setDetail] = useState(null);
+    const [setDetail] = useState(null);
     const [selectedFoods, setSelectedFoods] = useState([]);
     const [existingFoods, setExistingFoods] = useState([]);
     const [selectedDescription, setSelectedDescription] = useState(null);
@@ -57,9 +57,6 @@ const FoodSearch = () => {
     const navigate = useNavigate();
     const token = localStorage.getItem('token');
 
-    const handleShowDetail = (food) => {
-        setDetail(food);
-    };
     // 1) Redirect nếu không có token
     useEffect(() => {
         if (!token) navigate('/login');
@@ -463,7 +460,7 @@ const FoodSearch = () => {
 
     // 17) Tính theo gam món
     const handleChangeWeight = (key, newWeightStr) => {
-        const newWeight = Math.max(1, parseFloat(newWeightStr) || 0); 
+        const newWeight = Math.max(1, parseFloat(newWeightStr) || 0);
         setSelectedFoods(prev =>
             prev.map(f => {
                 const fKey = f.nix_item_id || f.food_name;
@@ -637,7 +634,7 @@ const FoodSearch = () => {
 
                     {popup.open && (
                         <Popup
-                            open={popup.open} 
+                            open={popup.open}
                             message={popup.message}
                             success={popup.success}
                             onClose={() => setPopup({ ...popup, open: false })}

@@ -36,6 +36,7 @@ app.get("/test-db", (req, res) => {
     });
 });
 app.use('/api', authRoutes);
+
 app.use('/api/foods/explain-alternative', explainAlternativeRoute);
 
 // ✅ Dùng routes/user.js

@@ -1,5 +1,8 @@
+﻿// src/pages/LoginPage.jsx
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 import '../styles/login.css';
 
 const LoginPage = () => {
@@ -11,7 +14,9 @@ const LoginPage = () => {
         password: '',
     });
 
-    const handleChange = e => {
+    const [showPassword, setShowPassword] = useState(false);
+
+    const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
 
@@ -26,7 +31,6 @@ const LoginPage = () => {
             const data = await res.json();
             if (res.ok) {
                 localStorage.setItem('token', data.token);
-                // Navigate to "/" (which the router will redirect to "/home" if token exists)
                 navigate('/app/home', { replace: true });
             } else {
                 setError(data.message || 'Login failed');
@@ -73,16 +77,30 @@ const LoginPage = () => {
                             className="dangnhap-input w-full px-3 py-2 rounded bg-gray-100"
                             required
                         />
-                        <input
-                            type="password"
-                            name="password"
-                            value={formData.password}
-                            onChange={handleChange}
-                            placeholder="Password"
-                            className="dangnhap-input w-full px-3 py-2 rounded bg-gray-100"
-                            required
-                        />
+
+                        {/* PASSWORD FIELD WITH EYE ICON */}
+                        <div className="relative w-full">
+                            <input
+                                type={showPassword ? 'text' : 'password'}
+                                name="password"
+                                value={formData.password}
+                                onChange={handleChange}
+                                placeholder="Password"
+                                className="dangnhap-input w-full pr-10 px-3 py-2 rounded bg-gray-100"
+                                required
+                            />
+                            <button
+                                type="button"
+                                onClick={() => setShowPassword(prev => !prev)}
+                                className="absolute inset-y-0 right-3 flex items-center text-gray-500"
+                                tabIndex={-1}
+                            >
+                                <FontAwesomeIcon icon={showPassword ? faEyeSlash : faEye} />
+                            </button>
+                        </div>
+
                         {error && <p className="dangnhap-loi text-red-500">{error}</p>}
+
                         <button
                             type="submit"
                             className="dangnhap-nut mx-auto block bg-gray-700 text-white px-12 py-2 rounded-full mt-4"

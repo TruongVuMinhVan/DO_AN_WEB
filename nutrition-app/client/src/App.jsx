@@ -4,21 +4,17 @@ import Login from "./pages/login";
 import Signup from "./pages/signUpPage";
 import SignUpInfoPage from './pages/signUpInfoPage';
 import Sidebar from './components/sidebar';
-import Dashboard from './components/Dashboard';
 import Charts from './components/charts';
 import Profile from './components/profiles';
+import NotFound from './pages/notFound';
 import FoodSearch from './pages/foodSearch';
 import Header from './components/Header';
-import Report from './pages/Report';
-import IndexPage from './pages/Index';
+import IndexPage from './pages/Index'; // ✅ Trang giới thiệu
 import PhysicalInfo from './pages/physicalInfo';
 import Home from './pages/Home';
-import NotFound from './pages/notFound';
-
 import RequireAuth from './components/RequireAuth';
 
 // Layout wrapper for all protected pages
-import Home from './pages/Home';
 import HealthierSuggestionsPage from './pages/HealthierSuggestionsPage';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
@@ -62,11 +58,10 @@ const App = () => {
                     <Route index element={<Navigate to="home" replace />} />
                     <Route path="home" element={<Home />} />
                     <Route path="physical-info" element={<PhysicalInfo />} />
-                    <Route path="dashboard" element={<Dashboard />} />
                     <Route path="food" element={<FoodSearch />} />
+                    <Route path="healthier-suggestions" element={<HealthierSuggestionsPage />} />
                     <Route path="charts" element={<Charts />} />
                     <Route path="profile" element={<Profile />} />
-                    <Route path="report" element={<Report />} />
                     <Route path="*" element={<NotFound />} />
                 </Route>
             </Route>

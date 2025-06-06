@@ -3,8 +3,9 @@
     "",
     "\\client",
     "\\client\\src",
-    "\\client\\src\\styles"
+    "\\client\\src\\components",
+    "\\server\\routes"
   ],
-  "SelectedNode": "\\client\\src\\styles\\dashboard.css",
+  "SelectedNode": "\\client\\src\\pages",
   "PreviewInSolutionExplorer": false
 }
