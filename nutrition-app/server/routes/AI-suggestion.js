@@ -67,9 +67,9 @@ router.post('/', verifyToken, async (req, res) => {
              LEFT JOIN thong_tin_dinh_duong ttdn ON ma.id = ttdn.mon_an_id
              WHERE lsba.user_id = ?
              ORDER BY lsba.date DESC
-             LIMIT 5`,
+             LIMIT 5`,          
             [userId]
-        );
+        );  
 
         if (!meals.length) {
             return res.status(200).send('No recent meal data.');
@@ -97,11 +97,11 @@ ${foodsText}
 
 Tiêu chí chế độ ăn: ${goals.join(', ')}
 
-1. Phân tích các món trên, nhắc nhở nếu có món chưa lành mạnh.
-2. Giải thích lợi ích sức khỏe hoặc dinh dưỡng khi sử dụng món đó.
+1. Phân tích món ăn đã được lấy từ cơ sở dữ liệu, nhắc nhở nếu có món chưa lành mạnh.
+2. Giải thích lợi ích sức khỏe hoặc dinh dưỡng của những món ăn đã được gửi lên từ cơ sở dữ liệu
 3. Đề xuất 3 món ăn lành mạnh hơn, không trùng với các món đã nhập.
    Với mỗi món đề xuất, hãy ghi rõ tên món, thông tin dinh dưỡng cũng như lợi ích khi dùng món đó.
-   Gợi ý thực đơn cho người dùng.
+   Gợi ý thực đơn cho người dùng.   
    Trả về kết quả dạng văn bản dễ đọc cho người dùng.`;
 
         // Translate prompt to English

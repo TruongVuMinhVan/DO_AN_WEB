@@ -13,7 +13,10 @@ const Sidebar = ({ collapsed, toggleSidebar }) => {
     return (
         <div className={`sidebar ${collapsed ? 'collapsed' : ''}`}>
             <div className="sidebar-header">
-                <span className="title">Nutrition App</span>
+                {/* Thay span thành Link để bấm về Home */}
+                <Link to="/home" className="title">
+                    Sống Khỏe
+                </Link>
                 <button onClick={toggleSidebar} className="toggle-btn">☰</button>
             </div>
 
@@ -24,14 +27,14 @@ const Sidebar = ({ collapsed, toggleSidebar }) => {
                         <span>Food</span>
                     </Link>
                 </li>
-                
+
                 <li>
                     <Link to="/physical-info">
-                        <i className="fas fa-heartbeat"></i> {/* icon phù hợp thể chất */}
+                        <i className="fas fa-heartbeat"></i>
                         {!collapsed && <span>Physical</span>}
                     </Link>
                 </li>
-                
+
                 <li>
                     <Link to="/healthier-suggestions">
                         <i className="fas fa-lightbulb" />

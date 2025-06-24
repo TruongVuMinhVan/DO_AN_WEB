@@ -31,7 +31,7 @@ const LoginPage = () => {
             const data = await res.json();
             if (res.ok) {
                 localStorage.setItem('token', data.token);
-                navigate('/app/home', { replace: true });
+                navigate('/home', { replace: true });
             } else {
                 setError(data.message || 'Login failed');
             }

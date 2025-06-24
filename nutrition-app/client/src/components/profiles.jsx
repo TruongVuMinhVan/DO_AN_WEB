@@ -260,7 +260,11 @@ const Profile = () => {
         <div className="profile-container row-layout">
             <div className="profile-info-panel">
                 <div className="avatar-wrapper">
-                    <img src={user.avatarUrl || '/images/avt_default.jpg'} alt="Avatar" className="avatar-img" />
+                    <img
+                        src={user.avatarUrl || '/images/avt_default.png'}
+                        alt="Avatar"
+                        className="avatar-img"
+                    />
                     {isEditing && (
                         <label className="avatar-upload-btn">
                             <FontAwesomeIcon icon={faCamera} />

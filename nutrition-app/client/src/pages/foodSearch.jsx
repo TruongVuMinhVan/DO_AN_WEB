@@ -45,7 +45,7 @@ const FoodSearch = () => {
     const [q, setQ] = useState('');
     const [results, setResults] = useState([]);
     const [history, setHistory] = useState([]);
-    const [setDetail] = useState(null);
+    const [detail, setDetail] = useState(null);
     const [selectedFoods, setSelectedFoods] = useState([]);
     const [existingFoods, setExistingFoods] = useState([]);
     const [selectedDescription, setSelectedDescription] = useState(null);

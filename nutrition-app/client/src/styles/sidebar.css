@@ -110,3 +110,40 @@
 .sidebar.collapsed .toggle-btn {
     margin-left: 0.225rem; 
 }
+/* Chỉ highlight khi hover */
+.menu-list a:hover,
+.menu-list button:hover {
+    background: rgba(255,255,255,0.1);
+}
+
+/* Không highlight khi click (active) hay có focus từ keyboard */
+.menu-list a:active,
+.menu-list button:active,
+.menu-list a:focus,
+.menu-list button:focus {
+    background: none;
+    outline: none;
+}
+
+/* Đảm bảo link không đổi màu sau khi đã click (visited) */
+.menu-list a:link,
+.menu-list a:visited {
+    color: inherit;
+    text-decoration: none;
+}
+
+/* Link tiêu đề sidebar luôn trắng, không gạch chân */
+.sidebar-header .title,
+.sidebar-header .title:link,
+.sidebar-header .title:visited,
+.sidebar-header .title:active {
+    color: #fff;
+    text-decoration: none;
+}
+
+    /* Nếu vẫn muốn giữ hover effect (ví dụ đổi nhẹ nền) */
+    .sidebar-header .title:hover {
+        /* ví dụ sáng hơn một chút */
+        background: rgba(255,255,255,0.1);
+    }
+
